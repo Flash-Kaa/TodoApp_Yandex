@@ -26,7 +26,7 @@ import com.flasshka.todoapp.ui.theme.TodoAppTheme
 
 @Composable
 fun ImportanceGetDropdown(
-    curImportance: TodoItem.Importance,
+    getImportance: () -> TodoItem.Importance,
     changeNeed: (Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -43,7 +43,7 @@ fun ImportanceGetDropdown(
         )
 
         Text(
-            text = curImportance.toString(),
+            text = getImportance().toString(),
             color = colorResource(id = R.color.label_tertiary),
             fontSize = 14.sp,
             fontWeight = FontWeight(400)
@@ -59,13 +59,13 @@ private fun PreviewImportanceDropdown() {
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
-            var imp: TodoItem.Importance by remember {
+            var importance: TodoItem.Importance by remember {
                 mutableStateOf(TodoItem.Importance.COMMON)
             }
 
             ImportanceGetDropdown(
-                curImportance = imp,
-                changeNeed = {},
+                getImportance = { importance },
+                changeNeed = {  },
                 modifier = Modifier.padding(16.dp)
             )
         }

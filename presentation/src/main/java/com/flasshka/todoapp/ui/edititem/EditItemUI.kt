@@ -32,17 +32,13 @@ import com.flasshka.todoapp.ui.theme.TodoAppTheme
 
 @Composable
 fun EditItemUI(
-    getDate: () -> Long?,
-    deleteButtonIsEnabled: Boolean,
+    getName: () -> String,
+    getImportance: () -> TodoItem.Importance,
+    getDate: () -> String,
+    deleteButtonIsEnabled: () -> Boolean,
     getAction: (EditItemActionType) -> (() -> Unit)
 ) {
-    var needDropdown: Boolean by remember {
-        mutableStateOf(false)
-    }
-
-    Column(
-        horizontalAlignment = Alignment.Start
-    ) {
+    Column(horizontalAlignment = Alignment.Start) {
         TopButtons(
             getAction = getAction,
             modifier = Modifier
@@ -51,48 +47,28 @@ fun EditItemUI(
         LazyColumn {
             item {
                 NameField(
-                    name = "",
+                    getName = getName,
                     getAction = getAction,
                     modifier = Modifier.padding(16.dp)
                 )
             }
 
             item {
-
-                Row {
-                    ImportanceGetDropdown(
-                        curImportance = TodoItem.Importance.URGENTLY,
-                        changeNeed = { needDropdown = it },
-                        modifier = Modifier.padding(16.dp)
-                    )
-                    ImportanceDropdownMenu(
-                        expanded = needDropdown,
-                        changeNeed = { needDropdown = it },
-                        getAction = getAction,
-                        offset = DpOffset(x = 16.dp, y = (-60).dp)
-                    )
-
-                }
-            }
-
-            item {
-                Underline(Modifier.padding(horizontal = 16.dp))
-            }
-
-            item {
-                DeadlineItem(
-                    getDate = getDate,
+                ImportanceDropdownMenuItem(
+                    getImportance = getImportance,
                     getAction = getAction
                 )
             }
 
-            item {
-                Underline(modifier = Modifier.padding(top = 16.dp))
-            }
+            item { Underline(modifier = Modifier.padding(horizontal = 16.dp)) }
+
+            item { DeadlineItem(getDate = getDate, getAction = getAction) }
+
+            item { Underline(modifier = Modifier.padding(top = 16.dp)) }
 
             item {
                 DeleteButton(
-                    enabled = deleteButtonIsEnabled,
+                    isEnabled = deleteButtonIsEnabled,
                     getAction = getAction,
                     modifier = Modifier.padding(16.dp)
                 )
@@ -102,23 +78,52 @@ fun EditItemUI(
 }
 
 @Composable
+private fun ImportanceDropdownMenuItem(
+    getImportance: () -> TodoItem.Importance,
+    getAction: (EditItemActionType) -> (() -> Unit)
+) {
+    var needDropdown: Boolean by remember {
+        mutableStateOf(false)
+    }
+
+    Row {
+        ImportanceGetDropdown(
+            getImportance = getImportance,
+            changeNeed = { needDropdown = it },
+            modifier = Modifier.padding(16.dp)
+        )
+
+        ImportanceDropdownMenu(
+            expanded = needDropdown,
+            changeNeed = { needDropdown = it },
+            getAction = getAction,
+            offset = DpOffset(x = 16.dp, y = (-60).dp)
+        )
+    }
+}
+
+@Composable
 private fun DeadlineItem(
-    getDate: () -> Long?,
+    getDate: () -> String,
     getAction: (EditItemActionType) -> (() -> Unit)
 ) {
     var checked by remember { mutableStateOf(false) }
+    var haveDate by remember { mutableStateOf(false) }
 
     DeadlineSwitch(
         checked = checked,
-        onCheckedChange = { checked = it },
+        onCheckedChange = { checked = it; haveDate = false },
         getDate = getDate,
         modifier = Modifier.padding(16.dp)
     )
 
-    if (checked) {
+    if (checked && !haveDate) {
         Calendar(
             onCancel = { checked = false },
-            onDone = {}
+            onDone = {
+                haveDate = true
+                getAction(EditItemActionType.OnDeadlineChanged(it))
+            }
         )
     }
 }
@@ -131,7 +136,13 @@ private fun PreviewEditItemUI() {
             modifier = Modifier.fillMaxSize(),
             color = colorResource(id = R.color.back_primary)
         ) {
-            EditItemUI({1L}, false, { {} })
+            EditItemUI(
+                getName = { "" },
+                getDate = { "date" },
+                getImportance = { TodoItem.Importance.COMMON },
+                deleteButtonIsEnabled = { true },
+                getAction = { {} }
+            )
         }
     }
 }

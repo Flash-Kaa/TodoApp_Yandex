@@ -35,7 +35,7 @@ import com.flasshka.todoapp.ui.theme.TodoAppTheme
 @Composable
 fun DeadlineSwitch(
     checked: Boolean,
-    getDate: () -> Long?,
+    getDate: () -> String,
     onCheckedChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -59,7 +59,7 @@ fun DeadlineSwitch(
 @Composable
 private fun DeadlineText(
     checked: Boolean,
-    getDate: () -> Long?,
+    getDate: () -> String,
 ) {
     Column {
         Text(
@@ -79,11 +79,11 @@ private fun DeadlineText(
 @Composable
 private fun DeadlineDate(
     checked: Boolean,
-    getDate: () -> Long?,
+    getDate: () -> String,
 ) {
     if (checked) {
         Text(
-            text = getDate().toString(),
+            text = getDate(),
             color = colorResource(id = R.color.blue),
             fontSize = 14.sp,
             fontWeight = FontWeight(400)
@@ -137,7 +137,7 @@ private fun PreviewDeadlineSwitch() {
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
-            DeadlineSwitch(true, { null }, {}, modifier = Modifier.padding(16.dp))
+            DeadlineSwitch(true, { "null" }, {}, modifier = Modifier.padding(16.dp))
         }
     }
 }

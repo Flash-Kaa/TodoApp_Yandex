@@ -30,13 +30,13 @@ import com.flasshka.todoapp.ui.theme.TodoAppTheme
 
 @Composable
 fun NameField(
-    name: String,
+    getName: () -> String,
     getAction: (EditItemActionType) -> (() -> Unit),
 
     modifier: Modifier = Modifier
 ) {
     TextField(
-        value = name,
+        value = getName(),
         onValueChange = { getAction(EditItemActionType.OnNameChanged(it)).invoke() },
         placeholder = { Placeholder() },
         colors = TextFieldDefaults.colors(
@@ -79,7 +79,7 @@ private fun PreviewNameField() {
                 .padding(16.dp)
         ) {
             NameField(
-                name = name,
+                getName = { name },
                 getAction = { action ->
                     {
                         name = (action as EditItemActionType.OnNameChanged).newVale

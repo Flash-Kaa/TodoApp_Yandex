@@ -1,6 +1,8 @@
 package com.flasshka.todoapp.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -13,13 +15,10 @@ import com.flasshka.todoapp.ui.listitems.ListVM
 
 @Composable
 fun NavGraph(
+    navController: NavHostController,
     listVM: ListVM,
     editItemVM: EditItemVM
 ) {
-    val navController = rememberNavController()
-    /*listVM.initRouter(navController)
-    createItemVM.initRouter(navController)*/
-
     NavHost(
         navController = navController,
         startDestination = NavScreen.ListOfItems.route

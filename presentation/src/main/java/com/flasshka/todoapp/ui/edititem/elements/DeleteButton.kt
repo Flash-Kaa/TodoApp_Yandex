@@ -25,12 +25,16 @@ import com.flasshka.todoapp.ui.theme.TodoAppTheme
 
 @Composable
 fun DeleteButton(
-    enabled: Boolean,
+    isEnabled: () -> Boolean,
     getAction: (EditItemActionType) -> (() -> Unit),
     modifier: Modifier = Modifier
 ) {
-    val color =
-        if (enabled) colorResource(id = R.color.red) else colorResource(id = R.color.label_disable)
+    val enabled = isEnabled()
+
+    val color = if (enabled)
+        colorResource(id = R.color.red)
+    else
+        colorResource(id = R.color.label_disable)
 
     val clickableModifier = if (enabled)
         modifier.clickable(onClick = getAction(EditItemActionType.OnDelete))
@@ -65,7 +69,7 @@ private fun PreviewDeleteButton() {
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
-            DeleteButton(false, { {} })
+            DeleteButton({ false }, { {} })
         }
     }
 }
