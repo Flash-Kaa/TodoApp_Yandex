@@ -1,16 +1,21 @@
 package com.flasshka.todoapp.ui.listitems
 
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import com.flasshka.domain.entities.TodoItem
 import com.flasshka.domain.usecases.DeleteTodoItemUseCase
 import com.flasshka.domain.usecases.GetTodoItemsUseCase
 import com.flasshka.domain.usecases.UpdateTodoItemUseCase
 import com.flasshka.todoapp.actions.ListOfItemsActionType
 import com.flasshka.todoapp.navigation.Router
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class FactoryForListVM(
     private val router: Router,
@@ -33,17 +38,26 @@ class ListVM(
     var visibility: Boolean by mutableStateOf(false)
         private set
 
+    private val listOfItems = mutableStateListOf<TodoItem>(*getTodoItem.invoke().toTypedArray())
+
+    // DELETE
+    fun updateList() {
+        val new = getTodoItem.invoke()
+
+        listOfItems.addAll(new.filter { it !in listOfItems })
+        listOfItems.removeAll(listOfItems.filter { it !in new })
+    }
 
     fun getItem(id: String): TodoItem? {
-        return getTodoItem.invoke().firstOrNull { it.id == id }
+        return listOfItems.firstOrNull { it.id == id }
     }
 
     fun getItems(): List<TodoItem> {
-        return getTodoItem.invoke().filter { it.completed.not() || visibility }
+        return listOfItems.filter { it.completed.not() || visibility }
     }
 
     fun getDoneCount(): Int {
-        return getTodoItem.invoke().count { it.completed }
+        return listOfItems.count { it.completed }
     }
 
     fun getAction(action: ListOfItemsActionType): () -> Unit {
@@ -69,18 +83,40 @@ class ListVM(
     }
 
     private fun onDelete(id: String): () -> Unit {
-        return { deleteTodoItem.invoke(id) }
+        return {
+            viewModelScope.launch {
+                withContext(Dispatchers.Default) {
+                    deleteTodoItem.invoke(id)
+                }
+            }
+            // use observe
+            val index = listOfItems.indexOfFirst { it.id == id }
+
+            if (index != -1) {
+                listOfItems.removeAt(index)
+            }
+        }
     }
 
     private fun onChangeDoneItem(id: String): () -> Unit {
         return {
-            val item = getTodoItem.invoke().first {
+            val item = listOfItems.first {
                 it.id == id
             }
 
             val copy = item.copy(completed = item.completed.not())
 
-            updateTodoItem.invoke(copy)
+            viewModelScope.launch {
+                withContext(Dispatchers.Default) {
+                    updateTodoItem.invoke(copy)
+                }
+            }
+            // use observe
+            val index = listOfItems.indexOfFirst { it.id == id }
+
+            if (index != -1) {
+                listOfItems[index] = copy
+            }
         }
     }
 }

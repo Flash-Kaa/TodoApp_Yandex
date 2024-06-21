@@ -33,14 +33,13 @@ import com.flasshka.todoapp.ui.listitems.elements.CreateFAB
 import com.flasshka.todoapp.ui.listitems.elements.ListTitle
 import com.flasshka.todoapp.ui.listitems.elements.SwipeItemUI
 import com.flasshka.todoapp.ui.theme.TodoAppTheme
-import java.util.Calendar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ListUI(
-    getDoneCount: () -> Int,
-    getVisibilityDoneON: () -> Boolean,
-    getItems: () -> List<TodoItem>,
+    doneCount: Int,
+    visibilityDoneON: Boolean,
+    items: List<TodoItem>,
     getAction: (ListOfItemsActionType) -> (() -> Unit)
 ) {
     val scrollState = rememberLazyListState()
@@ -57,8 +56,8 @@ fun ListUI(
             LargeTopAppBar(
                 title = {
                     ListTitle(
-                        getDoneCount = getDoneCount,
-                        getVisibilityDoneON = getVisibilityDoneON,
+                        doneCount = doneCount,
+                        visibilityDoneON = visibilityDoneON,
                         getAction = getAction,
                         scrollBehavior = scrollBehavior,
                         modifier = Modifier.padding(start = 48.dp, end = 16.dp)
@@ -76,7 +75,7 @@ fun ListUI(
         ) {
             var isFirst = true
 
-            items(getItems()) { item ->
+            items(items) { item ->
                 val modifier = if (isFirst)
                     Modifier.clip(RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp))
                 else Modifier
@@ -130,7 +129,7 @@ private fun PreviewListUI() {
             modifier = Modifier.fillMaxSize(),
             color = colorResource(id = R.color.back_primary)
         ) {
-            ListUI(
+            /*ListUI(
                 { 3 },
                 { false },
                 {
@@ -160,7 +159,7 @@ private fun PreviewListUI() {
                     )
                 },
                 getAction = { {} }
-            )
+            )*/
         }
     }
 }

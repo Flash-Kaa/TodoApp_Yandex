@@ -4,10 +4,12 @@ import androidx.compose.runtime.Composable
 
 @Composable
 fun DrawerListUI(listVM: ListVM) {
+    listVM.updateList()
+
     ListUI(
-        getDoneCount = listVM::getDoneCount,
-        getVisibilityDoneON = listVM::visibility,
-        getItems = listVM::getItems,
+        doneCount = listVM.getDoneCount(),
+        visibilityDoneON = listVM.visibility,
+        items = listVM.getItems(),
         getAction = listVM::getAction
     )
 }

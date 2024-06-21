@@ -81,7 +81,6 @@ class EditItemVM(
     }
 
     private fun onExitAction() {
-        state = EditTodoItemState.getNewState()
         router.navigateToListOfItems()
     }
 

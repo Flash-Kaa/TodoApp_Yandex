@@ -26,8 +26,8 @@ import com.flasshka.todoapp.actions.ListOfItemsActionType
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ListTitle(
-    getDoneCount: () -> Int,
-    getVisibilityDoneON: () -> Boolean,
+    doneCount: Int,
+    visibilityDoneON: Boolean,
     getAction: (ListOfItemsActionType) -> (() -> Unit),
 
     scrollBehavior: TopAppBarScrollBehavior,
@@ -53,7 +53,7 @@ fun ListTitle(
 
             if (collapseFraction < 0.63f) {
                 Text(
-                    text = stringResource(R.string.done_count, getDoneCount()),
+                    text = stringResource(R.string.done_count, doneCount),
                     color = colorResource(id = R.color.label_tertiary),
                     fontWeight = FontWeight(400),
                     fontSize = 16.sp
@@ -63,7 +63,7 @@ fun ListTitle(
 
         }
 
-        val icon = if (getVisibilityDoneON())
+        val icon = if (visibilityDoneON)
             ImageVector.vectorResource(id = R.drawable.baseline_visibility_24)
         else
             ImageVector.vectorResource(id = R.drawable.baseline_visibility_off_24)

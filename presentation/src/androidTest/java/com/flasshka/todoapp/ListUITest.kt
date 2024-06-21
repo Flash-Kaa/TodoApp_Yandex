@@ -25,17 +25,19 @@ internal class ListUITest {
     val composeTestRule: ComposeContentTestRule = createComposeRule()
 
     private lateinit var repository: TodoItemRepository
+    private lateinit var actionsMock: ActionsForTest
 
     @Before
     fun setContent() {
         repository = TodoItemRepositoryMock()
-        val actionsMock = ActionsForTest(repository)
+        actionsMock = ActionsForTest(repository)
 
         composeTestRule.setContent {
             ListUI(
-                getDoneCount = { repository.getTodoItems().count { it.completed } },
-                getVisibilityDoneON = { actionsMock.visibility },
-                getItems = { repository.getTodoItems() },
+                doneCount = repository.getTodoItems().count { it.completed },
+                visibilityDoneON = false,
+                items = repository.getTodoItems()
+                    .filter { it.completed.not() || actionsMock.visibility },
                 getAction = actionsMock::invoke
             )
         }
@@ -112,6 +114,8 @@ internal class ListUITest {
 
     @Test
     fun doneSwipe() {
+        actionsMock.visibility = true
+
         addOne()
         composeTestRule.onNodeWithTag(TestTag.ListItem.value)
             .assertExists()
@@ -127,7 +131,7 @@ internal class ListUITest {
 
     @Test
     fun visibilityCount() {
-        val names = (1..10).map {
+        val names = (1..20).map {
             addOne(it.toString())
         }
 
@@ -140,6 +144,7 @@ internal class ListUITest {
                 .performTouchInput {
                     swipeRight()
                 }
+                .assertDoesNotExist()
 
             composeTestRule.onNodeWithText(text = "Выполнено — $name")
                 .assertExists()

@@ -1,8 +1,5 @@
 package com.flasshka.data
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import com.flasshka.domain.entities.TodoItem
 import com.flasshka.domain.interfaces.TodoItemRepository
 import java.util.Calendar
@@ -11,8 +8,8 @@ import java.util.UUID
 
 class TodoItemRepositoryImpl : TodoItemRepository {
     companion object {
-        private var db: List<TodoItem> by mutableStateOf(
-            listOf(
+        private val db: MutableList<TodoItem> =
+            mutableListOf(
                 //
                 TodoItem(
                     id = UUID.randomUUID().toString(),
@@ -184,7 +181,6 @@ class TodoItemRepositoryImpl : TodoItemRepository {
                     completed = true
                 )
             )
-        )
     }
 
     override fun getTodoItems(): List<TodoItem> {
@@ -192,15 +188,22 @@ class TodoItemRepositoryImpl : TodoItemRepository {
     }
 
     override fun addTodoItem(item: TodoItem) {
-        db += listOf(item)
+        db.add(item)
     }
 
     override fun deleteTodoItem(id: String) {
-        db = db.filter { it.id != id }
+        val index = db.indexOfFirst { it.id == id }
+
+        if (index != -1) {
+            db.removeAt(index)
+        }
     }
 
     override fun updateTodoItemById(item: TodoItem) {
-        deleteTodoItem(item.id)
-        addTodoItem(item)
+        val index = db.indexOfFirst { it.id == item.id }
+
+        if (index != -1) {
+            db[index] = item
+        }
     }
 }
