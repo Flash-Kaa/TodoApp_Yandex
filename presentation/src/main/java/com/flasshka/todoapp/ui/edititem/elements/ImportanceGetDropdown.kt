@@ -60,12 +60,12 @@ private fun PreviewImportanceDropdown() {
             color = MaterialTheme.colorScheme.background
         ) {
             var importance: TodoItem.Importance by remember {
-                mutableStateOf(TodoItem.Importance.COMMON)
+                mutableStateOf(TodoItem.Importance.Common)
             }
 
             ImportanceGetDropdown(
                 getImportance = { importance },
-                changeNeed = {  },
+                changeNeed = { },
                 modifier = Modifier.padding(16.dp)
             )
         }

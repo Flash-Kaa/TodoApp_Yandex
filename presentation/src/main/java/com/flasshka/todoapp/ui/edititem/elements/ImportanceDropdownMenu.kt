@@ -55,7 +55,7 @@ private fun ImportanceDrawer(
     changeNeed: (Boolean) -> Unit,
     getAction: (EditItemActionType) -> (() -> Unit),
 ) {
-    val color = if (importance == TodoItem.Importance.URGENTLY)
+    val color = if (importance == TodoItem.Importance.Urgently)
         colorResource(id = R.color.red)
     else
         colorResource(id = R.color.label_primary)
@@ -76,7 +76,7 @@ private fun ImportanceDrawer(
             }
         },
         onClick = {
-            getAction(EditItemActionType.OnImportanceChanged(importance))
+            getAction(EditItemActionType.OnImportanceChanged(importance)).invoke()
             changeNeed(false)
         }
     )

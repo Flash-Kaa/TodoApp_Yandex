@@ -7,7 +7,7 @@ import java.util.UUID
 data class EditTodoItemState(
     val id: String,
     val text: String = "",
-    val importance: TodoItem.Importance = TodoItem.Importance.COMMON,
+    val importance: TodoItem.Importance = TodoItem.Importance.Common,
     val created: Date? = null,
     val deadLine: Long? = null,
     val completed: Boolean = false,
@@ -33,7 +33,7 @@ data class EditTodoItemState(
                     isUpdate = true
                 )
             }
-    }
+        }
     }
 
     fun toTodoItem(): TodoItem {

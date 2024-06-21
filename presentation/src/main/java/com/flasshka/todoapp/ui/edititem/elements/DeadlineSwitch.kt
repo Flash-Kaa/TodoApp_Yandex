@@ -23,6 +23,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -35,7 +36,7 @@ import com.flasshka.todoapp.ui.theme.TodoAppTheme
 @Composable
 fun DeadlineSwitch(
     checked: Boolean,
-    getDate: () -> String,
+    getDate: () -> Long?,
     onCheckedChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -59,7 +60,7 @@ fun DeadlineSwitch(
 @Composable
 private fun DeadlineText(
     checked: Boolean,
-    getDate: () -> String,
+    getDate: () -> Long?,
 ) {
     Column {
         Text(
@@ -79,15 +80,20 @@ private fun DeadlineText(
 @Composable
 private fun DeadlineDate(
     checked: Boolean,
-    getDate: () -> String,
+    getDate: () -> Long?,
 ) {
     if (checked) {
-        Text(
-            text = getDate(),
-            color = colorResource(id = R.color.blue),
-            fontSize = 14.sp,
-            fontWeight = FontWeight(400)
-        )
+        val context = LocalContext.current
+        val formatter = android.text.format.DateFormat.getDateFormat(context)
+
+        getDate()?.let {
+            Text(
+                text = formatter.format(it),
+                color = colorResource(id = R.color.blue),
+                fontSize = 14.sp,
+                fontWeight = FontWeight(400)
+            )
+        }
     }
 }
 
@@ -137,7 +143,7 @@ private fun PreviewDeadlineSwitch() {
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
-            DeadlineSwitch(true, { "null" }, {}, modifier = Modifier.padding(16.dp))
+            DeadlineSwitch(true, { null }, {}, modifier = Modifier.padding(16.dp))
         }
     }
 }

@@ -34,7 +34,7 @@ import com.flasshka.todoapp.ui.theme.TodoAppTheme
 fun EditItemUI(
     getName: () -> String,
     getImportance: () -> TodoItem.Importance,
-    getDate: () -> String,
+    getDeadline: () -> Long?,
     deleteButtonIsEnabled: () -> Boolean,
     getAction: (EditItemActionType) -> (() -> Unit)
 ) {
@@ -62,7 +62,7 @@ fun EditItemUI(
 
             item { Underline(modifier = Modifier.padding(horizontal = 16.dp)) }
 
-            item { DeadlineItem(getDate = getDate, getAction = getAction) }
+            item { DeadlineItem(getDate = getDeadline, getAction = getAction) }
 
             item { Underline(modifier = Modifier.padding(top = 16.dp)) }
 
@@ -104,15 +104,22 @@ private fun ImportanceDropdownMenuItem(
 
 @Composable
 private fun DeadlineItem(
-    getDate: () -> String,
+    getDate: () -> Long?,
     getAction: (EditItemActionType) -> (() -> Unit)
 ) {
-    var checked by remember { mutableStateOf(false) }
-    var haveDate by remember { mutableStateOf(false) }
+    var checked by remember { mutableStateOf(getDate() != null) }
+    var haveDate by remember { mutableStateOf(checked) }
 
     DeadlineSwitch(
         checked = checked,
-        onCheckedChange = { checked = it; haveDate = false },
+        onCheckedChange = {
+            checked = it
+
+            if (!checked) {
+                haveDate = false
+                getAction(EditItemActionType.OnDeadlineChanged(null)).invoke()
+            }
+        },
         getDate = getDate,
         modifier = Modifier.padding(16.dp)
     )
@@ -122,7 +129,7 @@ private fun DeadlineItem(
             onCancel = { checked = false },
             onDone = {
                 haveDate = true
-                getAction(EditItemActionType.OnDeadlineChanged(it))
+                getAction(EditItemActionType.OnDeadlineChanged(it)).invoke()
             }
         )
     }
@@ -138,8 +145,8 @@ private fun PreviewEditItemUI() {
         ) {
             EditItemUI(
                 getName = { "" },
-                getDate = { "date" },
-                getImportance = { TodoItem.Importance.COMMON },
+                getDeadline = { null },
+                getImportance = { TodoItem.Importance.Common },
                 deleteButtonIsEnabled = { true },
                 getAction = { {} }
             )

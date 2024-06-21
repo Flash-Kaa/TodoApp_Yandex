@@ -11,16 +11,16 @@ data class TodoItem(
     val completed: Boolean = false,
     val lastChange: Date? = null
 ) {
-    enum class Importance{
-        COMMON,
-        LOW,
-        URGENTLY;
+    enum class Importance {
+        Common,
+        Low,
+        Urgently;
 
         override fun toString(): String {
-            return when(this) {
-                COMMON -> "Нет"
-                LOW -> "Низкий"
-                URGENTLY -> "!! Высокий"
+            return when (this) {
+                Common -> "Нет"
+                Low -> "Низкий"
+                Urgently -> "!! Высокий"
             }
         }
     }

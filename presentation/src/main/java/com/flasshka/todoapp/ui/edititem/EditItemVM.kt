@@ -12,6 +12,7 @@ import com.flasshka.domain.usecases.DeleteTodoItemUseCase
 import com.flasshka.domain.usecases.UpdateTodoItemUseCase
 import com.flasshka.todoapp.actions.EditItemActionType
 import com.flasshka.todoapp.navigation.Router
+import java.util.Calendar
 
 class FactoryForEditItemVM(
     private val router: Router,
@@ -35,6 +36,22 @@ class EditItemVM(
         EditTodoItemState.getNewState()
     )
 
+    fun updateState(item: TodoItem? = null) {
+        state = if (item == null) {
+            EditTodoItemState.getNewState()
+        } else {
+            EditTodoItemState.getNewState(item)
+        }
+    }
+
+    fun getName() = state.text
+
+    fun getImportance() = state.importance
+
+    fun getDeadline() = state.deadLine
+
+    fun getDeleteButtonIsEnabled() = state.isUpdate
+
     fun getAction(action: EditItemActionType): () -> Unit {
         return when (action) {
             is EditItemActionType.OnSave -> ::onSaveAction
@@ -47,15 +64,14 @@ class EditItemVM(
     }
 
     private fun onSaveAction() {
-        /* TODO: add or update
-        if (upd) {
-            changed = now()
-            upd()
+        if (state.isUpdate) {
+            val copy = state.copy(lastChange = Calendar.getInstance().time)
+            updateTodoItem.invoke(copy.toTodoItem())
         } else {
-            created = now()
-            add()
+            val copy = state.copy(created = Calendar.getInstance().time)
+            addTodoItem.invoke(copy.toTodoItem())
         }
-         */
+
         onExitAction()
     }
 
@@ -66,7 +82,7 @@ class EditItemVM(
 
     private fun onExitAction() {
         state = EditTodoItemState.getNewState()
-        router.getNavigateToListOfItems().invoke()
+        router.navigateToListOfItems()
     }
 
     private fun onNameChanged(newValue: String): () -> Unit {

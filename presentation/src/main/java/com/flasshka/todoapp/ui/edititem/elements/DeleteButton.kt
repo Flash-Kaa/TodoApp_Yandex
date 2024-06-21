@@ -44,6 +44,7 @@ fun DeleteButton(
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = clickableModifier
+            .padding(top = 16.dp, end = 16.dp, bottom = 16.dp)
     ) {
         Icon(
             imageVector = ImageVector.vectorResource(id = R.drawable.baseline_delete_24),

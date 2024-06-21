@@ -1,7 +1,6 @@
 package com.flasshka.todoapp.ui.edititem.elements
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDefaults
@@ -28,22 +27,19 @@ fun Calendar(
     DatePickerDialog(
         onDismissRequest = onCancel,
         confirmButton = {
-            Row(modifier = Modifier.padding(bottom = 16.dp, end = 16.dp)) {
-                TextButton(
-                    text = stringResource(R.string.cancel),
-                    onClick = onCancel,
-                    modifier = Modifier.padding(end = 32.dp),
-                )
-
-                TextButton(
-                    text = stringResource(R.string.done),
-                    onClick = {
-                        onDone(state.selectedDateMillis)
-                    },
-                    enabled = state.selectedDateMillis != null
-                )
-            }
-
+            TextButton(
+                text = stringResource(R.string.done),
+                onClick = {
+                    onDone(state.selectedDateMillis)
+                },
+                enabled = state.selectedDateMillis != null
+            )
+        },
+        dismissButton = {
+            TextButton(
+                text = stringResource(R.string.cancel),
+                onClick = onCancel
+            )
         },
         colors = DatePickerDefaults.colors(
             containerColor = colorResource(id = R.color.back_secondary),
@@ -76,11 +72,13 @@ private fun TextButton(
     else
         colorResource(id = R.color.label_disable)
 
+    val clickable = if (enabled) modifier.clickable(onClick = onClick) else modifier
+
     Text(
         text = text,
         fontWeight = FontWeight(500),
         fontSize = 14.sp,
-        modifier = if (enabled) modifier.clickable(onClick = onClick) else modifier,
+        modifier = clickable.padding(16.dp),
         color = color
     )
 }
