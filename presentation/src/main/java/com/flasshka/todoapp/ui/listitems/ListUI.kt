@@ -17,7 +17,10 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -44,8 +47,6 @@ fun ListUI(
     getAction: (ListOfItemsActionType) -> (() -> Unit)
 ) {
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
-
-    var isFirst = remember { true }
 
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
@@ -78,32 +79,16 @@ fun ListUI(
                 items = items,
                 key = { it.id },
             ) { item ->
-                val modifier = remember {
-                    if (isFirst) {
-                        isFirst = true
-                        Modifier.clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
-                    } else {
-                        Modifier
-                    }
-                }
-
                 SwipeItemUI(
                     item = item,
                     getAction = getAction,
-                    modifier = modifier
+                    modifier = Modifier
                 )
             }
 
             item {
-                val modifier = remember {
-                    if (isFirst)
-                        Modifier.clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
-                    else
-                        Modifier
-                }
-
                 Box(
-                    modifier = modifier
+                    modifier = Modifier
                         .clip(RoundedCornerShape(bottomStart = 16.dp, bottomEnd = 16.dp))
                         .fillMaxWidth()
                         .background(MaterialTheme.colorScheme.surface)

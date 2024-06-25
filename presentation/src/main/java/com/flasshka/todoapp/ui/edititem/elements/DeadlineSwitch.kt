@@ -33,6 +33,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.flasshka.domain.entities.EditTodoItemState
 import com.flasshka.todoapp.R
 import com.flasshka.todoapp.ui.theme.DarkThemeBlue
 import com.flasshka.todoapp.ui.theme.DarkThemeOverlay
@@ -43,7 +44,7 @@ import com.flasshka.todoapp.ui.theme.TodoAppTheme
 @Composable
 fun DeadlineSwitch(
     checked: Boolean,
-    getDate: () -> Long?,
+    state: EditTodoItemState,
     onCheckedChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -53,7 +54,7 @@ fun DeadlineSwitch(
         modifier = modifier.fillMaxWidth()
     ) {
         DeadlineText(
-            getDate = getDate,
+            state = state,
             checked = checked
         )
 
@@ -67,7 +68,7 @@ fun DeadlineSwitch(
 @Composable
 private fun DeadlineText(
     checked: Boolean,
-    getDate: () -> Long?,
+    state: EditTodoItemState
 ) {
     Column {
         Text(
@@ -78,7 +79,7 @@ private fun DeadlineText(
         )
 
         DeadlineDate(
-            getDate = getDate,
+            state = state,
             checked = checked
         )
     }
@@ -87,7 +88,7 @@ private fun DeadlineText(
 @Composable
 private fun DeadlineDate(
     checked: Boolean,
-    getDate: () -> Long?,
+    state: EditTodoItemState
 ) {
     if (checked) {
         val context = LocalContext.current
@@ -95,7 +96,7 @@ private fun DeadlineDate(
 
         val color = if (isSystemInDarkTheme()) DarkThemeBlue else LightThemeBlue
 
-        getDate()?.let {
+        state.deadLine?.let {
             Text(
                 text = formatter.format(it),
                 color = color,
@@ -159,7 +160,12 @@ private fun PreviewDeadlineSwitch() {
                 mutableStateOf(true)
             }
 
-            DeadlineSwitch(checked, { null }, { checked = it }, modifier = Modifier.padding(16.dp))
+            DeadlineSwitch(
+                checked,
+                EditTodoItemState.getNewState(),
+                { checked = it },
+                modifier = Modifier.padding(16.dp)
+            )
         }
     }
 }

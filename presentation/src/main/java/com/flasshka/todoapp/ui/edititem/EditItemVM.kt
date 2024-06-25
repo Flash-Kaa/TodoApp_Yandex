@@ -1,8 +1,5 @@
 package com.flasshka.todoapp.ui.edititem
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -17,8 +14,10 @@ import com.flasshka.domain.usecases.UpdateTodoItemUseCase
 import com.flasshka.todoapp.actions.EditItemActionType
 import com.flasshka.todoapp.navigation.Router
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.util.Calendar
 
 class EditItemVM(
@@ -28,31 +27,22 @@ class EditItemVM(
     private val addTodoItem: AddTodoItemUseCase,
     private val updateTodoItem: UpdateTodoItemUseCase,
     private val deleteTodoItem: DeleteTodoItemUseCase,
-    private val getByIdOrNullTodoItem: GetTodoItemByIdOrNullUseCase
+    private val getTodoItemByIdOrNull: GetTodoItemByIdOrNullUseCase
 ) : ViewModel() {
-    private var state: EditTodoItemState by mutableStateOf(
-        EditTodoItemState.getNewState()
-    )
+    private val _state: MutableStateFlow<EditTodoItemState> = MutableStateFlow(EditTodoItemState.getNewState())
+    val state = _state.asStateFlow()
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
             itemId?.let { id ->
-                getByIdOrNullTodoItem(id)?.let { item ->
-                    withContext(Dispatchers.Main) {
-                        state = EditTodoItemState.getNewState(item)
-                    }
+                getTodoItemByIdOrNull(id)?.let { item ->
+                    _state.update { EditTodoItemState.getNewState(item) }
                 }
             }
         }
     }
 
-    fun getName() = state.text
-
-    fun getImportance() = state.importance
-
-    fun getDeadline() = state.deadLine
-
-    fun getDeleteButtonIsEnabled() = state.isUpdate
+    fun getDeleteButtonIsEnabled() = _state.value.isUpdate
 
     fun getAction(action: EditItemActionType): () -> Unit {
         return when (action) {
@@ -67,11 +57,11 @@ class EditItemVM(
 
     private fun onSaveAction() {
         viewModelScope.launch(Dispatchers.IO) {
-            if (state.isUpdate) {
-                val copy = state.copy(lastChange = Calendar.getInstance().time)
+            if (_state.value.isUpdate) {
+                val copy = _state.value.copy(lastChange = Calendar.getInstance().time)
                 updateTodoItem(copy.toTodoItem())
             } else {
-                val copy = state.copy(created = Calendar.getInstance().time)
+                val copy = _state.value.copy(created = Calendar.getInstance().time)
                 addTodoItem(copy.toTodoItem())
             }
         }
@@ -81,7 +71,7 @@ class EditItemVM(
 
     private fun onDeleteAction() {
         viewModelScope.launch(Dispatchers.IO) {
-            deleteTodoItem(state.id)
+            deleteTodoItem(_state.value.id)
         }
 
         onExitAction()
@@ -92,15 +82,15 @@ class EditItemVM(
     }
 
     private fun onNameChanged(newValue: String): () -> Unit {
-        return { state = state.copy(text = newValue) }
+        return { _state.update { it.copy(text = newValue) } }
     }
 
     private fun onImportanceChanged(newValue: TodoItem.Importance): () -> Unit {
-        return { state = state.copy(importance = newValue) }
+        return { _state.update { it.copy(importance = newValue) } }
     }
 
     private fun onDeadlineChanged(newValue: Long?): () -> Unit {
-        return { state = state.copy(deadLine = newValue) }
+        return { _state.update { it.copy(deadLine = newValue) } }
     }
 
     class Factory(
@@ -114,7 +104,7 @@ class EditItemVM(
             val addTodoItem = AddTodoItemUseCase(repository)
             val updateTodoItem = UpdateTodoItemUseCase(repository)
             val deleteTodoItem = DeleteTodoItemUseCase(repository)
-            val getByIdOrNullTodoItem = GetTodoItemByIdOrNullUseCase(repository)
+            val getTodoItemByIdOrNull = GetTodoItemByIdOrNullUseCase(repository)
 
             return EditItemVM(
                 itemId = itemId,
@@ -122,7 +112,7 @@ class EditItemVM(
                 addTodoItem = addTodoItem,
                 updateTodoItem = updateTodoItem,
                 deleteTodoItem = deleteTodoItem,
-                getByIdOrNullTodoItem = getByIdOrNullTodoItem
+                getTodoItemByIdOrNull = getTodoItemByIdOrNull
             ) as T
         }
     }

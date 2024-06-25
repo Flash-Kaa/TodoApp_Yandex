@@ -1,7 +1,10 @@
 package com.flasshka.todoapp.ui.edititem
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.flasshka.domain.entities.EditTodoItemState
 import com.flasshka.todoapp.navigation.Router
 
 @Composable
@@ -13,10 +16,10 @@ fun DrawerEditItemUI(
         factory = EditItemVM.Factory(router, itemId)
     )
 
+    // val state: EditTodoItemState by editItemVM.state.collectAsState(initial = EditTodoItemState.getNewState())
+
     EditItemUI(
-        getName = editItemVM::getName,
-        getImportance = editItemVM::getImportance,
-        getDeadline = editItemVM::getDeadline,
+        state1 = editItemVM.state,
         deleteButtonIsEnabled = editItemVM::getDeleteButtonIsEnabled,
         getAction = editItemVM::getAction
     )

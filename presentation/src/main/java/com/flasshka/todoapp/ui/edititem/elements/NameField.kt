@@ -24,23 +24,22 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.flasshka.domain.entities.EditTodoItemState
 import com.flasshka.todoapp.R
 import com.flasshka.todoapp.actions.EditItemActionType
 import com.flasshka.todoapp.ui.theme.TodoAppTheme
 
 @Composable
 fun NameField(
-    getName: () -> String,
+    state: EditTodoItemState,
     getAction: (EditItemActionType) -> (() -> Unit),
 
     modifier: Modifier = Modifier
 ) {
-    val shape = remember {
-        RoundedCornerShape(10.dp)
-    }
+    val shape = RoundedCornerShape(10.dp)
 
     TextField(
-        value = getName(),
+        value = state.text,
         onValueChange = { getAction(EditItemActionType.OnNameChanged(it)).invoke() },
         placeholder = { Placeholder() },
         colors = TextFieldDefaults.colors(
@@ -84,7 +83,7 @@ private fun PreviewNameField() {
                 .padding(16.dp),
         ) {
             NameField(
-                getName = { name },
+                state = EditTodoItemState.getNewState(),
                 getAction = { action ->
                     {
                         name = (action as EditItemActionType.OnNameChanged).newValue

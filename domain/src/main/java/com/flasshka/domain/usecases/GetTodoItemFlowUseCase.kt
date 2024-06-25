@@ -4,10 +4,10 @@ import com.flasshka.domain.entities.TodoItem
 import com.flasshka.domain.interfaces.TodoItemRepository
 import kotlinx.coroutines.flow.StateFlow
 
-class GetTodoItemsUseCase(
+class GetTodoItemFlowUseCase(
     private val repository: TodoItemRepository
 ) {
-    suspend operator fun invoke(): List<TodoItem> {
-        return repository.getTodoItems()
+    operator fun invoke(): StateFlow<List<TodoItem>> {
+        return repository.itemsFlow
     }
 }
