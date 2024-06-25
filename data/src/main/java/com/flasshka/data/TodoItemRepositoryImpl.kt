@@ -5,12 +5,14 @@ import com.flasshka.domain.interfaces.TodoItemRepository
 import java.util.Calendar
 import java.util.Date
 import java.util.UUID
+import java.util.concurrent.locks.ReentrantReadWriteLock
+import kotlin.concurrent.read
+import kotlin.concurrent.write
 
 class TodoItemRepositoryImpl : TodoItemRepository {
     companion object {
-        private val db: MutableList<TodoItem> =
-            mutableListOf(
-                //
+        private var list: List<TodoItem> =
+            listOf(
                 TodoItem(
                     id = UUID.randomUUID().toString(),
                     text = "common item",
@@ -183,27 +185,27 @@ class TodoItemRepositoryImpl : TodoItemRepository {
             )
     }
 
-    override fun getTodoItems(): List<TodoItem> {
-        return db
+    private val locker = ReentrantReadWriteLock()
+
+    override suspend fun getTodoItems(): List<TodoItem> {
+        return locker.read { list }
     }
 
-    override fun addTodoItem(item: TodoItem) {
-        db.add(item)
-    }
-
-    override fun deleteTodoItem(id: String) {
-        val index = db.indexOfFirst { it.id == id }
-
-        if (index != -1) {
-            db.removeAt(index)
+    override suspend fun addTodoItem(item: TodoItem) {
+        locker.write {
+            list += item
         }
     }
 
-    override fun updateTodoItemById(item: TodoItem) {
-        val index = db.indexOfFirst { it.id == item.id }
+    override suspend fun deleteTodoItem(id: String) {
+        locker.write {
+            list = list.filter { it.id != id }
+        }
+    }
 
-        if (index != -1) {
-            db[index] = item
+    override suspend fun updateTodoItemById(item: TodoItem) {
+        locker.write {
+            list = list.map { if (it.id != item.id) it else item }
         }
     }
 }

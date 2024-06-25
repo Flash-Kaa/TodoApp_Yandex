@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -13,12 +14,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import com.flasshka.domain.entities.TodoItem
-import com.flasshka.todoapp.R
 import com.flasshka.todoapp.actions.EditItemActionType
 import com.flasshka.todoapp.ui.edititem.elements.Calendar
 import com.flasshka.todoapp.ui.edititem.elements.DeadlineSwitch
@@ -62,7 +61,7 @@ fun EditItemUI(
 
             item { Underline(modifier = Modifier.padding(horizontal = 16.dp)) }
 
-            item { DeadlineItem(getDate = getDeadline, getAction = getAction) }
+            item { DeadlineItem(getDeadline = getDeadline, getAction = getAction) }
 
             item { Underline(modifier = Modifier.padding(top = 16.dp)) }
 
@@ -104,10 +103,10 @@ private fun ImportanceDropdownMenuItem(
 
 @Composable
 private fun DeadlineItem(
-    getDate: () -> Long?,
+    getDeadline: () -> Long?,
     getAction: (EditItemActionType) -> (() -> Unit)
 ) {
-    var checked by remember { mutableStateOf(getDate() != null) }
+    var checked by remember { mutableStateOf(getDeadline() != null) }
     var haveDate by remember { mutableStateOf(checked) }
 
     DeadlineSwitch(
@@ -120,7 +119,7 @@ private fun DeadlineItem(
                 getAction(EditItemActionType.OnDeadlineChanged(null)).invoke()
             }
         },
-        getDate = getDate,
+        getDate = getDeadline,
         modifier = Modifier.padding(16.dp)
     )
 
@@ -141,7 +140,7 @@ private fun PreviewEditItemUI() {
     TodoAppTheme {
         Surface(
             modifier = Modifier.fillMaxSize(),
-            color = colorResource(id = R.color.back_primary)
+            color = MaterialTheme.colorScheme.background
         ) {
             EditItemUI(
                 getName = { "" },

@@ -1,14 +1,17 @@
 package com.flasshka.todoapp.ui.edititem
 
 import androidx.compose.runtime.Composable
-import com.flasshka.domain.entities.TodoItem
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.flasshka.todoapp.navigation.Router
 
 @Composable
 fun DrawerEditItemUI(
-    editItemVM: EditItemVM,
-    item: TodoItem? = null
+    router: Router,
+    itemId: String? = null
 ) {
-    editItemVM.updateState(item)
+    val editItemVM: EditItemVM = viewModel(
+        factory = EditItemVM.Factory(router, itemId)
+    )
 
     EditItemUI(
         getName = editItemVM::getName,

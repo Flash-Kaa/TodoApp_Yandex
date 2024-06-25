@@ -7,15 +7,15 @@ import com.flasshka.domain.interfaces.TodoItemRepository
 internal class TodoItemRepositoryMock : TodoItemRepository {
     private var db = mutableStateListOf<TodoItem>()
 
-    override fun getTodoItems(): List<TodoItem> {
+    override suspend fun getTodoItems(): List<TodoItem> {
         return db
     }
 
-    override fun addTodoItem(item: TodoItem) {
+    override suspend fun addTodoItem(item: TodoItem) {
         db.add(item)
     }
 
-    override fun deleteTodoItem(id: String) {
+    override suspend fun deleteTodoItem(id: String) {
         val index = db.indexOfFirst { it.id == id }
 
         if (index != -1) {
@@ -23,7 +23,7 @@ internal class TodoItemRepositoryMock : TodoItemRepository {
         }
     }
 
-    override fun updateTodoItemById(item: TodoItem) {
+    override suspend fun updateTodoItemById(item: TodoItem) {
         val index = db.indexOfFirst { it.id == item.id }
 
         if (index != -1) {

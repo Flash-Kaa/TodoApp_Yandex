@@ -1,5 +1,6 @@
 package com.flasshka.todoapp
 
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.ui.test.junit4.ComposeContentTestRule
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
@@ -14,6 +15,7 @@ import com.flasshka.domain.interfaces.TodoItemRepository
 import com.flasshka.todoapp.ui.listitems.ListUI
 import com.flasshka.todoapp.utils.ActionsForTest
 import com.flasshka.todoapp.utils.TodoItemRepositoryMock
+import kotlinx.coroutines.runBlocking
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -34,10 +36,15 @@ internal class ListUITest {
 
         composeTestRule.setContent {
             ListUI(
-                doneCount = repository.getTodoItems().count { it.completed },
-                visibilityDoneON = false,
-                items = repository.getTodoItems()
-                    .filter { it.completed.not() || actionsMock.visibility },
+                doneCount = runBlocking { repository.getTodoItems().count { it.completed } },
+                visibilityDoneON = actionsMock.visibility.value,
+                items = runBlocking {
+                    mutableStateListOf(
+                        *repository.getTodoItems()
+                            .filter { it.completed.not() || actionsMock.visibility.value }
+                            .toTypedArray()
+                    )
+                },
                 getAction = actionsMock::invoke
             )
         }
@@ -91,12 +98,14 @@ internal class ListUITest {
     fun canDone() {
         addOne()
 
-        assert(repository.getTodoItems().first().completed.not())
+        val firstNotCompleted = runBlocking { repository.getTodoItems().first().completed.not() }
+        assert(firstNotCompleted)
 
         composeTestRule.onNodeWithTag(TestTag.Checkbox.value)
             .performClick()
 
-        assert(repository.getTodoItems().first().completed)
+        val firstCompleted = runBlocking { repository.getTodoItems().first().completed }
+        assert(firstCompleted)
     }
 
     @Test
@@ -114,7 +123,7 @@ internal class ListUITest {
 
     @Test
     fun doneSwipe() {
-        actionsMock.visibility = true
+        actionsMock.visibility.value = true
 
         addOne()
         composeTestRule.onNodeWithTag(TestTag.ListItem.value)
@@ -126,7 +135,8 @@ internal class ListUITest {
         composeTestRule.onNodeWithTag(TestTag.ListItem.value)
             .assertExists()
 
-        assert(repository.getTodoItems().first().completed)
+        val firstCompleted = runBlocking { repository.getTodoItems().first().completed }
+        assert(firstCompleted)
     }
 
     @Test
@@ -152,15 +162,17 @@ internal class ListUITest {
     }
 
     private fun addOne(idWithName: String = "testItem"): String {
-        repository.addTodoItem(
-            TodoItem(
-                id = idWithName,
-                text = idWithName,
-                importance = TodoItem.Importance.Low,
-                created = Calendar.getInstance().time,
-                deadLine = Calendar.getInstance().time
+        runBlocking {
+            repository.addTodoItem(
+                TodoItem(
+                    id = idWithName,
+                    text = idWithName,
+                    importance = TodoItem.Importance.Low,
+                    created = Calendar.getInstance().time,
+                    deadLine = Calendar.getInstance().time
+                )
             )
-        )
+        }
 
         return idWithName
     }

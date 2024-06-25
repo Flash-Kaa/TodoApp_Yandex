@@ -12,9 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -37,14 +35,14 @@ fun ImportanceGetDropdown(
     ) {
         Text(
             text = stringResource(R.string.importance),
-            color = colorResource(id = R.color.label_primary),
+            color = MaterialTheme.colorScheme.primary,
             fontSize = 16.sp,
             fontWeight = FontWeight(400)
         )
 
         Text(
             text = getImportance().toString(),
-            color = colorResource(id = R.color.label_tertiary),
+            color = MaterialTheme.colorScheme.tertiary,
             fontSize = 14.sp,
             fontWeight = FontWeight(400)
         )
@@ -59,7 +57,7 @@ private fun PreviewImportanceDropdown() {
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
-            var importance: TodoItem.Importance by remember {
+            val importance: TodoItem.Importance by remember {
                 mutableStateOf(TodoItem.Importance.Common)
             }
 

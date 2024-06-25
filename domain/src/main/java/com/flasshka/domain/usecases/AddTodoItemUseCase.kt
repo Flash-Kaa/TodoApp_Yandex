@@ -6,7 +6,7 @@ import com.flasshka.domain.interfaces.TodoItemRepository
 class AddTodoItemUseCase(
     private val repository: TodoItemRepository
 ) {
-    fun invoke(todoItem: TodoItem) {
+    suspend operator fun invoke(todoItem: TodoItem) {
         repository.addTodoItem(todoItem)
     }
 }
