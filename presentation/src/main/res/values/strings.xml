@@ -1,3 +1,14 @@
 <resources>
     <string name="app_name">TodoApp</string>
+    <string name="save">СОХРАНИТЬ</string>
+    <string name="what_write">Что надо сделать…</string>
+    <string name="importance">Важность</string>
+    <string name="delete">Удалить</string>
+    <string name="deadline_date">Сделать до</string>
+    <string name="cancel">ОТМЕНА</string>
+    <string name="done">ГОТОВО</string>
+    <string name="my_work">Мои дела</string>
+    <string name="done_count">"Выполнено — %d"</string>
+    <string name="date_format">dd-MM-yy</string>
+    <string name="new_item">Новое</string>
 </resources>
