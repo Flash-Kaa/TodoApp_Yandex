@@ -7,9 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
-import com.flasshka.data.TodoItemRepositoryImpl
 import com.flasshka.domain.entities.TodoItem
-import com.flasshka.domain.interfaces.TodoItemRepository
 import com.flasshka.domain.usecases.DeleteTodoItemUseCase
 import com.flasshka.domain.usecases.GetDoneCountUseCase
 import com.flasshka.domain.usecases.GetItemsWithVisibilityUseCase
@@ -96,7 +94,12 @@ class ListVM(
     class Factory(
         private val router: Router,
 
-        private val repository: TodoItemRepository = TodoItemRepositoryImpl(),
+        private val updateTodoItem: UpdateTodoItemUseCase,
+        private val deleteTodoItem: DeleteTodoItemUseCase,
+        private val getByIdOrNull: GetTodoItemByIdOrNullUseCase,
+        private val getDoneCounts: GetDoneCountUseCase,
+        private val getItemsWithVisibility: GetItemsWithVisibilityUseCase,
+
         private val showError: ((String) -> Unit)? = null
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
@@ -104,12 +107,6 @@ class ListVM(
             modelClass: Class<T>,
             extras: CreationExtras
         ): T {
-            val updateTodoItem = UpdateTodoItemUseCase(repository)
-            val deleteTodoItem = DeleteTodoItemUseCase(repository)
-            val getByIdOrNull = GetTodoItemByIdOrNullUseCase(repository)
-            val getDoneCounts = GetDoneCountUseCase(repository)
-            val getItemsWithVisibility = GetItemsWithVisibilityUseCase(repository)
-
             return ListVM(
                 router = router,
                 updateTodoItem = updateTodoItem,

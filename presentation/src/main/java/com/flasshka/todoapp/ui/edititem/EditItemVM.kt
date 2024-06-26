@@ -122,17 +122,15 @@ class EditItemVM(
         private val router: Router,
         private val itemId: String?,
 
-        private val repository: TodoItemRepository = TodoItemRepositoryImpl(),
+        private val addTodoItem: AddTodoItemUseCase,
+        private val updateTodoItem: UpdateTodoItemUseCase,
+        private val deleteTodoItem: DeleteTodoItemUseCase,
+        private val getTodoItemByIdOrNull: GetTodoItemByIdOrNullUseCase,
+
         private val showError: ((String) -> Unit)? = null,
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
-
-            val addTodoItem = AddTodoItemUseCase(repository)
-            val updateTodoItem = UpdateTodoItemUseCase(repository)
-            val deleteTodoItem = DeleteTodoItemUseCase(repository)
-            val getTodoItemByIdOrNull = GetTodoItemByIdOrNullUseCase(repository)
-
             return EditItemVM(
                 itemId = itemId,
                 router = router,
