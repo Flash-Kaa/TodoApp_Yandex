@@ -36,7 +36,7 @@ import kotlinx.coroutines.flow.StateFlow
 fun EditItemUI(
     state1: StateFlow<EditTodoItemState>,
     deleteButtonIsEnabled: () -> Boolean,
-    getAction: (EditItemActionType) -> (() -> Unit)
+    getAction: (EditItemActionType) -> (() -> Unit),
 ) {
     val state: EditTodoItemState by state1.collectAsState(initial = EditTodoItemState.getNewState())
 

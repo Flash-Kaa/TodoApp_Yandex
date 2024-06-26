@@ -13,6 +13,7 @@ import com.flasshka.domain.usecases.GetTodoItemByIdOrNullUseCase
 import com.flasshka.domain.usecases.UpdateTodoItemUseCase
 import com.flasshka.todoapp.actions.EditItemActionType
 import com.flasshka.todoapp.navigation.Router
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -24,18 +25,30 @@ class EditItemVM(
     itemId: String?,
 
     private val router: Router,
+
     private val addTodoItem: AddTodoItemUseCase,
     private val updateTodoItem: UpdateTodoItemUseCase,
     private val deleteTodoItem: DeleteTodoItemUseCase,
-    private val getTodoItemByIdOrNull: GetTodoItemByIdOrNullUseCase
+    private val getTodoItemByIdOrNull: GetTodoItemByIdOrNullUseCase,
+
+    private val showError: ((String) -> Unit)? = null,
 ) : ViewModel() {
-    private val _state: MutableStateFlow<EditTodoItemState> = MutableStateFlow(EditTodoItemState.getNewState())
+    private val _state: MutableStateFlow<EditTodoItemState> =
+        MutableStateFlow(EditTodoItemState.getNewState())
     val state = _state.asStateFlow()
 
     init {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(
+            Dispatchers.IO + CoroutineExceptionHandler { _, _ ->
+                viewModelScope.launch(Dispatchers.Main) {
+                    showError?.invoke("Не удаётся создать или редактировать объект")
+                }
+            }
+        ) {
             itemId?.let { id ->
-                getTodoItemByIdOrNull(id)?.let { item ->
+                val item = getTodoItemByIdOrNull(id)
+
+                if (item != null) {
                     _state.update { EditTodoItemState.getNewState(item) }
                 }
             }
@@ -56,7 +69,13 @@ class EditItemVM(
     }
 
     private fun onSaveAction() {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(
+            Dispatchers.IO + CoroutineExceptionHandler { _, _ ->
+                viewModelScope.launch(Dispatchers.Main) {
+                    showError?.invoke("Не получилось сохранить изменения")
+                }
+            }
+        ) {
             if (_state.value.isUpdate) {
                 val copy = _state.value.copy(lastChange = Calendar.getInstance().time)
                 updateTodoItem(copy.toTodoItem())
@@ -70,7 +89,13 @@ class EditItemVM(
     }
 
     private fun onDeleteAction() {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(
+            Dispatchers.IO + CoroutineExceptionHandler { _, _ ->
+                viewModelScope.launch(Dispatchers.Main) {
+                    showError?.invoke("Не можем удалить")
+                }
+            }
+        ) {
             deleteTodoItem(_state.value.id)
         }
 
@@ -96,7 +121,9 @@ class EditItemVM(
     class Factory(
         private val router: Router,
         private val itemId: String?,
-        private val repository: TodoItemRepository = TodoItemRepositoryImpl()
+
+        private val repository: TodoItemRepository = TodoItemRepositoryImpl(),
+        private val showError: ((String) -> Unit)? = null,
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -112,7 +139,8 @@ class EditItemVM(
                 addTodoItem = addTodoItem,
                 updateTodoItem = updateTodoItem,
                 deleteTodoItem = deleteTodoItem,
-                getTodoItemByIdOrNull = getTodoItemByIdOrNull
+                getTodoItemByIdOrNull = getTodoItemByIdOrNull,
+                showError = showError
             ) as T
         }
     }
