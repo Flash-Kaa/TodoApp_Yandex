@@ -11,14 +11,15 @@ import com.flasshka.data.TodoItemRepositoryImpl
 import com.flasshka.domain.entities.TodoItem
 import com.flasshka.domain.interfaces.TodoItemRepository
 import com.flasshka.domain.usecases.DeleteTodoItemUseCase
+import com.flasshka.domain.usecases.GetDoneCountUseCase
+import com.flasshka.domain.usecases.GetItemsWithVisibilityUseCase
 import com.flasshka.domain.usecases.GetTodoItemByIdOrNullUseCase
-import com.flasshka.domain.usecases.GetTodoItemFlowUseCase
 import com.flasshka.domain.usecases.UpdateTodoItemUseCase
 import com.flasshka.todoapp.actions.ListOfItemsActionType
 import com.flasshka.todoapp.navigation.Router
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 
@@ -26,18 +27,21 @@ class ListVM(
     private val router: Router,
     private val updateTodoItem: UpdateTodoItemUseCase,
     private val deleteTodoItem: DeleteTodoItemUseCase,
-    private val getTodoItemFlow: GetTodoItemFlowUseCase,
-    private val getByIdOrNull: GetTodoItemByIdOrNullUseCase
+    private val getByIdOrNull: GetTodoItemByIdOrNullUseCase,
+    private val getDoneCounts: GetDoneCountUseCase,
+    private val getItemsWithVisibility: GetItemsWithVisibilityUseCase,
+
+    private val showError: ((String) -> Unit)? = null
 ) : ViewModel() {
     var visibility: Boolean by mutableStateOf(false)
         private set
 
     fun getItems(): Flow<List<TodoItem>> {
-        return getTodoItemFlow().map { list -> list.filter { item -> !item.completed || visibility } }
+        return getItemsWithVisibility(visibility)
     }
 
     fun getDoneCount(): Flow<Int> {
-        return getTodoItemFlow().map { list -> list.count { item -> item.completed } }
+        return getDoneCounts()
     }
 
     fun getAction(action: ListOfItemsActionType): () -> Unit {
@@ -64,7 +68,11 @@ class ListVM(
 
     private fun onDelete(id: String): () -> Unit {
         return {
-            viewModelScope.launch(Dispatchers.IO) {
+            viewModelScope.launch(
+                Dispatchers.IO + CoroutineExceptionHandler { _, _ ->
+                    showError?.invoke("Не можем удалить")
+                }
+            ) {
                 deleteTodoItem(id)
             }
         }
@@ -72,11 +80,13 @@ class ListVM(
 
     private fun onChangeDoneItem(id: String): () -> Unit {
         return {
-            viewModelScope.launch(Dispatchers.IO) {
-                val item = getByIdOrNull(id)
-
-                if (item != null) {
-                    val copy = item.copy(completed = item.completed.not())
+            viewModelScope.launch(
+                Dispatchers.IO + CoroutineExceptionHandler { _, _ ->
+                    showError?.invoke("Не получилось открыть меню изменения")
+                }
+            ) {
+                getByIdOrNull(id)?.let {
+                    val copy = it.copy(completed = it.completed.not())
                     updateTodoItem(copy)
                 }
             }
@@ -85,7 +95,9 @@ class ListVM(
 
     class Factory(
         private val router: Router,
-        private val repository: TodoItemRepository = TodoItemRepositoryImpl()
+
+        private val repository: TodoItemRepository = TodoItemRepositoryImpl(),
+        private val showError: ((String) -> Unit)? = null
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(
@@ -94,15 +106,18 @@ class ListVM(
         ): T {
             val updateTodoItem = UpdateTodoItemUseCase(repository)
             val deleteTodoItem = DeleteTodoItemUseCase(repository)
-            val getTodoItemFlow = GetTodoItemFlowUseCase(repository)
             val getByIdOrNull = GetTodoItemByIdOrNullUseCase(repository)
+            val getDoneCounts = GetDoneCountUseCase(repository)
+            val getItemsWithVisibility = GetItemsWithVisibilityUseCase(repository)
 
             return ListVM(
                 router = router,
                 updateTodoItem = updateTodoItem,
                 deleteTodoItem = deleteTodoItem,
-                getTodoItemFlow = getTodoItemFlow,
-                getByIdOrNull = getByIdOrNull
+                getByIdOrNull = getByIdOrNull,
+                getDoneCounts = getDoneCounts,
+                getItemsWithVisibility = getItemsWithVisibility,
+                showError = showError
             ) as T
         }
     }

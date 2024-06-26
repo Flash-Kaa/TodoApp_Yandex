@@ -2,6 +2,7 @@ package com.flasshka.data
 
 import com.flasshka.domain.entities.TodoItem
 import com.flasshka.domain.interfaces.TodoItemRepository
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -12,24 +13,25 @@ import java.util.Calendar
 import java.util.Date
 import java.util.UUID
 import java.util.concurrent.locks.ReentrantReadWriteLock
+import kotlin.concurrent.read
 import kotlin.concurrent.write
 
 class TodoItemRepositoryImpl : TodoItemRepository {
     private val _itemsFlow: MutableStateFlow<List<TodoItem>> = MutableStateFlow(TemporaryData.list)
-    override val itemsFlow/*: StateFlow<List<TodoItem>>*/ = _itemsFlow.asStateFlow()
+    override val itemsFlow: StateFlow<List<TodoItem>> = _itemsFlow.asStateFlow()
 
     private val locker = ReentrantReadWriteLock()
 
     override suspend fun getTodoItems(): List<TodoItem> {
-        return TemporaryData.list
+        return locker.read {
+            TemporaryData.list
+        }
     }
 
     override suspend fun addTodoItem(item: TodoItem) {
-        //_listOfItems.update { currentCollection -> currentCollection + item }
+        _itemsFlow.update { items -> items + item }
 
         locker.write {
-            _itemsFlow.update { items -> items + item }
-
             TemporaryData.list += item
         }
     }
@@ -40,17 +42,16 @@ class TodoItemRepositoryImpl : TodoItemRepository {
         }
 
         locker.write {
-
             TemporaryData.list -= TemporaryData.list.first { it.id == id }
         }
     }
 
     override suspend fun updateTodoItemById(item: TodoItem) {
-        _itemsFlow.update { currentCollection ->
-            currentCollection.map { if (it.id != item.id) it else item }
-        }
-
         locker.write {
+            _itemsFlow.update { currentCollection ->
+                currentCollection.map { if (it.id != item.id) it else item }
+            }
+
             TemporaryData.list = TemporaryData.list.map { if (it.id != item.id) it else item }
         }
     }
