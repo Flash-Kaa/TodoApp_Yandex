@@ -1,27 +1,35 @@
 package com.flasshka.todoapp.ui.listitems.elements
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.flasshka.todoapp.R
 import com.flasshka.todoapp.actions.ListOfItemsActionType
+import com.flasshka.todoapp.ui.theme.DarkThemeBlue
+import com.flasshka.todoapp.ui.theme.LightThemeBlue
+import com.flasshka.todoapp.ui.theme.TodoAppTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -46,7 +54,7 @@ fun ListTitle(
 
             Text(
                 text = stringResource(R.string.my_work),
-                color = colorResource(id = R.color.label_primary),
+                color = MaterialTheme.colorScheme.primary,
                 fontWeight = FontWeight(500),
                 fontSize = titleTextSize
             )
@@ -54,7 +62,7 @@ fun ListTitle(
             if (collapseFraction < 0.63f) {
                 Text(
                     text = stringResource(R.string.done_count, doneCount),
-                    color = colorResource(id = R.color.label_tertiary),
+                    color = MaterialTheme.colorScheme.tertiary,
                     fontWeight = FontWeight(400),
                     fontSize = 16.sp
                 )
@@ -71,12 +79,32 @@ fun ListTitle(
         Icon(
             imageVector = icon,
             contentDescription = "visibility done icon",
-            tint = colorResource(id = R.color.blue),
+            tint = if (isSystemInDarkTheme()) DarkThemeBlue else LightThemeBlue,
             modifier = Modifier
+                .padding(end = 16.dp)
                 .clickable(
                     onClick = getAction(ListOfItemsActionType.OnChangeDoneVisibility)
                 )
-                .padding(end = 16.dp)
+                .padding(8.dp)
         )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview(showBackground = true)
+@Composable
+private fun PreviewListTitle() {
+    TodoAppTheme {
+        Surface(
+            modifier = Modifier.fillMaxSize(),
+            color = MaterialTheme.colorScheme.background
+        ) {
+            ListTitle(
+                doneCount = 0,
+                visibilityDoneON = true,
+                getAction = { {} },
+                scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
+            )
+        }
     }
 }

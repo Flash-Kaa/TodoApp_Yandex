@@ -5,7 +5,7 @@ import com.flasshka.domain.interfaces.TodoItemRepository
 class DeleteTodoItemUseCase(
     private val repository: TodoItemRepository
 ) {
-    fun invoke(id: String) {
+    suspend operator fun invoke(id: String) {
         repository.deleteTodoItem(id)
     }
 }

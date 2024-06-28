@@ -8,10 +8,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.LargeTopAppBar
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -20,7 +20,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -33,6 +32,7 @@ import com.flasshka.todoapp.ui.listitems.elements.CreateFAB
 import com.flasshka.todoapp.ui.listitems.elements.ListTitle
 import com.flasshka.todoapp.ui.listitems.elements.SwipeItemUI
 import com.flasshka.todoapp.ui.theme.TodoAppTheme
+import java.util.Calendar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -42,13 +42,7 @@ fun ListUI(
     items: List<TodoItem>,
     getAction: (ListOfItemsActionType) -> (() -> Unit)
 ) {
-    val scrollState = rememberLazyListState()
-
-    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(
-        canScroll = { scrollState.canScrollForward || scrollState.canScrollBackward }
-    )
-
-    scrollBehavior.state.collapsedFraction
+    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
 
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
@@ -63,52 +57,44 @@ fun ListUI(
                         modifier = Modifier.padding(start = 48.dp, end = 16.dp)
                     )
                 },
-                scrollBehavior = scrollBehavior
+                scrollBehavior = scrollBehavior,
+                colors = TopAppBarDefaults.largeTopAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.background,
+                    scrolledContainerColor = MaterialTheme.colorScheme.background
+                )
             )
-        }
+        },
+        containerColor = MaterialTheme.colorScheme.background
     ) { paddingValues ->
         LazyColumn(
-            state = scrollState,
             modifier = Modifier
                 .padding(paddingValues)
                 .fillMaxWidth()
         ) {
-            var isFirst = true
-
-            items(items) { item ->
-                val modifier = if (isFirst)
-                    Modifier.clip(RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp))
-                else Modifier
-
-                if (isFirst) {
-                    isFirst = false
-                }
-
+            items(
+                items = items,
+                key = { it.id },
+            ) { item ->
                 SwipeItemUI(
                     item = item,
                     getAction = getAction,
-                    modifier = modifier
+                    modifier = Modifier
                 )
             }
 
             item {
-                val modifier = if (isFirst)
-                    Modifier.clip(RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp))
-                else
-                    Modifier
-
                 Box(
-                    modifier = modifier
-                        .clickable(onClick = getAction(ListOfItemsActionType.OnCreate))
-                        .clip(RoundedCornerShape(bottomStart = 8.dp, bottomEnd = 8.dp))
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(bottomStart = 16.dp, bottomEnd = 16.dp))
                         .fillMaxWidth()
-                        .background(colorResource(id = R.color.back_secondary))
+                        .background(MaterialTheme.colorScheme.surface)
+                        .clickable(onClick = getAction(ListOfItemsActionType.OnCreate))
                 ) {
                     Text(
                         text = stringResource(R.string.new_item),
                         fontWeight = FontWeight(400),
                         fontSize = 16.sp,
-                        color = colorResource(id = R.color.label_tertiary),
+                        color = MaterialTheme.colorScheme.tertiary,
                         modifier = Modifier.padding(start = 32.dp, bottom = 24.dp, top = 8.dp)
                     )
                 }
@@ -127,39 +113,37 @@ private fun PreviewListUI() {
     TodoAppTheme {
         Surface(
             modifier = Modifier.fillMaxSize(),
-            color = colorResource(id = R.color.back_primary)
+            color = MaterialTheme.colorScheme.background
         ) {
-            /*ListUI(
-                { 3 },
-                { false },
-                {
-                    listOf(
-                        TodoItem(
-                            id = "1",
-                            text = "testItem",
-                            importance = TodoItem.Importance.Low,
-                            created = Calendar.getInstance().time,
-                            deadLine = Calendar.getInstance().time,
-                            completed = true
-                        ),
-                        TodoItem(
-                            id = "1",
-                            text = "testItem",
-                            importance = TodoItem.Importance.Low,
-                            created = Calendar.getInstance().time,
-                            deadLine = Calendar.getInstance().time
-                        ),
-                        TodoItem(
-                            id = "1",
-                            text = "testItem",
-                            importance = TodoItem.Importance.Low,
-                            created = Calendar.getInstance().time,
-                            deadLine = Calendar.getInstance().time
-                        ),
-                    )
-                },
+            ListUI(
+                doneCount = 1,
+                visibilityDoneON = true,
+                items = listOf(
+                    TodoItem(
+                        id = "1",
+                        text = "testItem",
+                        importance = TodoItem.Importance.Low,
+                        created = Calendar.getInstance().time,
+                        deadLine = Calendar.getInstance().time,
+                        completed = true
+                    ),
+                    TodoItem(
+                        id = "2",
+                        text = "testItem",
+                        importance = TodoItem.Importance.Low,
+                        created = Calendar.getInstance().time,
+                        deadLine = Calendar.getInstance().time
+                    ),
+                    TodoItem(
+                        id = "4",
+                        text = "testItem",
+                        importance = TodoItem.Importance.Low,
+                        created = Calendar.getInstance().time,
+                        deadLine = Calendar.getInstance().time
+                    ),
+                ),
                 getAction = { {} }
-            )*/
+            )
         }
     }
 }

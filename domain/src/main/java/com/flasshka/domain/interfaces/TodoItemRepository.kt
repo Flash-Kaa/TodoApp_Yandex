@@ -1,13 +1,16 @@
 package com.flasshka.domain.interfaces
 
 import com.flasshka.domain.entities.TodoItem
+import kotlinx.coroutines.flow.StateFlow
 
 interface TodoItemRepository {
-    fun getTodoItems(): List<TodoItem>
+    val itemsFlow: StateFlow<List<TodoItem>>
 
-    fun addTodoItem(item: TodoItem)
+    suspend fun getTodoItems(): List<TodoItem>
 
-    fun deleteTodoItem(id: String)
+    suspend fun addTodoItem(item: TodoItem)
 
-    fun updateTodoItemById(item: TodoItem)
+    suspend fun deleteTodoItem(id: String)
+
+    suspend fun updateTodoItemById(item: TodoItem)
 }

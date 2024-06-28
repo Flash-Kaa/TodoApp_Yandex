@@ -1,15 +1,14 @@
 package com.flasshka.todoapp.utils
 
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import com.flasshka.domain.interfaces.TodoItemRepository
 import com.flasshka.todoapp.actions.ListOfItemsActionType
+import kotlinx.coroutines.runBlocking
 
 internal class ActionsForTest(
     private val repository: TodoItemRepository
 ) {
-    var visibility: Boolean by mutableStateOf(false)
+    val visibility = mutableStateOf(false)
 
     fun invoke(action: ListOfItemsActionType): () -> Unit {
         return when (action) {
@@ -22,22 +21,28 @@ internal class ActionsForTest(
             }
 
             is ListOfItemsActionType.OnChangeDoneVisibility -> {
-                { visibility = !visibility }
+                { visibility.value = !visibility.value }
             }
 
             is ListOfItemsActionType.OnDeleteItem -> {
-                { repository.deleteTodoItem(action.id) }
+                {
+                    runBlocking {
+                        repository.deleteTodoItem(action.id)
+                    }
+                }
             }
 
             is ListOfItemsActionType.OnChangeDoneItem -> {
                 {
-                    val item = repository.getTodoItems().first {
-                        it.id == action.id
+                    runBlocking {
+                        val item = repository.getTodoItems().first {
+                            it.id == action.id
+                        }
+
+                        val copy = item.copy(completed = item.completed.not())
+
+                        repository.updateTodoItemById(copy)
                     }
-
-                    val copy = item.copy(completed = item.completed.not())
-
-                    repository.updateTodoItemById(copy)
                 }
             }
         }

@@ -5,20 +5,20 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
-import com.flasshka.domain.entities.TodoItem
-import com.flasshka.todoapp.R
+import com.flasshka.domain.entities.EditTodoItemState
 import com.flasshka.todoapp.actions.EditItemActionType
 import com.flasshka.todoapp.ui.edititem.elements.Calendar
 import com.flasshka.todoapp.ui.edititem.elements.DeadlineSwitch
@@ -29,15 +29,17 @@ import com.flasshka.todoapp.ui.edititem.elements.NameField
 import com.flasshka.todoapp.ui.edititem.elements.TopButtons
 import com.flasshka.todoapp.ui.edititem.elements.Underline
 import com.flasshka.todoapp.ui.theme.TodoAppTheme
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 
 @Composable
 fun EditItemUI(
-    getName: () -> String,
-    getImportance: () -> TodoItem.Importance,
-    getDeadline: () -> Long?,
+    state1: StateFlow<EditTodoItemState>,
     deleteButtonIsEnabled: () -> Boolean,
-    getAction: (EditItemActionType) -> (() -> Unit)
+    getAction: (EditItemActionType) -> (() -> Unit),
 ) {
+    val state: EditTodoItemState by state1.collectAsState(initial = EditTodoItemState.getNewState())
+
     Column(horizontalAlignment = Alignment.Start) {
         TopButtons(
             getAction = getAction,
@@ -47,7 +49,7 @@ fun EditItemUI(
         LazyColumn {
             item {
                 NameField(
-                    getName = getName,
+                    state = state,
                     getAction = getAction,
                     modifier = Modifier.padding(16.dp)
                 )
@@ -55,14 +57,14 @@ fun EditItemUI(
 
             item {
                 ImportanceDropdownMenuItem(
-                    getImportance = getImportance,
+                    state = state,
                     getAction = getAction
                 )
             }
 
             item { Underline(modifier = Modifier.padding(horizontal = 16.dp)) }
 
-            item { DeadlineItem(getDate = getDeadline, getAction = getAction) }
+            item { DeadlineItem(state = state, getAction = getAction) }
 
             item { Underline(modifier = Modifier.padding(top = 16.dp)) }
 
@@ -79,7 +81,7 @@ fun EditItemUI(
 
 @Composable
 private fun ImportanceDropdownMenuItem(
-    getImportance: () -> TodoItem.Importance,
+    state: EditTodoItemState,
     getAction: (EditItemActionType) -> (() -> Unit)
 ) {
     var needDropdown: Boolean by remember {
@@ -88,7 +90,7 @@ private fun ImportanceDropdownMenuItem(
 
     Row {
         ImportanceGetDropdown(
-            getImportance = getImportance,
+            state = state,
             changeNeed = { needDropdown = it },
             modifier = Modifier.padding(16.dp)
         )
@@ -104,31 +106,29 @@ private fun ImportanceDropdownMenuItem(
 
 @Composable
 private fun DeadlineItem(
-    getDate: () -> Long?,
+    state: EditTodoItemState,
     getAction: (EditItemActionType) -> (() -> Unit)
 ) {
-    var checked by remember { mutableStateOf(getDate() != null) }
-    var haveDate by remember { mutableStateOf(checked) }
+    var needCalendar by remember { mutableStateOf(false) }
 
     DeadlineSwitch(
-        checked = checked,
+        checked = state.deadLine != null,
         onCheckedChange = {
-            checked = it
-
-            if (!checked) {
-                haveDate = false
+            if (!it) {
                 getAction(EditItemActionType.OnDeadlineChanged(null)).invoke()
+            } else {
+                needCalendar = true
             }
         },
-        getDate = getDate,
+        state = state,
         modifier = Modifier.padding(16.dp)
     )
 
-    if (checked && !haveDate) {
+    if (needCalendar) {
         Calendar(
-            onCancel = { checked = false },
+            onCancel = { needCalendar = false },
             onDone = {
-                haveDate = true
+                needCalendar = false
                 getAction(EditItemActionType.OnDeadlineChanged(it)).invoke()
             }
         )
@@ -141,12 +141,10 @@ private fun PreviewEditItemUI() {
     TodoAppTheme {
         Surface(
             modifier = Modifier.fillMaxSize(),
-            color = colorResource(id = R.color.back_primary)
+            color = MaterialTheme.colorScheme.background
         ) {
             EditItemUI(
-                getName = { "" },
-                getDeadline = { null },
-                getImportance = { TodoItem.Importance.Common },
+                state1 = MutableStateFlow(EditTodoItemState.getNewState()),
                 deleteButtonIsEnabled = { true },
                 getAction = { {} }
             )
