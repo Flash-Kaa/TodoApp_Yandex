@@ -65,7 +65,7 @@ private fun ImportanceDrawer(
     changeNeed: (Boolean) -> Unit,
     getAction: (EditItemActionType) -> (() -> Unit),
 ) {
-    val color = if (importance == TodoItem.Importance.Urgently)
+    val color = if (importance == TodoItem.Importance.Important)
         if (isSystemInDarkTheme()) DarkThemeRed else LightThemeRed
     else
         MaterialTheme.colorScheme.primary

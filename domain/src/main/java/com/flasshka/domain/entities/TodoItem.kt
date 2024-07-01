@@ -12,15 +12,15 @@ data class TodoItem(
     val lastChange: Date? = null
 ) {
     enum class Importance {
-        Common,
+        Basic,
         Low,
-        Urgently;
+        Important;
 
         override fun toString(): String {
             return when (this) {
-                Common -> "Нет"
+                Basic -> "Нет"
                 Low -> "Низкий"
-                Urgently -> "!! Высокий"
+                Important -> "!! Высокий"
             }
         }
     }

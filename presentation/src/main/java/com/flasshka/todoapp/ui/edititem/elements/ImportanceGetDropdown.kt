@@ -18,7 +18,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.flasshka.domain.entities.EditTodoItemState
+import com.flasshka.todoapp.ui.EditTodoItemState
 import com.flasshka.domain.entities.TodoItem
 import com.flasshka.todoapp.R
 import com.flasshka.todoapp.ui.theme.TodoAppTheme
@@ -59,7 +59,7 @@ private fun PreviewImportanceDropdown() {
             color = MaterialTheme.colorScheme.background
         ) {
             val importance: TodoItem.Importance by remember {
-                mutableStateOf(TodoItem.Importance.Common)
+                mutableStateOf(TodoItem.Importance.Basic)
             }
 
             ImportanceGetDropdown(

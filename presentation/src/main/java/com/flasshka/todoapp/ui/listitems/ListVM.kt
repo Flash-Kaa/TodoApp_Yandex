@@ -9,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
 import com.flasshka.domain.entities.TodoItem
 import com.flasshka.domain.usecases.DeleteTodoItemUseCase
+import com.flasshka.domain.usecases.FetchItemsUseCase
 import com.flasshka.domain.usecases.GetDoneCountUseCase
 import com.flasshka.domain.usecases.GetItemsWithVisibilityUseCase
 import com.flasshka.domain.usecases.GetTodoItemByIdOrNullUseCase
@@ -17,8 +18,10 @@ import com.flasshka.todoapp.actions.ListOfItemsActionType
 import com.flasshka.todoapp.navigation.Router
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.supervisorScope
 
 
 class ListVM(
@@ -28,11 +31,22 @@ class ListVM(
     private val getByIdOrNull: GetTodoItemByIdOrNullUseCase,
     private val getDoneCounts: GetDoneCountUseCase,
     private val getItemsWithVisibility: GetItemsWithVisibilityUseCase,
+    private val fetchItems: FetchItemsUseCase,
 
     private val showError: ((String) -> Unit)? = null
 ) : ViewModel() {
     var visibility: Boolean by mutableStateOf(false)
         private set
+
+    init {
+        viewModelScope.launch(
+            Dispatchers.IO + CoroutineExceptionHandler { _, _ ->
+                showError?.invoke("Не получается обновить список")
+            }
+        ) {
+            fetchItems()
+        }
+    }
 
     fun getItems(): Flow<List<TodoItem>> {
         return getItemsWithVisibility(visibility)
@@ -71,7 +85,9 @@ class ListVM(
                     showError?.invoke("Не можем удалить")
                 }
             ) {
-                deleteTodoItem(id)
+                supervisorScope {
+                    deleteTodoItem(id)
+                }
             }
         }
     }
@@ -99,6 +115,7 @@ class ListVM(
         private val getByIdOrNull: GetTodoItemByIdOrNullUseCase,
         private val getDoneCounts: GetDoneCountUseCase,
         private val getItemsWithVisibility: GetItemsWithVisibilityUseCase,
+        private val fetchItems: FetchItemsUseCase,
 
         private val showError: ((String) -> Unit)? = null
     ) : ViewModelProvider.Factory {
@@ -114,6 +131,7 @@ class ListVM(
                 getByIdOrNull = getByIdOrNull,
                 getDoneCounts = getDoneCounts,
                 getItemsWithVisibility = getItemsWithVisibility,
+                fetchItems = fetchItems,
                 showError = showError
             ) as T
         }

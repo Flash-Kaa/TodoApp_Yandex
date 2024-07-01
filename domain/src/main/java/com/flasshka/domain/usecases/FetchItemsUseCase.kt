@@ -3,10 +3,10 @@ package com.flasshka.domain.usecases
 import com.flasshka.domain.entities.TodoItem
 import com.flasshka.domain.interfaces.TodoItemRepository
 
-class GetTodoItemByIdOrNullUseCase(
+class FetchItemsUseCase(
     private val repository: TodoItemRepository
 ) {
-    suspend operator fun invoke(id: String): TodoItem? {
-        return repository.getItemByIdOrNull(id)
+    suspend operator fun invoke() {
+        repository.fetchItems()
     }
 }

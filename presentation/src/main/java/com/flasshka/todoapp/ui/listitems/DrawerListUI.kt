@@ -8,9 +8,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.flasshka.data.TodoItemRepositoryImpl
+import com.flasshka.data.network.NetworkRepository
 import com.flasshka.domain.entities.TodoItem
 import com.flasshka.domain.interfaces.TodoItemRepository
 import com.flasshka.domain.usecases.DeleteTodoItemUseCase
+import com.flasshka.domain.usecases.FetchItemsUseCase
 import com.flasshka.domain.usecases.GetDoneCountUseCase
 import com.flasshka.domain.usecases.GetItemsWithVisibilityUseCase
 import com.flasshka.domain.usecases.GetTodoItemByIdOrNullUseCase
@@ -20,7 +22,7 @@ import com.flasshka.todoapp.navigation.Router
 @Composable
 fun DrawerListUI(
     router: Router,
-    repository: TodoItemRepository = TodoItemRepositoryImpl()
+    repository: TodoItemRepository = NetworkRepository.create()
 ) {
     val context = LocalContext.current.applicationContext
 
@@ -29,6 +31,7 @@ fun DrawerListUI(
     val getByIdOrNull = remember { GetTodoItemByIdOrNullUseCase(repository) }
     val getDoneCounts = remember { GetDoneCountUseCase(repository) }
     val getItemsWithVisibility = remember { GetItemsWithVisibilityUseCase(repository) }
+    val fetchItems = remember { FetchItemsUseCase(repository) }
 
     val listVM: ListVM = viewModel(
         factory = ListVM.Factory(
@@ -39,6 +42,7 @@ fun DrawerListUI(
             getByIdOrNull = getByIdOrNull,
             getDoneCounts = getDoneCounts,
             getItemsWithVisibility = getItemsWithVisibility,
+            fetchItems = fetchItems,
 
             showError = { message ->
                 Toast.makeText(context, message, Toast.LENGTH_LONG).show()

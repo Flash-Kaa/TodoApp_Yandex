@@ -1,6 +1,9 @@
+import java.util.Properties
+
 plugins {
     id("com.android.library")
     alias(libs.plugins.jetbrainsKotlinAndroid)
+    id("kotlin-kapt")
 }
 
 android {
@@ -11,6 +14,12 @@ android {
         minSdk = 26
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        val localProperties = Properties()
+        localProperties.load(project.rootProject.file("local.properties").inputStream())
+
+        val address: String? = localProperties.getProperty("token.oath")
+        buildConfigField("String", "OATH_TOKEN", address.toString())
     }
 
     buildTypes {
@@ -29,10 +38,21 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
     }
+
+    buildFeatures {
+        buildConfig = true
+    }
 }
 
 dependencies {
     implementation(project(":domain"))
+
+    // Retrofit
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
+
+    // Json converter
+    implementation(libs.core.jackson.databind)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)

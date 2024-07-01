@@ -2,11 +2,8 @@ package com.flasshka.data
 
 import com.flasshka.domain.entities.TodoItem
 import com.flasshka.domain.interfaces.TodoItemRepository
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import java.util.Calendar
@@ -17,12 +14,14 @@ import kotlin.concurrent.read
 import kotlin.concurrent.write
 
 class TodoItemRepositoryImpl : TodoItemRepository {
-    private val _itemsFlow: MutableStateFlow<List<TodoItem>> = MutableStateFlow(TemporaryData.list)
+    private val _itemsFlow: MutableStateFlow<List<TodoItem>> = MutableStateFlow(emptyList())
     override val itemsFlow: StateFlow<List<TodoItem>> = _itemsFlow.asStateFlow()
 
     private val locker = ReentrantReadWriteLock()
 
-    override suspend fun getTodoItems(): List<TodoItem> {
+    override suspend fun fetchItems() {
+        _itemsFlow.update { TemporaryData.list }
+
         return locker.read {
             TemporaryData.list
         }
@@ -56,12 +55,16 @@ class TodoItemRepositoryImpl : TodoItemRepository {
         }
     }
 
+    override suspend fun getItemByIdOrNull(id: String): TodoItem? {
+        TODO("Not yet implemented")
+    }
+
     private object TemporaryData {
         var list = listOf(
             TodoItem(
                 id = UUID.randomUUID().toString(),
                 text = "common item",
-                importance = TodoItem.Importance.Common,
+                importance = TodoItem.Importance.Basic,
                 created = Calendar.getInstance().time
             ),
             TodoItem(
@@ -73,13 +76,13 @@ class TodoItemRepositoryImpl : TodoItemRepository {
             TodoItem(
                 id = UUID.randomUUID().toString(),
                 text = "urgently item",
-                importance = TodoItem.Importance.Urgently,
+                importance = TodoItem.Importance.Important,
                 created = Calendar.getInstance().time
             ),
             TodoItem(
                 id = UUID.randomUUID().toString(),
                 text = "with deadline",
-                importance = TodoItem.Importance.Common,
+                importance = TodoItem.Importance.Basic,
                 created = Calendar.getInstance().time,
                 deadLine = Date(Calendar.getInstance().time.time + 1E9.toLong())
             ),
@@ -93,14 +96,14 @@ class TodoItemRepositoryImpl : TodoItemRepository {
             TodoItem(
                 id = UUID.randomUUID().toString(),
                 text = "with deadline",
-                importance = TodoItem.Importance.Urgently,
+                importance = TodoItem.Importance.Important,
                 created = Calendar.getInstance().time,
                 deadLine = Date(Calendar.getInstance().time.time + 4E8.toLong())
             ),
             TodoItem(
                 id = UUID.randomUUID().toString(),
                 text = "completed with deadline",
-                importance = TodoItem.Importance.Urgently,
+                importance = TodoItem.Importance.Important,
                 created = Calendar.getInstance().time,
                 deadLine = Date(Calendar.getInstance().time.time + 1E9.toLong()),
                 completed = true
@@ -116,7 +119,7 @@ class TodoItemRepositoryImpl : TodoItemRepository {
             TodoItem(
                 id = UUID.randomUUID().toString(),
                 text = "completed with deadline",
-                importance = TodoItem.Importance.Common,
+                importance = TodoItem.Importance.Basic,
                 created = Calendar.getInstance().time,
                 deadLine = Date(Calendar.getInstance().time.time - 4E8.toLong()),
                 completed = true
@@ -124,7 +127,7 @@ class TodoItemRepositoryImpl : TodoItemRepository {
             TodoItem(
                 id = UUID.randomUUID().toString(),
                 text = "completed without deadline",
-                importance = TodoItem.Importance.Common,
+                importance = TodoItem.Importance.Basic,
                 created = Calendar.getInstance().time,
                 completed = true
             ),
@@ -138,7 +141,7 @@ class TodoItemRepositoryImpl : TodoItemRepository {
             TodoItem(
                 id = UUID.randomUUID().toString(),
                 text = "completed without deadline",
-                importance = TodoItem.Importance.Urgently,
+                importance = TodoItem.Importance.Important,
                 created = Calendar.getInstance().time,
                 completed = true
             ),
@@ -146,7 +149,7 @@ class TodoItemRepositoryImpl : TodoItemRepository {
             TodoItem(
                 id = UUID.randomUUID().toString(),
                 text = "common item with long message: with_long_message, with_long_message, with_long_message, with_long_message, with_long_message, with_long_message, with_long_message, with_long_message, with_long_message, with_long_message, with_long_message, with_long_message, with_long_message, with_long_message",
-                importance = TodoItem.Importance.Common,
+                importance = TodoItem.Importance.Basic,
                 created = Calendar.getInstance().time
             ),
             TodoItem(
@@ -158,13 +161,13 @@ class TodoItemRepositoryImpl : TodoItemRepository {
             TodoItem(
                 id = UUID.randomUUID().toString(),
                 text = "urgently item with long message: with_long_message, with_long_message, with_long_message, with_long_message, with_long_message, with_long_message, with_long_message, with_long_message, with_long_message, with_long_message, with_long_message, with_long_message, with_long_message, with_long_message",
-                importance = TodoItem.Importance.Urgently,
+                importance = TodoItem.Importance.Important,
                 created = Calendar.getInstance().time
             ),
             TodoItem(
                 id = UUID.randomUUID().toString(),
                 text = "deadline with long message: with_long_message, with_long_message, with_long_message, with_long_message, with_long_message, with_long_message, with_long_message, with_long_message, with_long_message, with_long_message, with_long_message, with_long_message, with_long_message, with_long_message",
-                importance = TodoItem.Importance.Common,
+                importance = TodoItem.Importance.Basic,
                 created = Calendar.getInstance().time,
                 deadLine = Date(Calendar.getInstance().time.time + 1E9.toLong())
             ),
@@ -178,14 +181,14 @@ class TodoItemRepositoryImpl : TodoItemRepository {
             TodoItem(
                 id = UUID.randomUUID().toString(),
                 text = "deadline with long message: with_long_message, with_long_message, with_long_message, with_long_message, with_long_message, with_long_message, with_long_message, with_long_message, with_long_message, with_long_message, with_long_message, with_long_message, with_long_message, with_long_message",
-                importance = TodoItem.Importance.Urgently,
+                importance = TodoItem.Importance.Important,
                 created = Calendar.getInstance().time,
                 deadLine = Date(Calendar.getInstance().time.time + 4E8.toLong())
             ),
             TodoItem(
                 id = UUID.randomUUID().toString(),
                 text = "completed with deadline with long message: with_long_message, with_long_message, with_long_message, with_long_message, with_long_message, with_long_message, with_long_message, with_long_message, with_long_message, with_long_message, with_long_message, with_long_message, with_long_message, with_long_message",
-                importance = TodoItem.Importance.Urgently,
+                importance = TodoItem.Importance.Important,
                 created = Calendar.getInstance().time,
                 deadLine = Date(Calendar.getInstance().time.time + 1E9.toLong()),
                 completed = true
@@ -201,7 +204,7 @@ class TodoItemRepositoryImpl : TodoItemRepository {
             TodoItem(
                 id = UUID.randomUUID().toString(),
                 text = "completed with deadline with long message: with_long_message, with_long_message, with_long_message, with_long_message, with_long_message, with_long_message, with_long_message, with_long_message, with_long_message, with_long_message, with_long_message, with_long_message, with_long_message, with_long_message",
-                importance = TodoItem.Importance.Common,
+                importance = TodoItem.Importance.Basic,
                 created = Calendar.getInstance().time,
                 deadLine = Date(Calendar.getInstance().time.time - 4E8.toLong()),
                 completed = true
@@ -209,7 +212,7 @@ class TodoItemRepositoryImpl : TodoItemRepository {
             TodoItem(
                 id = UUID.randomUUID().toString(),
                 text = "completed without deadline with long message: with_long_message, with_long_message, with_long_message, with_long_message, with_long_message, with_long_message, with_long_message, with_long_message, with_long_message, with_long_message, with_long_message, with_long_message, with_long_message, with_long_message",
-                importance = TodoItem.Importance.Common,
+                importance = TodoItem.Importance.Basic,
                 created = Calendar.getInstance().time,
                 completed = true
             ),
@@ -223,7 +226,7 @@ class TodoItemRepositoryImpl : TodoItemRepository {
             TodoItem(
                 id = UUID.randomUUID().toString(),
                 text = "completed without deadline with long message: with_long_message, with_long_message, with_long_message, with_long_message, with_long_message, with_long_message, with_long_message, with_long_message, with_long_message, with_long_message, with_long_message, with_long_message, with_long_message, with_long_message",
-                importance = TodoItem.Importance.Urgently,
+                importance = TodoItem.Importance.Important,
                 created = Calendar.getInstance().time,
                 completed = true
             )

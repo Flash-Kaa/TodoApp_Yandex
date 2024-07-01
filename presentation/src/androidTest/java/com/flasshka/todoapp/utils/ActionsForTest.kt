@@ -35,7 +35,7 @@ internal class ActionsForTest(
             is ListOfItemsActionType.OnChangeDoneItem -> {
                 {
                     runBlocking {
-                        val item = repository.getTodoItems().first {
+                        val item = repository.itemsFlow.value.first {
                             it.id == action.id
                         }
 

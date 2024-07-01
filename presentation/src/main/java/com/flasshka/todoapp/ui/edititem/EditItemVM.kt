@@ -3,12 +3,11 @@ package com.flasshka.todoapp.ui.edititem
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.flasshka.data.TodoItemRepositoryImpl
-import com.flasshka.domain.entities.EditTodoItemState
+import com.flasshka.todoapp.ui.EditTodoItemState
 import com.flasshka.domain.entities.TodoItem
-import com.flasshka.domain.interfaces.TodoItemRepository
 import com.flasshka.domain.usecases.AddTodoItemUseCase
 import com.flasshka.domain.usecases.DeleteTodoItemUseCase
+import com.flasshka.domain.usecases.FetchItemsUseCase
 import com.flasshka.domain.usecases.GetTodoItemByIdOrNullUseCase
 import com.flasshka.domain.usecases.UpdateTodoItemUseCase
 import com.flasshka.todoapp.actions.EditItemActionType
@@ -30,6 +29,7 @@ class EditItemVM(
     private val updateTodoItem: UpdateTodoItemUseCase,
     private val deleteTodoItem: DeleteTodoItemUseCase,
     private val getTodoItemByIdOrNull: GetTodoItemByIdOrNullUseCase,
+    private val fetchItems: FetchItemsUseCase,
 
     private val showError: ((String) -> Unit)? = null,
 ) : ViewModel() {
@@ -40,15 +40,21 @@ class EditItemVM(
     init {
         viewModelScope.launch(
             Dispatchers.IO + CoroutineExceptionHandler { _, _ ->
+                showError?.invoke("Не получается обновить список")
+            }
+        ) {
+            fetchItems()
+        }
+
+        viewModelScope.launch(
+            Dispatchers.IO + CoroutineExceptionHandler { _, _ ->
                 viewModelScope.launch(Dispatchers.Main) {
                     showError?.invoke("Не удаётся создать или редактировать объект")
                 }
             }
         ) {
             itemId?.let { id ->
-                val item = getTodoItemByIdOrNull(id)
-
-                if (item != null) {
+                getTodoItemByIdOrNull(id)?.let { item ->
                     _state.update { EditTodoItemState.getNewState(item) }
                 }
             }
@@ -126,6 +132,7 @@ class EditItemVM(
         private val updateTodoItem: UpdateTodoItemUseCase,
         private val deleteTodoItem: DeleteTodoItemUseCase,
         private val getTodoItemByIdOrNull: GetTodoItemByIdOrNullUseCase,
+        private val fetchItems: FetchItemsUseCase,
 
         private val showError: ((String) -> Unit)? = null,
     ) : ViewModelProvider.Factory {
@@ -138,6 +145,7 @@ class EditItemVM(
                 updateTodoItem = updateTodoItem,
                 deleteTodoItem = deleteTodoItem,
                 getTodoItemByIdOrNull = getTodoItemByIdOrNull,
+                fetchItems = fetchItems,
                 showError = showError
             ) as T
         }

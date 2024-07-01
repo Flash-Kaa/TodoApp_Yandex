@@ -127,7 +127,7 @@ private fun PreviewSwipeItemUI() {
                 TodoItem(
                     id = "123",
                     text = "text",
-                    TodoItem.Importance.Urgently,
+                    TodoItem.Importance.Important,
                     created = Calendar.getInstance().time,
                     deadLine = Calendar.getInstance().time
                 )

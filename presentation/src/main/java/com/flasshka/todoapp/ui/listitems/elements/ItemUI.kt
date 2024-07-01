@@ -46,7 +46,7 @@ fun ItemUI(
 ) {
     ListItem(
         leadingContent = {
-            val uncheckedColor = if (item.importance == TodoItem.Importance.Urgently)
+            val uncheckedColor = if (item.importance == TodoItem.Importance.Important)
                 if (isSystemInDarkTheme()) DarkThemeRed else LightThemeRed
             else MaterialTheme.colorScheme.tertiary
 
@@ -108,13 +108,13 @@ private fun TextName(
 private fun ImportanceIcon(
     item: TodoItem
 ) {
-    if (item.importance != TodoItem.Importance.Common) {
-        val color = if (item.importance == TodoItem.Importance.Urgently)
+    if (item.importance != TodoItem.Importance.Basic) {
+        val color = if (item.importance == TodoItem.Importance.Important)
             if (isSystemInDarkTheme()) DarkThemeRed else LightThemeRed
         else
             if (isSystemInDarkTheme()) DarkThemeGray else LightThemeGray
 
-        val icon = if (item.importance == TodoItem.Importance.Urgently)
+        val icon = if (item.importance == TodoItem.Importance.Important)
             ImageVector.vectorResource(id = R.drawable.baseline_priority_high_24)
         else
             ImageVector.vectorResource(id = R.drawable.baseline_arrow_downward_24)
@@ -157,7 +157,7 @@ private fun PreviewItemUI() {
                 TodoItem(
                     id = "123",
                     text = "text",
-                    TodoItem.Importance.Urgently,
+                    TodoItem.Importance.Important,
                     created = Calendar.getInstance().time,
                     deadLine = Calendar.getInstance().time
                 )

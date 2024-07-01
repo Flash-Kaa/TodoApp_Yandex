@@ -6,9 +6,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.flasshka.data.TodoItemRepositoryImpl
+import com.flasshka.data.network.NetworkRepository
 import com.flasshka.domain.interfaces.TodoItemRepository
 import com.flasshka.domain.usecases.AddTodoItemUseCase
 import com.flasshka.domain.usecases.DeleteTodoItemUseCase
+import com.flasshka.domain.usecases.FetchItemsUseCase
 import com.flasshka.domain.usecases.GetTodoItemByIdOrNullUseCase
 import com.flasshka.domain.usecases.UpdateTodoItemUseCase
 import com.flasshka.todoapp.navigation.Router
@@ -17,7 +19,7 @@ import com.flasshka.todoapp.navigation.Router
 fun DrawerEditItemUI(
     router: Router,
     itemId: String? = null,
-    repository: TodoItemRepository = TodoItemRepositoryImpl()
+    repository: TodoItemRepository = NetworkRepository.create()
 ) {
     val context = LocalContext.current.applicationContext
 
@@ -25,6 +27,7 @@ fun DrawerEditItemUI(
     val updateTodoItem = remember { UpdateTodoItemUseCase(repository) }
     val deleteTodoItem = remember { DeleteTodoItemUseCase(repository) }
     val getTodoItemByIdOrNull = remember { GetTodoItemByIdOrNullUseCase(repository) }
+    val fetchItems = remember { FetchItemsUseCase(repository) }
 
     val editItemVM: EditItemVM = viewModel(
         factory = EditItemVM.Factory(
@@ -34,6 +37,7 @@ fun DrawerEditItemUI(
             updateTodoItem = updateTodoItem,
             deleteTodoItem = deleteTodoItem,
             getTodoItemByIdOrNull = getTodoItemByIdOrNull,
+            fetchItems = fetchItems,
             showError = { message ->
                 Toast.makeText(context, message, Toast.LENGTH_LONG).show()
             }

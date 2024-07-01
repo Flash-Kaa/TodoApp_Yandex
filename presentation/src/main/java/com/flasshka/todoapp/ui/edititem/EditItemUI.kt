@@ -18,7 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
-import com.flasshka.domain.entities.EditTodoItemState
+import com.flasshka.todoapp.ui.EditTodoItemState
 import com.flasshka.todoapp.actions.EditItemActionType
 import com.flasshka.todoapp.ui.edititem.elements.Calendar
 import com.flasshka.todoapp.ui.edititem.elements.DeadlineSwitch

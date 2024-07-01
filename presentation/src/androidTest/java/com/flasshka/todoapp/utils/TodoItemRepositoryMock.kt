@@ -12,8 +12,7 @@ internal class TodoItemRepositoryMock : TodoItemRepository {
         MutableStateFlow(emptyList<TodoItem>())
     override val itemsFlow: StateFlow<List<TodoItem>> = _itemsFlow.asStateFlow()
 
-    override suspend fun getTodoItems(): List<TodoItem> {
-        return _itemsFlow.value
+    override suspend fun fetchItems() {
     }
 
     override suspend fun addTodoItem(item: TodoItem) {
@@ -32,5 +31,9 @@ internal class TodoItemRepositoryMock : TodoItemRepository {
         _itemsFlow.update { currentCollection ->
             currentCollection.map { if (it.id != item.id) it else item }
         }
+    }
+
+    override suspend fun getItemByIdOrNull(id: String): TodoItem? {
+        TODO("Not yet implemented")
     }
 }

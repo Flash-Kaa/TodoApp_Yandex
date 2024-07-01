@@ -24,7 +24,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.flasshka.domain.entities.EditTodoItemState
+import com.flasshka.todoapp.ui.EditTodoItemState
 import com.flasshka.todoapp.R
 import com.flasshka.todoapp.actions.EditItemActionType
 import com.flasshka.todoapp.ui.theme.TodoAppTheme
