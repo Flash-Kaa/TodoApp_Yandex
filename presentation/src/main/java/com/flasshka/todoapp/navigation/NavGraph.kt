@@ -7,11 +7,14 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.flasshka.domain.interfaces.TodoItemRepository
 import com.flasshka.todoapp.ui.edititem.DrawerEditItemUI
 import com.flasshka.todoapp.ui.listitems.DrawerListUI
 
 @Composable
-fun NavGraph() {
+fun NavGraph(
+    repository: TodoItemRepository
+) {
     val navController = rememberNavController()
     val router = remember { Router(navController) }
 
@@ -20,7 +23,10 @@ fun NavGraph() {
         startDestination = NavScreen.ListOfItems.route
     ) {
         composable(NavScreen.ListOfItems.route) {
-            DrawerListUI(router = router)
+            DrawerListUI(
+                router = router,
+                repository = repository
+            )
         }
 
         composable(
@@ -33,7 +39,8 @@ fun NavGraph() {
 
             DrawerEditItemUI(
                 itemId = id,
-                router = router
+                router = router,
+                repository = repository
             )
         }
     }

@@ -13,7 +13,7 @@ import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Path
 
-internal interface TodoListService {
+interface TodoListService {
     object RuntimeConstants {
         val OAthWithToken: String = "OAuth ${BuildConfig.OATH_TOKEN}"
         var lastKnownRevision: Int = 0

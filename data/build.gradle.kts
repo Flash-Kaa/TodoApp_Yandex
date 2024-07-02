@@ -3,7 +3,7 @@ import java.util.Properties
 plugins {
     id("com.android.library")
     alias(libs.plugins.jetbrainsKotlinAndroid)
-    id("kotlin-kapt")
+    id("com.google.devtools.ksp") version "1.9.0-1.0.13"
 }
 
 android {
@@ -54,6 +54,11 @@ dependencies {
     // Json converter
     implementation(libs.core.jackson.databind)
 
+    // Room
+    implementation(libs.androidx.room.ktx)
+    implementation(libs.androidx.room.runtime)
+    ksp(libs.androidx.room.compiler)
+    
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
 

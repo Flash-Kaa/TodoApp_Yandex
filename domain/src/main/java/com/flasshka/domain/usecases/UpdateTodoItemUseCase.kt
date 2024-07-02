@@ -7,6 +7,6 @@ class UpdateTodoItemUseCase(
     private val repository: TodoItemRepository
 ) {
     suspend operator fun invoke(item: TodoItem) {
-        repository.updateTodoItemById(item)
+        repository.updateTodoItem(item)
     }
 }

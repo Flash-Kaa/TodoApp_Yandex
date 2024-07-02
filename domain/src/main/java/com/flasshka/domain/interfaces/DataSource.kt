@@ -1,17 +1,25 @@
 package com.flasshka.domain.interfaces
 
+import com.flasshka.domain.entities.TodoItem
 import kotlinx.coroutines.flow.Flow
 
-interface DataSource<T> {
-    suspend fun getItems(): Flow<List<T>>
+/**
+ * R - one item
+ *
+ * L - group of items
+ *
+ * T - output item
+ */
+interface DataSource {
+    suspend fun getItems(): Flow<List<TodoItem>>
 
-    suspend fun <R>updateItems(items: R): Flow<List<T>>
+    suspend fun updateItems(items: List<TodoItem>): Flow<List<TodoItem>>
 
-    suspend fun getItemById(id: String): Flow<T>
+    suspend fun getItemById(id: String): TodoItem
 
-    suspend fun <R>addItem(item: R): Flow<T>
+    suspend fun addItem(item: TodoItem)
 
-    suspend fun <R>updateItem(item: R): Flow<T>
+    suspend fun updateItem(item: TodoItem)
 
-    suspend fun deleteItem(id: String): Flow<T>
+    suspend fun deleteItem(id: String)
 }

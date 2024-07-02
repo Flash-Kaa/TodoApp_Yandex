@@ -8,7 +8,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.flasshka.data.TodoItemRepositoryImpl
-import com.flasshka.data.network.NetworkRepository
 import com.flasshka.domain.entities.TodoItem
 import com.flasshka.domain.interfaces.TodoItemRepository
 import com.flasshka.domain.usecases.DeleteTodoItemUseCase
@@ -22,7 +21,7 @@ import com.flasshka.todoapp.navigation.Router
 @Composable
 fun DrawerListUI(
     router: Router,
-    repository: TodoItemRepository = NetworkRepository.create()
+    repository: TodoItemRepository
 ) {
     val context = LocalContext.current.applicationContext
 

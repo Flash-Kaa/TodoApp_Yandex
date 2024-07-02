@@ -41,7 +41,7 @@ internal class ActionsForTest(
 
                         val copy = item.copy(completed = item.completed.not())
 
-                        repository.updateTodoItemById(copy)
+                        repository.updateTodoItem(copy)
                     }
                 }
             }

@@ -12,7 +12,7 @@ interface TodoItemRepository {
 
     suspend fun deleteTodoItem(id: String)
 
-    suspend fun updateTodoItemById(item: TodoItem)
+    suspend fun updateTodoItem(item: TodoItem)
 
     suspend fun getItemByIdOrNull(id: String): TodoItem?
 }

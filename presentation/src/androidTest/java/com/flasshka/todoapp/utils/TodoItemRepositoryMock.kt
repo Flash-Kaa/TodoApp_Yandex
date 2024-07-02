@@ -27,7 +27,7 @@ internal class TodoItemRepositoryMock : TodoItemRepository {
         }
     }
 
-    override suspend fun updateTodoItemById(item: TodoItem) {
+    override suspend fun updateTodoItem(item: TodoItem) {
         _itemsFlow.update { currentCollection ->
             currentCollection.map { if (it.id != item.id) it else item }
         }
