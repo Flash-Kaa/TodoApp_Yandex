@@ -54,7 +54,12 @@ dependencies {
     implementation(project(":data"))
 
 
-    implementation("androidx.navigation:navigation-compose:2.7.7")
+    // Navigation
+    implementation(libs.androidx.navigation.compose)
+
+    // WorkManager
+    implementation(libs.androidx.work.runtime.ktx)
+
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

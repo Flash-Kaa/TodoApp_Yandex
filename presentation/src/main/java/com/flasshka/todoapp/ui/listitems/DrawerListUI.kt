@@ -1,13 +1,11 @@
 package com.flasshka.todoapp.ui.listitems
 
-import android.widget.Toast
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.flasshka.data.TodoItemRepositoryImpl
 import com.flasshka.domain.entities.TodoItem
 import com.flasshka.domain.interfaces.TodoItemRepository
 import com.flasshka.domain.usecases.DeleteTodoItemUseCase
@@ -16,7 +14,9 @@ import com.flasshka.domain.usecases.GetDoneCountUseCase
 import com.flasshka.domain.usecases.GetItemsWithVisibilityUseCase
 import com.flasshka.domain.usecases.GetTodoItemByIdOrNullUseCase
 import com.flasshka.domain.usecases.UpdateTodoItemUseCase
+import com.flasshka.todoapp.R
 import com.flasshka.todoapp.navigation.Router
+import com.flasshka.todoapp.ui.showToast
 
 @Composable
 fun DrawerListUI(
@@ -25,12 +25,28 @@ fun DrawerListUI(
 ) {
     val context = LocalContext.current.applicationContext
 
-    val updateTodoItem = remember { UpdateTodoItemUseCase(repository) }
-    val deleteTodoItem = remember { DeleteTodoItemUseCase(repository) }
-    val getByIdOrNull = remember { GetTodoItemByIdOrNullUseCase(repository) }
+    val updateTodoItem = remember {
+        UpdateTodoItemUseCase(repository) {
+            showToast(context, context.getString(R.string.update_error_message))
+        }
+    }
+    val deleteTodoItem = remember {
+        DeleteTodoItemUseCase(repository) {
+            showToast(context, context.getString(R.string.delete_error_message))
+        }
+    }
+    val getByIdOrNull = remember {
+        GetTodoItemByIdOrNullUseCase(repository) {
+            showToast(context, context.getString(R.string.get_by_id_error_message))
+        }
+    }
     val getDoneCounts = remember { GetDoneCountUseCase(repository) }
     val getItemsWithVisibility = remember { GetItemsWithVisibilityUseCase(repository) }
-    val fetchItems = remember { FetchItemsUseCase(repository) }
+    val fetchItems = remember {
+        FetchItemsUseCase(repository) {
+            showToast(context, context.getString(R.string.fetch_error_message))
+        }
+    }
 
     val listVM: ListVM = viewModel(
         factory = ListVM.Factory(
@@ -41,11 +57,7 @@ fun DrawerListUI(
             getByIdOrNull = getByIdOrNull,
             getDoneCounts = getDoneCounts,
             getItemsWithVisibility = getItemsWithVisibility,
-            fetchItems = fetchItems,
-
-            showError = { message ->
-                Toast.makeText(context, message, Toast.LENGTH_LONG).show()
-            }
+            fetchItems = fetchItems
         )
     )
 

@@ -4,7 +4,6 @@ import com.flasshka.data.network.entities.BodyItem
 import com.flasshka.data.network.entities.BodyListItems
 import com.flasshka.data.network.entities.ItemWithRevision
 import com.flasshka.data.network.entities.ListItemsWithRevision
-import com.flasshka.data.network.entities.NetworkTodoItem
 import com.flasshka.data.network.entities.NetworkTodoItem.Companion.toNetwork
 import com.flasshka.domain.entities.TodoItem
 import com.flasshka.domain.interfaces.DataSource

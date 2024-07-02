@@ -1,7 +1,6 @@
 package com.flasshka.data.network.entities
 
 import com.flasshka.domain.entities.TodoItem
-import com.google.gson.annotations.SerializedName
 import java.util.Date
 
 data class NetworkTodoItem(

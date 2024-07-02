@@ -20,7 +20,7 @@ class DataSourceDB(private val dao: TodoItemsDao) : DataSource {
     }
 
     override suspend fun updateItems(items: List<TodoItem>): Flow<List<TodoItem>> {
-        for(i in items) {
+        for (i in items) {
             updateItem(i)
         }
 

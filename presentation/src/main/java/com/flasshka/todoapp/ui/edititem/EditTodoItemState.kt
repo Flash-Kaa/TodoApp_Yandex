@@ -1,4 +1,4 @@
-package com.flasshka.todoapp.ui
+package com.flasshka.todoapp.ui.edititem
 
 import com.flasshka.domain.entities.TodoItem
 import java.util.Calendar

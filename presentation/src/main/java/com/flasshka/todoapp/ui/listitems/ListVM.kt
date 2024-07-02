@@ -16,12 +16,8 @@ import com.flasshka.domain.usecases.GetTodoItemByIdOrNullUseCase
 import com.flasshka.domain.usecases.UpdateTodoItemUseCase
 import com.flasshka.todoapp.actions.ListOfItemsActionType
 import com.flasshka.todoapp.navigation.Router
-import kotlinx.coroutines.CoroutineExceptionHandler
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.supervisorScope
 
 
 class ListVM(
@@ -31,19 +27,13 @@ class ListVM(
     private val getByIdOrNull: GetTodoItemByIdOrNullUseCase,
     private val getDoneCounts: GetDoneCountUseCase,
     private val getItemsWithVisibility: GetItemsWithVisibilityUseCase,
-    private val fetchItems: FetchItemsUseCase,
-
-    private val showError: ((String) -> Unit)? = null
+    private val fetchItems: FetchItemsUseCase
 ) : ViewModel() {
     var visibility: Boolean by mutableStateOf(false)
         private set
 
     init {
-        viewModelScope.launch(
-            Dispatchers.IO + CoroutineExceptionHandler { _, _ ->
-                showError?.invoke("Не получается обновить список")
-            }
-        ) {
+        viewModelScope.launch {
             fetchItems()
         }
     }
@@ -80,25 +70,15 @@ class ListVM(
 
     private fun onDelete(id: String): () -> Unit {
         return {
-            viewModelScope.launch(
-                Dispatchers.IO + CoroutineExceptionHandler { _, _ ->
-                    showError?.invoke("Не можем удалить")
-                }
-            ) {
-                supervisorScope {
-                    deleteTodoItem(id)
-                }
+            viewModelScope.launch {
+                deleteTodoItem(id)
             }
         }
     }
 
     private fun onChangeDoneItem(id: String): () -> Unit {
         return {
-            viewModelScope.launch(
-                Dispatchers.IO + CoroutineExceptionHandler { _, _ ->
-                    showError?.invoke("Не получилось открыть меню изменения")
-                }
-            ) {
+            viewModelScope.launch {
                 getByIdOrNull(id)?.let {
                     val copy = it.copy(completed = it.completed.not())
                     updateTodoItem(copy)
@@ -115,9 +95,7 @@ class ListVM(
         private val getByIdOrNull: GetTodoItemByIdOrNullUseCase,
         private val getDoneCounts: GetDoneCountUseCase,
         private val getItemsWithVisibility: GetItemsWithVisibilityUseCase,
-        private val fetchItems: FetchItemsUseCase,
-
-        private val showError: ((String) -> Unit)? = null
+        private val fetchItems: FetchItemsUseCase
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(
@@ -131,8 +109,7 @@ class ListVM(
                 getByIdOrNull = getByIdOrNull,
                 getDoneCounts = getDoneCounts,
                 getItemsWithVisibility = getItemsWithVisibility,
-                fetchItems = fetchItems,
-                showError = showError
+                fetchItems = fetchItems
             ) as T
         }
     }
