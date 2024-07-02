@@ -1,63 +1,45 @@
 package com.flasshka.todoapp.ui.listitems
 
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.CreationExtras
 import com.flasshka.domain.entities.TodoItem
 import com.flasshka.domain.usecases.DeleteTodoItemUseCase
-import com.flasshka.domain.usecases.GetTodoItemsUseCase
+import com.flasshka.domain.usecases.GetDoneCountUseCase
+import com.flasshka.domain.usecases.GetItemsWithVisibilityUseCase
+import com.flasshka.domain.usecases.GetTodoItemByIdOrNullUseCase
 import com.flasshka.domain.usecases.UpdateTodoItemUseCase
 import com.flasshka.todoapp.actions.ListOfItemsActionType
 import com.flasshka.todoapp.navigation.Router
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
-class FactoryForListVM(
-    private val router: Router,
-    private val getTodoItem: GetTodoItemsUseCase,
-    private val updateTodoItem: UpdateTodoItemUseCase,
-    private val deleteTodoItem: DeleteTodoItemUseCase
-) : ViewModelProvider.Factory {
-    @Suppress("UNCHECKED_CAST")
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        return ListVM(router, getTodoItem, updateTodoItem, deleteTodoItem) as T
-    }
-}
 
 class ListVM(
     private val router: Router,
-    private val getTodoItem: GetTodoItemsUseCase,
     private val updateTodoItem: UpdateTodoItemUseCase,
-    private val deleteTodoItem: DeleteTodoItemUseCase
+    private val deleteTodoItem: DeleteTodoItemUseCase,
+    private val getByIdOrNull: GetTodoItemByIdOrNullUseCase,
+    private val getDoneCounts: GetDoneCountUseCase,
+    private val getItemsWithVisibility: GetItemsWithVisibilityUseCase,
+
+    private val showError: ((String) -> Unit)? = null
 ) : ViewModel() {
     var visibility: Boolean by mutableStateOf(false)
         private set
 
-    private val listOfItems = mutableStateListOf<TodoItem>(*getTodoItem.invoke().toTypedArray())
-
-    // DELETE
-    fun updateList() {
-        val new = getTodoItem.invoke()
-
-        listOfItems.addAll(new.filter { it !in listOfItems })
-        listOfItems.removeAll(listOfItems.filter { it !in new })
+    fun getItems(): Flow<List<TodoItem>> {
+        return getItemsWithVisibility(visibility)
     }
 
-    fun getItem(id: String): TodoItem? {
-        return listOfItems.firstOrNull { it.id == id }
-    }
-
-    fun getItems(): List<TodoItem> {
-        return listOfItems.filter { it.completed.not() || visibility }
-    }
-
-    fun getDoneCount(): Int {
-        return listOfItems.count { it.completed }
+    fun getDoneCount(): Flow<Int> {
+        return getDoneCounts()
     }
 
     fun getAction(action: ListOfItemsActionType): () -> Unit {
@@ -84,39 +66,56 @@ class ListVM(
 
     private fun onDelete(id: String): () -> Unit {
         return {
-            viewModelScope.launch {
-                withContext(Dispatchers.Default) {
-                    deleteTodoItem.invoke(id)
+            viewModelScope.launch(
+                Dispatchers.IO + CoroutineExceptionHandler { _, _ ->
+                    showError?.invoke("Не можем удалить")
                 }
-            }
-            // use observe
-            val index = listOfItems.indexOfFirst { it.id == id }
-
-            if (index != -1) {
-                listOfItems.removeAt(index)
+            ) {
+                deleteTodoItem(id)
             }
         }
     }
 
     private fun onChangeDoneItem(id: String): () -> Unit {
         return {
-            val item = listOfItems.first {
-                it.id == id
-            }
-
-            val copy = item.copy(completed = item.completed.not())
-
-            viewModelScope.launch {
-                withContext(Dispatchers.Default) {
-                    updateTodoItem.invoke(copy)
+            viewModelScope.launch(
+                Dispatchers.IO + CoroutineExceptionHandler { _, _ ->
+                    showError?.invoke("Не получилось открыть меню изменения")
+                }
+            ) {
+                getByIdOrNull(id)?.let {
+                    val copy = it.copy(completed = it.completed.not())
+                    updateTodoItem(copy)
                 }
             }
-            // use observe
-            val index = listOfItems.indexOfFirst { it.id == id }
+        }
+    }
 
-            if (index != -1) {
-                listOfItems[index] = copy
-            }
+    class Factory(
+        private val router: Router,
+
+        private val updateTodoItem: UpdateTodoItemUseCase,
+        private val deleteTodoItem: DeleteTodoItemUseCase,
+        private val getByIdOrNull: GetTodoItemByIdOrNullUseCase,
+        private val getDoneCounts: GetDoneCountUseCase,
+        private val getItemsWithVisibility: GetItemsWithVisibilityUseCase,
+
+        private val showError: ((String) -> Unit)? = null
+    ) : ViewModelProvider.Factory {
+        @Suppress("UNCHECKED_CAST")
+        override fun <T : ViewModel> create(
+            modelClass: Class<T>,
+            extras: CreationExtras
+        ): T {
+            return ListVM(
+                router = router,
+                updateTodoItem = updateTodoItem,
+                deleteTodoItem = deleteTodoItem,
+                getByIdOrNull = getByIdOrNull,
+                getDoneCounts = getDoneCounts,
+                getItemsWithVisibility = getItemsWithVisibility,
+                showError = showError
+            ) as T
         }
     }
 }

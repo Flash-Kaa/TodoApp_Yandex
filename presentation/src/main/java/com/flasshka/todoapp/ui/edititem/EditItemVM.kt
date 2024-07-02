@@ -1,82 +1,104 @@
 package com.flasshka.todoapp.ui.edititem
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
+import com.flasshka.data.TodoItemRepositoryImpl
 import com.flasshka.domain.entities.EditTodoItemState
 import com.flasshka.domain.entities.TodoItem
+import com.flasshka.domain.interfaces.TodoItemRepository
 import com.flasshka.domain.usecases.AddTodoItemUseCase
 import com.flasshka.domain.usecases.DeleteTodoItemUseCase
+import com.flasshka.domain.usecases.GetTodoItemByIdOrNullUseCase
 import com.flasshka.domain.usecases.UpdateTodoItemUseCase
 import com.flasshka.todoapp.actions.EditItemActionType
 import com.flasshka.todoapp.navigation.Router
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import java.util.Calendar
 
-class FactoryForEditItemVM(
-    private val router: Router,
-    private val addTodoItem: AddTodoItemUseCase,
-    private val updateTodoItem: UpdateTodoItemUseCase,
-    private val deleteTodoItem: DeleteTodoItemUseCase
-) : ViewModelProvider.Factory {
-    @Suppress("UNCHECKED_CAST")
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        return EditItemVM(router, addTodoItem, updateTodoItem, deleteTodoItem) as T
-    }
-}
-
 class EditItemVM(
+    itemId: String?,
+
     private val router: Router,
+
     private val addTodoItem: AddTodoItemUseCase,
     private val updateTodoItem: UpdateTodoItemUseCase,
-    private val deleteTodoItem: DeleteTodoItemUseCase
-) : ViewModel() {
-    private var state: EditTodoItemState by mutableStateOf(
-        EditTodoItemState.getNewState()
-    )
+    private val deleteTodoItem: DeleteTodoItemUseCase,
+    private val getTodoItemByIdOrNull: GetTodoItemByIdOrNullUseCase,
 
-    fun updateState(item: TodoItem? = null) {
-        state = if (item == null) {
-            EditTodoItemState.getNewState()
-        } else {
-            EditTodoItemState.getNewState(item)
+    private val showError: ((String) -> Unit)? = null,
+) : ViewModel() {
+    private val _state: MutableStateFlow<EditTodoItemState> =
+        MutableStateFlow(EditTodoItemState.getNewState())
+    val state = _state.asStateFlow()
+
+    init {
+        viewModelScope.launch(
+            Dispatchers.IO + CoroutineExceptionHandler { _, _ ->
+                viewModelScope.launch(Dispatchers.Main) {
+                    showError?.invoke("Не удаётся создать или редактировать объект")
+                }
+            }
+        ) {
+            itemId?.let { id ->
+                val item = getTodoItemByIdOrNull(id)
+
+                if (item != null) {
+                    _state.update { EditTodoItemState.getNewState(item) }
+                }
+            }
         }
     }
 
-    fun getName() = state.text
-
-    fun getImportance() = state.importance
-
-    fun getDeadline() = state.deadLine
-
-    fun getDeleteButtonIsEnabled() = state.isUpdate
+    fun getDeleteButtonIsEnabled() = _state.value.isUpdate
 
     fun getAction(action: EditItemActionType): () -> Unit {
         return when (action) {
             is EditItemActionType.OnSave -> ::onSaveAction
             is EditItemActionType.OnDelete -> ::onDeleteAction
             is EditItemActionType.OnExit -> ::onExitAction
-            is EditItemActionType.OnNameChanged -> onNameChanged(action.newVale)
+            is EditItemActionType.OnNameChanged -> onNameChanged(action.newValue)
             is EditItemActionType.OnImportanceChanged -> onImportanceChanged(action.newValue)
             is EditItemActionType.OnDeadlineChanged -> onDeadlineChanged(action.newValue)
         }
     }
 
     private fun onSaveAction() {
-        if (state.isUpdate) {
-            val copy = state.copy(lastChange = Calendar.getInstance().time)
-            updateTodoItem.invoke(copy.toTodoItem())
-        } else {
-            val copy = state.copy(created = Calendar.getInstance().time)
-            addTodoItem.invoke(copy.toTodoItem())
+        viewModelScope.launch(
+            Dispatchers.IO + CoroutineExceptionHandler { _, _ ->
+                viewModelScope.launch(Dispatchers.Main) {
+                    showError?.invoke("Не получилось сохранить изменения")
+                }
+            }
+        ) {
+            if (_state.value.isUpdate) {
+                val copy = _state.value.copy(lastChange = Calendar.getInstance().time)
+                updateTodoItem(copy.toTodoItem())
+            } else {
+                val copy = _state.value.copy(created = Calendar.getInstance().time)
+                addTodoItem(copy.toTodoItem())
+            }
         }
 
         onExitAction()
     }
 
     private fun onDeleteAction() {
-        deleteTodoItem.invoke(state.id)
+        viewModelScope.launch(
+            Dispatchers.IO + CoroutineExceptionHandler { _, _ ->
+                viewModelScope.launch(Dispatchers.Main) {
+                    showError?.invoke("Не можем удалить")
+                }
+            }
+        ) {
+            deleteTodoItem(_state.value.id)
+        }
+
         onExitAction()
     }
 
@@ -85,14 +107,39 @@ class EditItemVM(
     }
 
     private fun onNameChanged(newValue: String): () -> Unit {
-        return { state = state.copy(text = newValue) }
+        return { _state.update { it.copy(text = newValue) } }
     }
 
     private fun onImportanceChanged(newValue: TodoItem.Importance): () -> Unit {
-        return { state = state.copy(importance = newValue) }
+        return { _state.update { it.copy(importance = newValue) } }
     }
 
     private fun onDeadlineChanged(newValue: Long?): () -> Unit {
-        return { state = state.copy(deadLine = newValue) }
+        return { _state.update { it.copy(deadLine = newValue) } }
+    }
+
+    class Factory(
+        private val router: Router,
+        private val itemId: String?,
+
+        private val addTodoItem: AddTodoItemUseCase,
+        private val updateTodoItem: UpdateTodoItemUseCase,
+        private val deleteTodoItem: DeleteTodoItemUseCase,
+        private val getTodoItemByIdOrNull: GetTodoItemByIdOrNullUseCase,
+
+        private val showError: ((String) -> Unit)? = null,
+    ) : ViewModelProvider.Factory {
+        @Suppress("UNCHECKED_CAST")
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
+            return EditItemVM(
+                itemId = itemId,
+                router = router,
+                addTodoItem = addTodoItem,
+                updateTodoItem = updateTodoItem,
+                deleteTodoItem = deleteTodoItem,
+                getTodoItemByIdOrNull = getTodoItemByIdOrNull,
+                showError = showError
+            ) as T
+        }
     }
 }

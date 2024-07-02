@@ -3,6 +3,7 @@ package com.flasshka.todoapp.ui.edititem.elements
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,24 +20,31 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.flasshka.domain.entities.EditTodoItemState
 import com.flasshka.todoapp.R
+import com.flasshka.todoapp.ui.theme.DarkThemeBlue
+import com.flasshka.todoapp.ui.theme.DarkThemeOverlay
+import com.flasshka.todoapp.ui.theme.LightThemeBlue
+import com.flasshka.todoapp.ui.theme.LightThemeOverlay
 import com.flasshka.todoapp.ui.theme.TodoAppTheme
 
 @Composable
 fun DeadlineSwitch(
     checked: Boolean,
-    getDate: () -> Long?,
+    state: EditTodoItemState,
     onCheckedChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -46,7 +54,7 @@ fun DeadlineSwitch(
         modifier = modifier.fillMaxWidth()
     ) {
         DeadlineText(
-            getDate = getDate,
+            state = state,
             checked = checked
         )
 
@@ -60,18 +68,18 @@ fun DeadlineSwitch(
 @Composable
 private fun DeadlineText(
     checked: Boolean,
-    getDate: () -> Long?,
+    state: EditTodoItemState
 ) {
     Column {
         Text(
             text = stringResource(R.string.deadline_date),
-            color = colorResource(id = R.color.label_primary),
+            color = MaterialTheme.colorScheme.primary,
             fontSize = 16.sp,
             fontWeight = FontWeight(400)
         )
 
         DeadlineDate(
-            getDate = getDate,
+            state = state,
             checked = checked
         )
     }
@@ -80,16 +88,18 @@ private fun DeadlineText(
 @Composable
 private fun DeadlineDate(
     checked: Boolean,
-    getDate: () -> Long?,
+    state: EditTodoItemState
 ) {
     if (checked) {
         val context = LocalContext.current
         val formatter = android.text.format.DateFormat.getDateFormat(context)
 
-        getDate()?.let {
+        val color = if (isSystemInDarkTheme()) DarkThemeBlue else LightThemeBlue
+
+        state.deadLine?.let {
             Text(
                 text = formatter.format(it),
-                color = colorResource(id = R.color.blue),
+                color = color,
                 fontSize = 14.sp,
                 fontWeight = FontWeight(400)
             )
@@ -104,13 +114,16 @@ private fun CustomSwitch(
 
     modifier: Modifier = Modifier
 ) {
-    val thumbOffset by animateDpAsState(targetValue = if (checked) 18.dp else 0.dp, label = "")
+    val thumbOffset by animateDpAsState(
+        targetValue = if (checked) 18.dp else 0.dp,
+        label = "DpAnimation"
+    )
 
-    val colorThumb = if (checked) colorResource(id = R.color.blue)
-    else colorResource(id = R.color.back_elevated)
-
-    val colorTrack = if (checked) colorResource(id = R.color.blue).copy(alpha = 0.3f)
-    else colorResource(id = R.color.overlay)
+    val blue = if (isSystemInDarkTheme()) DarkThemeBlue else LightThemeBlue
+    val colorThumb = if (checked) blue else MaterialTheme.colorScheme.surfaceVariant
+    val colorTrack = if (checked) blue.copy(alpha = 0.3f)
+    else if (isSystemInDarkTheme()) DarkThemeOverlay
+    else LightThemeOverlay
 
     Box(
         contentAlignment = Alignment.CenterStart
@@ -143,7 +156,16 @@ private fun PreviewDeadlineSwitch() {
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
-            DeadlineSwitch(true, { null }, {}, modifier = Modifier.padding(16.dp))
+            var checked: Boolean by remember {
+                mutableStateOf(true)
+            }
+
+            DeadlineSwitch(
+                checked,
+                EditTodoItemState.getNewState(),
+                { checked = it },
+                modifier = Modifier.padding(16.dp)
+            )
         }
     }
 }

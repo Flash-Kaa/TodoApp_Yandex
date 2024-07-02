@@ -8,10 +8,10 @@ class Router(private val navController: NavController) {
     }
 
     fun navigateToCreateItem() {
-        navController.navigate(NavScreen.CreateItem.route)
+        navController.navigate(NavScreen.EditItem.getRouteWithId())
     }
 
     fun navigateToChangeItemById(id: String) {
-        navController.navigate(NavScreen.ChangeItem.getRouteWithId(id))
+        navController.navigate(NavScreen.EditItem.getRouteWithId(id))
     }
 }

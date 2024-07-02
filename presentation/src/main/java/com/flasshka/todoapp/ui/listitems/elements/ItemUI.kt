@@ -1,28 +1,41 @@
 package com.flasshka.todoapp.ui.listitems.elements
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import com.flasshka.domain.entities.TodoItem
 import com.flasshka.todoapp.R
 import com.flasshka.todoapp.TestTag
 import com.flasshka.todoapp.actions.ListOfItemsActionType
+import com.flasshka.todoapp.ui.theme.DarkThemeGray
+import com.flasshka.todoapp.ui.theme.DarkThemeGreen
+import com.flasshka.todoapp.ui.theme.DarkThemeRed
+import com.flasshka.todoapp.ui.theme.LightThemeGray
+import com.flasshka.todoapp.ui.theme.LightThemeGreen
+import com.flasshka.todoapp.ui.theme.LightThemeRed
+import com.flasshka.todoapp.ui.theme.TodoAppTheme
+import java.util.Calendar
 
 @Composable
 fun ItemUI(
@@ -34,8 +47,8 @@ fun ItemUI(
     ListItem(
         leadingContent = {
             val uncheckedColor = if (item.importance == TodoItem.Importance.Urgently)
-                colorResource(id = R.color.red)
-            else colorResource(id = R.color.label_tertiary)
+                if (isSystemInDarkTheme()) DarkThemeRed else LightThemeRed
+            else MaterialTheme.colorScheme.tertiary
 
             Checkbox(
                 checked = item.completed,
@@ -43,7 +56,7 @@ fun ItemUI(
                     getAction(ListOfItemsActionType.OnChangeDoneItem(item.id)).invoke()
                 },
                 colors = CheckboxDefaults.colors(
-                    checkedColor = colorResource(id = R.color.green),
+                    checkedColor = if (isSystemInDarkTheme()) DarkThemeGreen else LightThemeGreen,
                     uncheckedColor = uncheckedColor
                 ),
                 modifier = Modifier.testTag(TestTag.Checkbox.value)
@@ -55,14 +68,14 @@ fun ItemUI(
             Icon(
                 imageVector = ImageVector.vectorResource(id = R.drawable.baseline_info_outline_24),
                 contentDescription = "info_btn",
-                tint = colorResource(id = R.color.label_tertiary)
+                tint = MaterialTheme.colorScheme.tertiary
             )
         },
         modifier = modifier
             .clickable(onClick = getAction(ListOfItemsActionType.OnChangeItem(item.id)))
             .testTag(TestTag.ListItem.value),
         colors = ListItemDefaults.colors(
-            containerColor = colorResource(id = R.color.back_secondary)
+            containerColor = MaterialTheme.colorScheme.surface
         )
     )
 }
@@ -75,9 +88,9 @@ private fun TextName(
         ImportanceIcon(item)
 
         val color = if (item.completed)
-            colorResource(id = R.color.label_tertiary)
+            MaterialTheme.colorScheme.tertiary
         else
-            colorResource(id = R.color.label_primary)
+            MaterialTheme.colorScheme.primary
 
         Text(
             text = item.text,
@@ -97,9 +110,9 @@ private fun ImportanceIcon(
 ) {
     if (item.importance != TodoItem.Importance.Common) {
         val color = if (item.importance == TodoItem.Importance.Urgently)
-            colorResource(id = R.color.red)
+            if (isSystemInDarkTheme()) DarkThemeRed else LightThemeRed
         else
-            colorResource(id = R.color.gray)
+            if (isSystemInDarkTheme()) DarkThemeGray else LightThemeGray
 
         val icon = if (item.importance == TodoItem.Importance.Urgently)
             ImageVector.vectorResource(id = R.drawable.baseline_priority_high_24)
@@ -127,7 +140,30 @@ private fun DateDrawer(
             text = formatter.format(it),
             fontWeight = FontWeight(400),
             fontSize = 14.sp,
-            color = colorResource(id = R.color.label_tertiary)
+            color = MaterialTheme.colorScheme.tertiary
         )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun PreviewItemUI() {
+    TodoAppTheme {
+        Surface(
+            modifier = Modifier.fillMaxSize(),
+            color = MaterialTheme.colorScheme.background
+        ) {
+            val item = remember {
+                TodoItem(
+                    id = "123",
+                    text = "text",
+                    TodoItem.Importance.Urgently,
+                    created = Calendar.getInstance().time,
+                    deadLine = Calendar.getInstance().time
+                )
+            }
+
+            ItemUI(item = item, getAction = { {} })
+        }
     }
 }
