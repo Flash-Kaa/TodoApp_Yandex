@@ -6,6 +6,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -30,47 +33,51 @@ import com.flasshka.todoapp.ui.theme.TodoAppTheme
 
 @Composable
 fun EditItemUI(
+    snackbarHostState: SnackbarHostState,
     state: EditTodoItemState,
     deleteButtonIsEnabled: () -> Boolean,
     getAction: (EditItemActionType) -> (() -> Unit),
 ) {
-    Column(horizontalAlignment = Alignment.Start) {
-        TopButtons(
-            getAction = getAction,
-            modifier = Modifier
-        )
+    Scaffold(snackbarHost = { SnackbarHost(snackbarHostState) }) { padding ->
+        Column(horizontalAlignment = Alignment.Start, modifier = Modifier.padding(padding)) {
+            TopButtons(
+                getAction = getAction,
+                modifier = Modifier
+            )
 
-        LazyColumn {
-            item {
-                NameField(
-                    state = state,
-                    getAction = getAction,
-                    modifier = Modifier.padding(16.dp)
-                )
-            }
+            LazyColumn {
+                item {
+                    NameField(
+                        state = state,
+                        getAction = getAction,
+                        modifier = Modifier.padding(16.dp)
+                    )
+                }
 
-            item {
-                ImportanceDropdownMenuItem(
-                    state = state,
-                    getAction = getAction
-                )
-            }
+                item {
+                    ImportanceDropdownMenuItem(
+                        state = state,
+                        getAction = getAction
+                    )
+                }
 
-            item { Underline(modifier = Modifier.padding(horizontal = 16.dp)) }
+                item { Underline(modifier = Modifier.padding(horizontal = 16.dp)) }
 
-            item { DeadlineItem(state = state, getAction = getAction) }
+                item { DeadlineItem(state = state, getAction = getAction) }
 
-            item { Underline(modifier = Modifier.padding(top = 16.dp)) }
+                item { Underline(modifier = Modifier.padding(top = 16.dp)) }
 
-            item {
-                DeleteButton(
-                    isEnabled = deleteButtonIsEnabled,
-                    getAction = getAction,
-                    modifier = Modifier.padding(16.dp)
-                )
+                item {
+                    DeleteButton(
+                        isEnabled = deleteButtonIsEnabled,
+                        getAction = getAction,
+                        modifier = Modifier.padding(16.dp)
+                    )
+                }
             }
         }
     }
+
 }
 
 @Composable
@@ -138,6 +145,7 @@ private fun PreviewEditItemUI() {
             color = MaterialTheme.colorScheme.background
         ) {
             EditItemUI(
+                snackbarHostState = remember { SnackbarHostState() },
                 state = EditTodoItemState.getNewState(),
                 deleteButtonIsEnabled = { true },
                 getAction = { {} }

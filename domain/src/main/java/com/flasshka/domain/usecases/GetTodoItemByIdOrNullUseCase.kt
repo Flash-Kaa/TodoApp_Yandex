@@ -5,7 +5,7 @@ import com.flasshka.domain.interfaces.TodoItemRepository
 
 class GetTodoItemByIdOrNullUseCase(
     private val repository: TodoItemRepository,
-    private val onErrorAction: (() -> Unit)? = null
+    private val onErrorAction: (suspend () -> Unit)? = null
 ) {
     suspend operator fun invoke(id: String): TodoItem? {
         return repository.getItemByIdOrNull(id, onErrorAction)

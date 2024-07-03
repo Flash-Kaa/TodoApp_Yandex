@@ -13,10 +13,13 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -37,6 +40,7 @@ import java.util.Calendar
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ListUI(
+    snackbarHostState: SnackbarHostState,
     doneCount: Int,
     visibilityDoneON: Boolean,
     items: List<TodoItem>,
@@ -45,6 +49,7 @@ fun ListUI(
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
 
     Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
             LargeTopAppBar(
@@ -62,6 +67,11 @@ fun ListUI(
                     containerColor = MaterialTheme.colorScheme.background,
                     scrolledContainerColor = MaterialTheme.colorScheme.background
                 )
+            )
+        },
+        floatingActionButton = {
+            CreateFAB(
+                onClick = getAction(ListOfItemsActionType.OnCreate)
             )
         },
         containerColor = MaterialTheme.colorScheme.background
@@ -101,10 +111,6 @@ fun ListUI(
             }
         }
     }
-
-    CreateFAB(
-        onClick = getAction(ListOfItemsActionType.OnCreate)
-    )
 }
 
 @Preview(showBackground = true)
@@ -116,6 +122,7 @@ private fun PreviewListUI() {
             color = MaterialTheme.colorScheme.background
         ) {
             ListUI(
+                remember { SnackbarHostState() },
                 doneCount = 1,
                 visibilityDoneON = true,
                 items = listOf(
