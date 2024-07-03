@@ -27,7 +27,8 @@ class NetworkDataSource(private val service: TodoListService) : DataSource {
     }
 
     override suspend fun updateItems(items: List<TodoItem>): Flow<List<TodoItem>> {
-        val body = BodyListItems(items = items.map { it.toNetwork() })
+        val body = BodyListItems(list = items.map { it.toNetwork() })
+
 
         val itemsWithRevision: ListItemsWithRevision =
             service.updateItems(body = RequestUtils.getBody(body))

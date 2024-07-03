@@ -17,24 +17,54 @@ import java.net.InetAddress
 
 class NetWithDbRepository(
     private val networkDataSource: DataSource,
-    private val databaseDataSource: DataSource
+    private val localDataSource: DataSource
 ) : TodoItemRepository {
     private val _itemsFlow: MutableStateFlow<List<TodoItem>> = MutableStateFlow(emptyList())
     override val itemsFlow: StateFlow<List<TodoItem>> = _itemsFlow.asStateFlow()
 
     override suspend fun fetchItems(onErrorAction: (suspend () -> Unit)?) {
-        runWithSupervisor(onErrorAction = onErrorAction) {
-            databaseDataSource.getItems().collect { collect ->
-                _itemsFlow.update { upd -> upd + collect.filter { fil -> upd.all { it.id != fil.id } } }
-            }
-        }
-
-        if (isInternetAvailable().not().not()) return
         runWithSupervisor(tryCount = 2u, onErrorAction = onErrorAction) {
-            networkDataSource.getItems().collect { collect ->
+            var itemsFromLocal: List<TodoItem> = emptyList()
+
+            localDataSource.getItems().collect { collect ->
+                itemsFromLocal = collect
                 _itemsFlow.update { upd -> upd + collect.filter { fil -> upd.all { it.id != fil.id } } }
             }
+
+            if (isInternetAvailable().not()) return@runWithSupervisor
+            var itemsFromNet: List<TodoItem> = emptyList()
+            networkDataSource.getItems().collect { collect ->
+                itemsFromNet = collect
+                _itemsFlow.update { upd -> upd + collect.distinctById(upd) }
+            }
+
+            updateItems(itemsFromLocal, itemsFromNet)
         }
+    }
+
+    private suspend fun updateItems(localItems: List<TodoItem>, netItems: List<TodoItem>) {
+        val localMap = localItems.map { it.getNewItemWithUpdate(netItems) }
+        val netMap = netItems.map { it.getNewItemWithUpdate(localItems) }
+
+        networkDataSource.updateItems(localMap + netItems.distinctById(localItems))
+        localDataSource.updateItems(netMap + localItems.distinctById(netItems))
+    }
+
+    private fun List<TodoItem>.distinctById(other: List<TodoItem>): List<TodoItem> {
+        return filter { fil -> other.all { fil.id != it.id } }
+    }
+
+    private fun TodoItem.getNewItemWithUpdate(otherItems: List<TodoItem>): TodoItem {
+        val fromOther = otherItems.firstOrNull { it.id == id }
+
+        if (fromOther == null) return this
+
+        val dbHaveChange = lastChange != null
+        if (dbHaveChange.not()) return fromOther
+
+        val isNew = fromOther.lastChange == null || fromOther.lastChange!!.time < lastChange!!.time
+
+        return if (isNew) this else fromOther
     }
 
     override suspend fun addTodoItem(item: TodoItem, onErrorAction: (suspend () -> Unit)?) {
@@ -43,7 +73,7 @@ class NetWithDbRepository(
         }
 
         runWithSupervisor(onErrorAction = onErrorAction) {
-            databaseDataSource.addItem(item)
+            localDataSource.addItem(item)
         }
 
         if (isInternetAvailable().not()) return
@@ -60,10 +90,9 @@ class NetWithDbRepository(
         }
 
         runWithSupervisor(onErrorAction = onErrorAction) {
-            databaseDataSource.deleteItem(id)
+            localDataSource.deleteItem(id)
         }
 
-        if (isInternetAvailable().not()) return
         runWithSupervisor(tryCount = 2u, onErrorAction = onErrorAction) {
             networkDataSource.deleteItem(id)
         }
@@ -77,10 +106,10 @@ class NetWithDbRepository(
         }
 
         runWithSupervisor(onErrorAction = onErrorAction) {
-            databaseDataSource.updateItem(item)
+            localDataSource.updateItem(item)
         }
 
-        if (isInternetAvailable()) return
+        if (isInternetAvailable().not()) return
         runWithSupervisor(tryCount = 2u, onErrorAction = onErrorAction) {
             networkDataSource.updateItem(item)
         }
@@ -109,7 +138,6 @@ class NetWithDbRepository(
                     }
 
                     launch {
-
                         delay(1000L)
                         runWithSupervisor(tryCount.dec(), onErrorAction, content)
                     }
@@ -124,7 +152,8 @@ class NetWithDbRepository(
      */
     private fun isInternetAvailable(): Boolean {
         return try {
-            InetAddress.getByName("ya.ru").hostAddress != null
+            val ipAddress = InetAddress.getByName("ya.ru")
+            ipAddress.hostAddress != null
         } catch (e: Exception) {
             false
         }

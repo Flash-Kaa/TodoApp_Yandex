@@ -22,7 +22,7 @@ class MainActivity : ComponentActivity() {
     private val repository: TodoItemRepository by lazy {
         NetWithDbRepository(
             networkDataSource = NetworkDataSource.create(),
-            databaseDataSource = DataSourceDB.create(applicationContext)
+            localDataSource = DataSourceDB.create(applicationContext)
         )
     }
 
