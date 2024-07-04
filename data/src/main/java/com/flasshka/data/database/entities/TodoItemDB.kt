@@ -6,6 +6,9 @@ import androidx.room.PrimaryKey
 import com.flasshka.domain.entities.TodoItem
 import java.util.Date
 
+/**
+ * Items table in db
+ */
 @Entity
 data class TodoItemDB(
     @PrimaryKey(autoGenerate = false) val id: String,

@@ -1,5 +1,6 @@
 [versions]
 agp = "8.3.2"
+authsdk = "3.1.0"
 jacksonDatabindVersion = "2.0.1"
 kotlin = "1.9.0"
 coreKtx = "1.13.1"
@@ -25,6 +26,7 @@ androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref =
 androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "roomKtx" }
 androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "roomKtx" }
 androidx-work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version.ref = "workRuntimeKtx" }
+authsdk = { module = "com.yandex.android:authsdk", version.ref = "authsdk" }
 converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "retrofit" }
 core-jackson-databind = { module = "com.fasterxml.jackson.core:jackson-databind", version.ref = "jacksonDatabindVersion" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }

@@ -46,27 +46,36 @@ fun TopButtons(
             modifier = modifier
                 .fillMaxWidth()
         ) {
-            Icon(
-                imageVector = ImageVector.vectorResource(id = R.drawable.baseline_close_24),
-                contentDescription = "back to list",
-                tint = MaterialTheme.colorScheme.primary,
-                modifier = Modifier
-                    .clickable(onClick = getAction(EditItemActionType.OnExit))
-                    .padding(16.dp)
-                    .size(30.dp)
-            )
-
-            Text(
-                text = stringResource(R.string.save),
-                modifier = Modifier
-                    .clickable(onClick = getAction(EditItemActionType.OnSave))
-                    .padding(16.dp),
-                fontWeight = FontWeight(500),
-                fontSize = 16.sp,
-                color = if (isSystemInDarkTheme()) DarkThemeBlue else LightThemeBlue
-            )
+            BackIcon(getAction)
+            SaveText(getAction)
         }
     }
+}
+
+@Composable
+private fun SaveText(getAction: (EditItemActionType) -> () -> Unit) {
+    Text(
+        text = stringResource(R.string.save),
+        modifier = Modifier
+            .clickable(onClick = getAction(EditItemActionType.OnSave))
+            .padding(16.dp),
+        fontWeight = FontWeight(500),
+        fontSize = 16.sp,
+        color = if (isSystemInDarkTheme()) DarkThemeBlue else LightThemeBlue
+    )
+}
+
+@Composable
+private fun BackIcon(getAction: (EditItemActionType) -> () -> Unit) {
+    Icon(
+        imageVector = ImageVector.vectorResource(id = R.drawable.baseline_close_24),
+        contentDescription = "back to list",
+        tint = MaterialTheme.colorScheme.primary,
+        modifier = Modifier
+            .clickable(onClick = getAction(EditItemActionType.OnExit))
+            .padding(16.dp)
+            .size(30.dp)
+    )
 }
 
 @Preview(showBackground = true)

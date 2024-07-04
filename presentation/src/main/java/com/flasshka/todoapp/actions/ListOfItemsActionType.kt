@@ -1,5 +1,8 @@
 package com.flasshka.todoapp.actions
 
+/**
+ * Store actions for the list screen
+ */
 sealed class ListOfItemsActionType {
     // Navigation
     data object OnCreate : ListOfItemsActionType()

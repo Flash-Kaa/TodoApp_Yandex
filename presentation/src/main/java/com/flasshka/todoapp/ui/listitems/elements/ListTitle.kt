@@ -46,48 +46,67 @@ fun ListTitle(
         horizontalArrangement = Arrangement.SpaceBetween,
         modifier = modifier.fillMaxWidth()
     ) {
-        Column {
-            // 100% :   collapseFraction == 1   this is min size of topAppBar
-            // 0%   :   collapseFraction == 0   this is max size of topAppBar
-            val collapseFraction = scrollBehavior.state.collapsedFraction
-            val titleTextSize = (32 - collapseFraction * 12).sp
-
-            Text(
-                text = stringResource(R.string.my_work),
-                color = MaterialTheme.colorScheme.primary,
-                fontWeight = FontWeight(500),
-                fontSize = titleTextSize
-            )
-
-            if (collapseFraction < 0.63f) {
-                Text(
-                    text = stringResource(R.string.done_count, doneCount),
-                    color = MaterialTheme.colorScheme.tertiary,
-                    fontWeight = FontWeight(400),
-                    fontSize = 16.sp
-                )
-
-            }
-
-        }
-
-        val icon = if (visibilityDoneON)
-            ImageVector.vectorResource(id = R.drawable.baseline_visibility_24)
-        else
-            ImageVector.vectorResource(id = R.drawable.baseline_visibility_off_24)
-
-        Icon(
-            imageVector = icon,
-            contentDescription = "visibility done icon",
-            tint = if (isSystemInDarkTheme()) DarkThemeBlue else LightThemeBlue,
-            modifier = Modifier
-                .padding(end = 16.dp)
-                .clickable(
-                    onClick = getAction(ListOfItemsActionType.OnChangeDoneVisibility)
-                )
-                .padding(8.dp)
-        )
+        Title(scrollBehavior, doneCount)
+        VisibilityIcon(visibilityDoneON, getAction)
     }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun Title(
+    scrollBehavior: TopAppBarScrollBehavior,
+    doneCount: Int
+) {
+    Column {
+        // 100% :   collapseFraction == 1   this is min size of topAppBar
+        // 0%   :   collapseFraction == 0   this is max size of topAppBar
+        val collapseFraction = scrollBehavior.state.collapsedFraction
+        val titleTextSize = (32 - collapseFraction * 12).sp
+
+        Text(
+            text = stringResource(R.string.my_work),
+            color = MaterialTheme.colorScheme.primary,
+            fontWeight = FontWeight(500),
+            fontSize = titleTextSize
+        )
+
+        CollapsedDoneCount(collapseFraction, doneCount)
+    }
+}
+
+@Composable
+private fun CollapsedDoneCount(collapseFraction: Float, doneCount: Int) {
+    if (collapseFraction > 0.63f) return
+
+    Text(
+        text = stringResource(R.string.done_count, doneCount),
+        color = MaterialTheme.colorScheme.tertiary,
+        fontWeight = FontWeight(400),
+        fontSize = 16.sp
+    )
+}
+
+@Composable
+private fun VisibilityIcon(
+    visibilityDoneON: Boolean,
+    getAction: (ListOfItemsActionType) -> () -> Unit
+) {
+    val icon = if (visibilityDoneON)
+        ImageVector.vectorResource(id = R.drawable.baseline_visibility_24)
+    else
+        ImageVector.vectorResource(id = R.drawable.baseline_visibility_off_24)
+
+    Icon(
+        imageVector = icon,
+        contentDescription = "visibility done icon",
+        tint = if (isSystemInDarkTheme()) DarkThemeBlue else LightThemeBlue,
+        modifier = Modifier
+            .padding(end = 16.dp)
+            .clickable(
+                onClick = getAction(ListOfItemsActionType.OnChangeDoneVisibility)
+            )
+            .padding(8.dp)
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

@@ -37,18 +37,11 @@ fun NameField(
     modifier: Modifier = Modifier
 ) {
     val shape = RoundedCornerShape(10.dp)
-
     TextField(
         value = state.text,
         onValueChange = { getAction(EditItemActionType.OnNameChanged(it)).invoke() },
         placeholder = { Placeholder() },
-        colors = TextFieldDefaults.colors(
-            focusedContainerColor = colorResource(id = R.color.back_secondary),
-            unfocusedContainerColor = colorResource(id = R.color.back_secondary),
-            focusedIndicatorColor = Color.Transparent,
-            unfocusedIndicatorColor = Color.Transparent,
-            disabledIndicatorColor = Color.Transparent,
-        ),
+        colors = editTextDefaults(),
         shape = shape,
         modifier = modifier
             .background(MaterialTheme.colorScheme.background)
@@ -58,6 +51,15 @@ fun NameField(
             .shadow(1.dp, shape)
     )
 }
+
+@Composable
+private fun editTextDefaults() = TextFieldDefaults.colors(
+    focusedContainerColor = colorResource(id = R.color.back_secondary),
+    unfocusedContainerColor = colorResource(id = R.color.back_secondary),
+    focusedIndicatorColor = Color.Transparent,
+    unfocusedIndicatorColor = Color.Transparent,
+    disabledIndicatorColor = Color.Transparent,
+)
 
 @Composable
 private fun Placeholder() {
@@ -72,8 +74,9 @@ private fun Placeholder() {
 @Preview(showBackground = true)
 @Composable
 private fun PreviewNameField() {
-    var name: String by remember {
-        mutableStateOf("")
+    var name: String by remember { mutableStateOf("") }
+    val getAction: (EditItemActionType) -> (() -> Unit) = { action ->
+        { name = (action as EditItemActionType.OnNameChanged).newValue }
     }
 
     TodoAppTheme {
@@ -81,15 +84,7 @@ private fun PreviewNameField() {
             modifier = Modifier
                 .background(MaterialTheme.colorScheme.background)
                 .padding(16.dp),
-        ) {
-            NameField(
-                state = EditTodoItemState.getNewState(),
-                getAction = { action ->
-                    {
-                        name = (action as EditItemActionType.OnNameChanged).newValue
-                    }
-                }
-            )
-        }
+            content = { NameField(EditTodoItemState.getNewState(), getAction) }
+        )
     }
 }

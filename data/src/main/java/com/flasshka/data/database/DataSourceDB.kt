@@ -7,6 +7,9 @@ import com.flasshka.domain.interfaces.DataSource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
+/**
+ * Data Source impl for data in DB
+ */
 class DataSourceDB(private val dao: TodoItemsDao) : DataSource {
     companion object {
         fun create(context: Context): DataSourceDB {

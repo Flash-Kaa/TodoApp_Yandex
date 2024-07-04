@@ -24,19 +24,10 @@ class NetWithDbRepository(
 
     override suspend fun fetchItems(onErrorAction: (suspend () -> Unit)?) {
         runWithSupervisor(tryCount = 2u, onErrorAction = onErrorAction) {
-            var itemsFromLocal: List<TodoItem> = emptyList()
-
-            localDataSource.getItems().collect { collect ->
-                itemsFromLocal = collect
-                _itemsFlow.update { upd -> upd + collect.filter { fil -> upd.all { it.id != fil.id } } }
-            }
+            val itemsFromLocal: List<TodoItem> = collectFromFlow(localDataSource)
 
             if (isInternetAvailable().not()) return@runWithSupervisor
-            var itemsFromNet: List<TodoItem> = emptyList()
-            networkDataSource.getItems().collect { collect ->
-                itemsFromNet = collect
-                _itemsFlow.update { upd -> upd + collect.distinctById(upd) }
-            }
+            val itemsFromNet: List<TodoItem> = collectFromFlow(networkDataSource)
 
             updateItems(itemsFromLocal, itemsFromNet)
         }
@@ -48,23 +39,6 @@ class NetWithDbRepository(
 
         networkDataSource.updateItems(localMap + netItems.distinctById(localItems))
         localDataSource.updateItems(netMap + localItems.distinctById(netItems))
-    }
-
-    private fun List<TodoItem>.distinctById(other: List<TodoItem>): List<TodoItem> {
-        return filter { fil -> other.all { fil.id != it.id } }
-    }
-
-    private fun TodoItem.getNewItemWithUpdate(otherItems: List<TodoItem>): TodoItem {
-        val fromOther = otherItems.firstOrNull { it.id == id }
-
-        if (fromOther == null) return this
-
-        val dbHaveChange = lastChange != null
-        if (dbHaveChange.not()) return fromOther
-
-        val isNew = fromOther.lastChange == null || fromOther.lastChange!!.time < lastChange!!.time
-
-        return if (isNew) this else fromOther
     }
 
     override suspend fun addTodoItem(item: TodoItem, onErrorAction: (suspend () -> Unit)?) {
@@ -85,7 +59,7 @@ class NetWithDbRepository(
     override suspend fun deleteTodoItem(id: String, onErrorAction: (suspend () -> Unit)?) {
         runWithSupervisor(onErrorAction = onErrorAction) {
             _itemsFlow.update { items ->
-                items - items.first { it.id == id }
+                items - getItemById(items, id)
             }
         }
 
@@ -101,7 +75,7 @@ class NetWithDbRepository(
     override suspend fun updateTodoItem(item: TodoItem, onErrorAction: (suspend () -> Unit)?) {
         runWithSupervisor(onErrorAction = onErrorAction) {
             _itemsFlow.update { items ->
-                items.map { if (it.id != item.id) it else item }
+                updateItemById(items, item)
             }
         }
 
@@ -118,9 +92,7 @@ class NetWithDbRepository(
     override suspend fun getItemByIdOrNull(
         id: String,
         onErrorAction: (suspend () -> Unit)?
-    ): TodoItem? {
-        return _itemsFlow.value.firstOrNull { it.id == id }
-    }
+    ): TodoItem? = _itemsFlow.value.firstOrNull { it.id == id }
 
     private suspend fun runWithSupervisor(
         tryCount: UByte = 1u,
@@ -132,20 +104,68 @@ class NetWithDbRepository(
 
         supervisorScope {
             launch(
-                Dispatchers.IO + CoroutineExceptionHandler { _, _ ->
-                    launch(Dispatchers.Main) {
-                        onErrorAction?.invoke()
-                    }
-
-                    launch {
-                        delay(1000L)
-                        runWithSupervisor(tryCount.dec(), onErrorAction, content)
-                    }
+                context = Dispatchers.IO + CoroutineExceptionHandler { _, _ ->
+                    runAfterException(onErrorAction, tryCount, content)
                 },
                 block = content
             )
         }
     }
+
+    private fun CoroutineScope.runAfterException(
+        onErrorAction: (suspend () -> Unit)?,
+        tryCount: UByte,
+        content: suspend CoroutineScope.() -> Unit
+    ) {
+        launch(Dispatchers.Main) {
+            onErrorAction?.invoke()
+        }
+
+        launch {
+            delay(1000L)
+            runWithSupervisor(tryCount.dec(), onErrorAction, content)
+        }
+    }
+
+    private suspend fun collectFromFlow(dataSource: DataSource): List<TodoItem> {
+        var itemsFromCollect: List<TodoItem> = emptyList()
+        dataSource.getItems().collect { collect ->
+            itemsFromCollect = collect
+            _itemsFlow.update { upd -> upd + collect.distinctById(upd) }
+        }
+        return itemsFromCollect
+    }
+
+    private fun List<TodoItem>.distinctById(other: List<TodoItem>): List<TodoItem> {
+        return filter { current -> other.all { current.id != it.id } }
+    }
+
+    private fun TodoItem.getNewItemWithUpdate(otherItems: List<TodoItem>): TodoItem {
+        val fromOther = otherItems.firstOrNull { it.id == id }
+
+        if (fromOther == null) {
+            return this
+        }
+
+        val dbHaveChange = lastChange != null
+        if (dbHaveChange.not()) {
+            return fromOther
+        }
+
+        val isNew = fromOther.lastChange == null || fromOther.lastChange!!.time < lastChange!!.time
+
+        return if (isNew) this else fromOther
+    }
+
+    private fun getItemById(
+        items: List<TodoItem>,
+        id: String
+    ) = items.first { it.id == id }
+
+    private fun updateItemById(
+        items: List<TodoItem>,
+        item: TodoItem
+    ) = items.map { if (it.id != item.id) it else item }
 
     /**
      * Проверка на наличие интернет соединение без использования context

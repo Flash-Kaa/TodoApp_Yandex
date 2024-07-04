@@ -1,6 +1,7 @@
 package com.flasshka.todoapp.ui.edititem
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -32,52 +33,60 @@ import com.flasshka.todoapp.ui.edititem.elements.Underline
 import com.flasshka.todoapp.ui.theme.TodoAppTheme
 
 @Composable
-fun EditItemUI(
+internal fun EditItemUI(
     snackbarHostState: SnackbarHostState,
     state: EditTodoItemState,
     deleteButtonIsEnabled: () -> Boolean,
     getAction: (EditItemActionType) -> (() -> Unit),
 ) {
-    Scaffold(snackbarHost = { SnackbarHost(snackbarHostState) }) { padding ->
-        Column(horizontalAlignment = Alignment.Start, modifier = Modifier.padding(padding)) {
-            TopButtons(
-                getAction = getAction,
-                modifier = Modifier
-            )
+    Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) },
+        modifier = Modifier.fillMaxSize(),
+        containerColor = MaterialTheme.colorScheme.background,
+        content = { ContentColumn(it, getAction, state, deleteButtonIsEnabled) }
+    )
+}
 
-            LazyColumn {
-                item {
-                    NameField(
-                        state = state,
-                        getAction = getAction,
-                        modifier = Modifier.padding(16.dp)
-                    )
-                }
+@Composable
+private fun ContentColumn(
+    padding: PaddingValues,
+    getAction: (EditItemActionType) -> () -> Unit,
+    state: EditTodoItemState,
+    deleteButtonIsEnabled: () -> Boolean
+) {
+    Column(
+        horizontalAlignment = Alignment.Start,
+        modifier = Modifier.padding(padding)
+    ) {
+        TopButtons(getAction = getAction)
 
-                item {
-                    ImportanceDropdownMenuItem(
-                        state = state,
-                        getAction = getAction
-                    )
-                }
-
-                item { Underline(modifier = Modifier.padding(horizontal = 16.dp)) }
-
-                item { DeadlineItem(state = state, getAction = getAction) }
-
-                item { Underline(modifier = Modifier.padding(top = 16.dp)) }
-
-                item {
-                    DeleteButton(
-                        isEnabled = deleteButtonIsEnabled,
-                        getAction = getAction,
-                        modifier = Modifier.padding(16.dp)
-                    )
-                }
-            }
-        }
+        LazyColumnOfEditField(
+            state = state,
+            getAction = getAction,
+            deleteButtonIsEnabled = deleteButtonIsEnabled
+        )
     }
+}
 
+@Composable
+private fun LazyColumnOfEditField(
+    state: EditTodoItemState,
+    getAction: (EditItemActionType) -> () -> Unit,
+    deleteButtonIsEnabled: () -> Boolean
+) {
+    LazyColumn {
+        item { NameField(state, getAction, Modifier.padding(16.dp)) }
+
+        item { ImportanceDropdownMenuItem(state, getAction) }
+
+        item { Underline(modifier = Modifier.padding(horizontal = 16.dp)) }
+
+        item { DeadlineItem(state = state, getAction = getAction) }
+
+        item { Underline(modifier = Modifier.padding(top = 16.dp)) }
+
+        item { DeleteButton(deleteButtonIsEnabled, getAction, Modifier.padding(16.dp)) }
+    }
 }
 
 @Composable
@@ -85,9 +94,7 @@ private fun ImportanceDropdownMenuItem(
     state: EditTodoItemState,
     getAction: (EditItemActionType) -> (() -> Unit)
 ) {
-    var needDropdown: Boolean by remember {
-        mutableStateOf(false)
-    }
+    var needDropdown: Boolean by remember { mutableStateOf(false) }
 
     Row {
         ImportanceGetDropdown(
@@ -111,29 +118,26 @@ private fun DeadlineItem(
     getAction: (EditItemActionType) -> (() -> Unit)
 ) {
     var needCalendar by remember { mutableStateOf(false) }
+    val onCheckedChange: (Boolean) -> Unit = {
+        if (!it) getAction(EditItemActionType.OnDeadlineChanged(null)).invoke()
+        else needCalendar = true
+    }
 
     DeadlineSwitch(
         checked = state.deadLine != null,
-        onCheckedChange = {
-            if (!it) {
-                getAction(EditItemActionType.OnDeadlineChanged(null)).invoke()
-            } else {
-                needCalendar = true
-            }
-        },
+        onCheckedChange = onCheckedChange,
         state = state,
         modifier = Modifier.padding(16.dp)
     )
 
-    if (needCalendar) {
-        Calendar(
-            onCancel = { needCalendar = false },
-            onDone = {
-                needCalendar = false
-                getAction(EditItemActionType.OnDeadlineChanged(it)).invoke()
-            }
-        )
-    }
+    if (!needCalendar) return
+    Calendar(
+        onCancel = { needCalendar = false },
+        onDone = {
+            needCalendar = false
+            getAction(EditItemActionType.OnDeadlineChanged(it)).invoke()
+        }
+    )
 }
 
 @Preview(showBackground = true)

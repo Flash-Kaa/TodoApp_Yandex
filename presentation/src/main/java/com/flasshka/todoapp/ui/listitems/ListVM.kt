@@ -19,8 +19,10 @@ import com.flasshka.todoapp.navigation.Router
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 
-
-class ListVM(
+/**
+ *  Managing the status and actions related to the task list in the UI
+ */
+internal class ListVM(
     private val router: Router,
     private val updateTodoItem: UpdateTodoItemUseCase,
     private val deleteTodoItem: DeleteTodoItemUseCase,
@@ -79,14 +81,21 @@ class ListVM(
     private fun onChangeDoneItem(id: String): () -> Unit {
         return {
             viewModelScope.launch {
-                getByIdOrNull(id)?.let {
-                    val copy = it.copy(completed = it.completed.not())
-                    updateTodoItem(copy)
-                }
+                updateDone(id)
             }
         }
     }
 
+    private suspend fun ListVM.updateDone(id: String) {
+        getByIdOrNull(id)?.let {
+            val copy = it.copy(completed = it.completed.not())
+            updateTodoItem(copy)
+        }
+    }
+
+    /**
+     * Creates a ListVM
+     */
     class Factory(
         private val router: Router,
 

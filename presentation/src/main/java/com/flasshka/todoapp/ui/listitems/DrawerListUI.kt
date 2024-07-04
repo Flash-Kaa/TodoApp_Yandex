@@ -1,5 +1,6 @@
 package com.flasshka.todoapp.ui.listitems
 
+import android.content.Context
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -27,53 +28,8 @@ fun DrawerListUI(
     val snackbarHostState = remember { SnackbarHostState() }
     val context = LocalContext.current.applicationContext
 
-    val updateTodoItem = remember {
-        UpdateTodoItemUseCase(repository) {
-            snackbarShow(
-                message = context.getString(R.string.update_error_message),
-                snackbarHostState = snackbarHostState
-            )
-        }
-    }
-
-    val deleteTodoItem = remember {
-        DeleteTodoItemUseCase(repository) {
-            snackbarShow(
-                message = context.getString(R.string.delete_error_message),
-                snackbarHostState = snackbarHostState
-            )
-        }
-    }
-    val getByIdOrNull = remember {
-        GetTodoItemByIdOrNullUseCase(repository) {
-            snackbarShow(
-                message = context.getString(R.string.get_by_id_error_message),
-                snackbarHostState = snackbarHostState
-            )
-        }
-    }
-    val getDoneCounts = remember { GetDoneCountUseCase(repository) }
-    val getItemsWithVisibility = remember { GetItemsWithVisibilityUseCase(repository) }
-
-    val fetchItems = remember {
-        FetchItemsUseCase(repository) {
-            snackbarShow(
-                message = context.getString(R.string.fetch_error_message),
-                snackbarHostState = snackbarHostState
-            )
-        }
-    }
-
     val listVM: ListVM = viewModel(
-        factory = ListVM.Factory(
-            router = router,
-            updateTodoItem = updateTodoItem,
-            deleteTodoItem = deleteTodoItem,
-            getByIdOrNull = getByIdOrNull,
-            getDoneCounts = getDoneCounts,
-            getItemsWithVisibility = getItemsWithVisibility,
-            fetchItems = fetchItems
-        )
+        factory = createFactoryForVM(router, repository, context, snackbarHostState)
     )
 
     val list: List<TodoItem> by listVM.getItems().collectAsState(initial = emptyList())
@@ -85,5 +41,65 @@ fun DrawerListUI(
         visibilityDoneON = listVM.visibility,
         items = list,
         getAction = listVM::getAction
+    )
+}
+
+@Composable
+private fun createFactoryForVM(
+    router: Router,
+    repository: TodoItemRepository,
+    context: Context,
+    snackbarHostState: SnackbarHostState
+) = ListVM.Factory(
+    router = router,
+    updateTodoItem = remember { createUpdateUseCase(repository, context, snackbarHostState) },
+    deleteTodoItem = remember { createDeleteUseCase(repository, context, snackbarHostState) },
+    getByIdOrNull = remember { createGetByIdUseCase(repository, context, snackbarHostState) },
+    getDoneCounts = remember { GetDoneCountUseCase(repository) },
+    getItemsWithVisibility = remember { GetItemsWithVisibilityUseCase(repository) },
+    fetchItems = remember { createFetchUseCase(repository, context, snackbarHostState) }
+)
+
+private fun createFetchUseCase(
+    repository: TodoItemRepository,
+    context: Context,
+    snackbarHostState: SnackbarHostState
+) = FetchItemsUseCase(repository) {
+    snackbarShow(
+        message = context.getString(R.string.fetch_error_message),
+        snackbarHostState = snackbarHostState
+    )
+}
+
+private fun createGetByIdUseCase(
+    repository: TodoItemRepository,
+    context: Context,
+    snackbarHostState: SnackbarHostState
+) = GetTodoItemByIdOrNullUseCase(repository) {
+    snackbarShow(
+        message = context.getString(R.string.get_by_id_error_message),
+        snackbarHostState = snackbarHostState
+    )
+}
+
+private fun createDeleteUseCase(
+    repository: TodoItemRepository,
+    context: Context,
+    snackbarHostState: SnackbarHostState
+) = DeleteTodoItemUseCase(repository) {
+    snackbarShow(
+        message = context.getString(R.string.delete_error_message),
+        snackbarHostState = snackbarHostState
+    )
+}
+
+private fun createUpdateUseCase(
+    repository: TodoItemRepository,
+    context: Context,
+    snackbarHostState: SnackbarHostState
+) = UpdateTodoItemUseCase(repository) {
+    snackbarShow(
+        message = context.getString(R.string.update_error_message),
+        snackbarHostState = snackbarHostState
     )
 }

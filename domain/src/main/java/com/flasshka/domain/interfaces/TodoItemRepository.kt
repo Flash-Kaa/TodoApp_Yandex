@@ -8,11 +8,14 @@ interface TodoItemRepository {
 
     suspend fun fetchItems(onErrorAction: (suspend () -> Unit)? = null)
 
-    suspend fun addTodoItem(item: TodoItem, onErrorAction: (suspend() -> Unit)? = null)
+    suspend fun addTodoItem(item: TodoItem, onErrorAction: (suspend () -> Unit)? = null)
 
     suspend fun deleteTodoItem(id: String, onErrorAction: (suspend () -> Unit)? = null)
 
     suspend fun updateTodoItem(item: TodoItem, onErrorAction: (suspend () -> Unit)? = null)
 
-    suspend fun getItemByIdOrNull(id: String, onErrorAction: (suspend () -> Unit)? = null): TodoItem?
+    suspend fun getItemByIdOrNull(
+        id: String,
+        onErrorAction: (suspend () -> Unit)? = null
+    ): TodoItem?
 }

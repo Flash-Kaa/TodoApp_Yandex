@@ -10,6 +10,9 @@ import com.flasshka.domain.interfaces.DataSource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
+/**
+ * Data Source impl for data in network
+ */
 class NetworkDataSource(private val service: TodoListService) : DataSource {
     companion object {
         fun create(): NetworkDataSource {

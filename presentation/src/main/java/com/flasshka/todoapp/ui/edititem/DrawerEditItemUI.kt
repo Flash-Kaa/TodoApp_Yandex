@@ -1,5 +1,6 @@
 package com.flasshka.todoapp.ui.edititem
 
+import android.content.Context
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -26,48 +27,59 @@ fun DrawerEditItemUI(
     val snackbarHostState = remember { SnackbarHostState() }
     val context = LocalContext.current.applicationContext
 
-    val addTodoItem = remember { AddTodoItemUseCase(repository) }
-    val updateTodoItem = remember { UpdateTodoItemUseCase(repository) }
-    val deleteTodoItem = remember { DeleteTodoItemUseCase(repository) }
-
-    val getTodoItemByIdOrNull = remember {
-        GetTodoItemByIdOrNullUseCase(repository) {
-            snackbarShow(
-                message = context.getString(R.string.get_by_id_error_message),
-                snackbarHostState = snackbarHostState
-            )
-        }
-    }
-
-    val fetchItems = remember {
-        FetchItemsUseCase(repository) {
-            snackbarShow(
-                message = context.getString(R.string.fetch_error_message),
-                snackbarHostState = snackbarHostState,
-                actionLabel = "retry",
-                onActionPerformed = { FetchItemsUseCase(repository).invoke() }
-            )
-        }
-    }
-
     val viewModel: EditItemVM = viewModel(
-        factory = EditItemVM.Factory(
-            router = router,
-            itemId = itemId,
-            addTodoItem = addTodoItem,
-            updateTodoItem = updateTodoItem,
-            deleteTodoItem = deleteTodoItem,
-            getTodoItemByIdOrNull = getTodoItemByIdOrNull,
-            fetchItems = fetchItems
-        ),
+        factory = createFactoryForVM(router, itemId, repository, context, snackbarHostState),
     )
 
     val state: EditTodoItemState by viewModel.state.collectAsState(EditTodoItemState.getNewState())
-
+    
     EditItemUI(
         snackbarHostState = snackbarHostState,
         state = state,
         deleteButtonIsEnabled = viewModel::getDeleteButtonIsEnabled,
         getAction = viewModel::getAction,
+    )
+}
+
+@Composable
+private fun createFactoryForVM(
+    router: Router,
+    itemId: String?,
+    repository: TodoItemRepository,
+    context: Context,
+    snackbarHostState: SnackbarHostState
+) = EditItemVM.Factory(
+    router = router,
+    itemId = itemId,
+    addTodoItem = remember { AddTodoItemUseCase(repository) },
+    updateTodoItem = remember { UpdateTodoItemUseCase(repository) },
+    deleteTodoItem = remember { DeleteTodoItemUseCase(repository) },
+    getTodoItemByIdOrNull = remember {
+        createGetByIdUseCase(repository, context, snackbarHostState)
+    },
+    fetchItems = remember { createFetchUseCase(repository, context, snackbarHostState) }
+)
+
+private fun createGetByIdUseCase(
+    repository: TodoItemRepository,
+    context: Context,
+    snackbarHostState: SnackbarHostState
+) = GetTodoItemByIdOrNullUseCase(repository) {
+    snackbarShow(
+        message = context.getString(R.string.get_by_id_error_message),
+        snackbarHostState = snackbarHostState
+    )
+}
+
+private fun createFetchUseCase(
+    repository: TodoItemRepository,
+    context: Context,
+    snackbarHostState: SnackbarHostState
+) = FetchItemsUseCase(repository) {
+    snackbarShow(
+        message = context.getString(R.string.fetch_error_message),
+        snackbarHostState = snackbarHostState,
+        actionLabel = "retry",
+        onActionPerformed = { FetchItemsUseCase(repository).invoke() }
     )
 }

@@ -18,7 +18,10 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.util.Calendar
 
-class EditItemVM(
+/**
+ * Manage the status and actions related to creating or editing a task in the UI
+ */
+internal class EditItemVM(
     itemId: String?,
 
     private val router: Router,
@@ -98,6 +101,9 @@ class EditItemVM(
         return { _state.update { it.copy(deadLine = newValue) } }
     }
 
+    /**
+     * Creates a EditItemVM
+     */
     class Factory(
         private val router: Router,
         private val itemId: String?,

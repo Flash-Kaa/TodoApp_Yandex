@@ -5,6 +5,9 @@ import java.util.Calendar
 import java.util.Date
 import java.util.UUID
 
+/**
+ * UI state; copy of TodoItem
+ */
 data class EditTodoItemState(
     val id: String,
     val text: String = "",

@@ -9,6 +9,9 @@ import androidx.work.WorkerParameters
 import com.flasshka.data.NetWithDbRepository
 import java.util.concurrent.TimeUnit
 
+/**
+ * Sync net data with local data
+ */
 class DataSyncWorker(
     private val repository: NetWithDbRepository,
     appContext: Context,
@@ -29,7 +32,6 @@ class DataSyncWorker(
 
     override suspend fun doWork(): Result {
         repository.fetchItems()
-
         return Result.success()
     }
 }

@@ -3,7 +3,6 @@ package com.flasshka.todoapp.ui.listitems.elements
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.Icon
@@ -45,32 +44,10 @@ fun ItemUI(
     modifier: Modifier = Modifier
 ) {
     ListItem(
-        leadingContent = {
-            val uncheckedColor = if (item.importance == TodoItem.Importance.Important)
-                if (isSystemInDarkTheme()) DarkThemeRed else LightThemeRed
-            else MaterialTheme.colorScheme.tertiary
-
-            Checkbox(
-                checked = item.completed,
-                onCheckedChange = {
-                    getAction(ListOfItemsActionType.OnChangeDoneItem(item.id)).invoke()
-                },
-                colors = CheckboxDefaults.colors(
-                    checkedColor = if (isSystemInDarkTheme()) DarkThemeGreen else LightThemeGreen,
-                    uncheckedColor = uncheckedColor
-                ),
-                modifier = Modifier.testTag(TestTag.Checkbox.value)
-            )
-        },
+        leadingContent = { CheckboxContent(item, getAction) },
         headlineContent = { TextName(item = item) },
         supportingContent = { DateDrawer(item = item) },
-        trailingContent = {
-            Icon(
-                imageVector = ImageVector.vectorResource(id = R.drawable.baseline_info_outline_24),
-                contentDescription = "info_btn",
-                tint = MaterialTheme.colorScheme.tertiary
-            )
-        },
+        trailingContent = { TrailingIcon() },
         modifier = modifier
             .clickable(onClick = getAction(ListOfItemsActionType.OnChangeItem(item.id)))
             .testTag(TestTag.ListItem.value),
@@ -81,23 +58,58 @@ fun ItemUI(
 }
 
 @Composable
+private fun TrailingIcon() {
+    Icon(
+        imageVector = ImageVector.vectorResource(id = R.drawable.baseline_info_outline_24),
+        contentDescription = "info_btn",
+        tint = MaterialTheme.colorScheme.tertiary
+    )
+}
+
+@Composable
+private fun CheckboxContent(
+    item: TodoItem,
+    getAction: (ListOfItemsActionType) -> () -> Unit
+) {
+    val uncheckedColor =
+        if (item.importance == TodoItem.Importance.Important && isSystemInDarkTheme()) {
+            DarkThemeRed
+        } else if (item.importance == TodoItem.Importance.Important) {
+            LightThemeRed
+        } else {
+            MaterialTheme.colorScheme.tertiary
+        }
+
+    Checkbox(
+        checked = item.completed,
+        onCheckedChange = { getAction(ListOfItemsActionType.OnChangeDoneItem(item.id)).invoke() },
+        colors = CheckboxDefaults.colors(
+            checkedColor = if (isSystemInDarkTheme()) DarkThemeGreen else LightThemeGreen,
+            uncheckedColor = uncheckedColor
+        ),
+        modifier = Modifier.testTag(TestTag.Checkbox.value)
+    )
+}
+
+@Composable
 private fun TextName(
     item: TodoItem
 ) {
     Row {
-        ImportanceIcon(item)
-
-        val color = if (item.completed)
+        val textDecoration = if (!item.completed) null else TextDecoration.LineThrough
+        val textColor = if (item.completed) {
             MaterialTheme.colorScheme.tertiary
-        else
+        } else {
             MaterialTheme.colorScheme.primary
+        }
 
+        ImportanceIcon(item)
         Text(
             text = item.text,
             fontWeight = FontWeight(400),
             fontSize = 16.sp,
-            textDecoration = if (!item.completed) null else TextDecoration.LineThrough,
-            color = color,
+            textDecoration = textDecoration,
+            color = textColor,
             maxLines = 3,
             overflow = TextOverflow.Ellipsis
         )
@@ -108,41 +120,40 @@ private fun TextName(
 private fun ImportanceIcon(
     item: TodoItem
 ) {
-    if (item.importance != TodoItem.Importance.Basic) {
-        val color = if (item.importance == TodoItem.Importance.Important)
-            if (isSystemInDarkTheme()) DarkThemeRed else LightThemeRed
-        else
-            if (isSystemInDarkTheme()) DarkThemeGray else LightThemeGray
+    if (item.importance == TodoItem.Importance.Basic) return
 
-        val icon = if (item.importance == TodoItem.Importance.Important)
-            ImageVector.vectorResource(id = R.drawable.baseline_priority_high_24)
-        else
-            ImageVector.vectorResource(id = R.drawable.baseline_arrow_downward_24)
+    val color = if (item.importance == TodoItem.Importance.Important)
+        if (isSystemInDarkTheme()) DarkThemeRed else LightThemeRed
+    else
+        if (isSystemInDarkTheme()) DarkThemeGray else LightThemeGray
 
-        Icon(
-            imageVector = icon,
-            contentDescription = "importance icon",
-            tint = color
-        )
-    }
+    val icon = if (item.importance == TodoItem.Importance.Important)
+        ImageVector.vectorResource(id = R.drawable.baseline_priority_high_24)
+    else
+        ImageVector.vectorResource(id = R.drawable.baseline_arrow_downward_24)
 
+    Icon(
+        imageVector = icon,
+        contentDescription = "importance icon",
+        tint = color
+    )
 }
 
 @Composable
 private fun DateDrawer(
     item: TodoItem
 ) {
-    item.deadLine?.let {
-        val context = LocalContext.current
-        val formatter = android.text.format.DateFormat.getDateFormat(context)
+    if (item.deadLine == null) return
 
-        Text(
-            text = formatter.format(it),
-            fontWeight = FontWeight(400),
-            fontSize = 14.sp,
-            color = MaterialTheme.colorScheme.tertiary
-        )
-    }
+    val context = LocalContext.current
+    val formatter = android.text.format.DateFormat.getDateFormat(context)
+
+    Text(
+        text = formatter.format(item.deadLine!!),
+        fontWeight = FontWeight(400),
+        fontSize = 14.sp,
+        color = MaterialTheme.colorScheme.tertiary
+    )
 }
 
 @Preview(showBackground = true)
@@ -150,7 +161,6 @@ private fun DateDrawer(
 private fun PreviewItemUI() {
     TodoAppTheme {
         Surface(
-            modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
             val item = remember {

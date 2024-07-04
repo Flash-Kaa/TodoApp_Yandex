@@ -1,5 +1,6 @@
 package com.flasshka.todoapp
 
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.ui.test.junit4.ComposeContentTestRule
 import androidx.compose.ui.test.junit4.createComposeRule
@@ -21,6 +22,10 @@ import org.junit.Rule
 import org.junit.Test
 import java.util.Calendar
 
+/**
+ * Testing UI for list screen
+ * Now not working
+ */
 internal class ListUITest {
     @Rule
     @JvmField
@@ -45,6 +50,7 @@ internal class ListUITest {
                             .toTypedArray()
                     )
                 },
+                snackbarHostState = SnackbarHostState(),
                 getAction = actionsMock::invoke
             )
         }
@@ -141,9 +147,7 @@ internal class ListUITest {
 
     @Test
     fun visibilityCount() {
-        val names = (1..20).map {
-            addOne(it.toString())
-        }
+        val names = (1..20).map { addOne(it.toString()) }
 
         composeTestRule.onNodeWithText(text = "Выполнено — 0")
             .assertExists()
@@ -151,9 +155,7 @@ internal class ListUITest {
         names.forEach { name ->
             composeTestRule.onNodeWithText(name)
                 .assertExists()
-                .performTouchInput {
-                    swipeRight()
-                }
+                .performTouchInput { swipeRight() }
                 .assertDoesNotExist()
 
             composeTestRule.onNodeWithText(text = "Выполнено — $name")

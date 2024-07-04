@@ -41,39 +41,45 @@ private fun AppThemePreview() {
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
-            Column(
-                modifier = Modifier.fillMaxSize()
-            ) {
-                Row {
-                    ColorBox(if (isSystemInDarkTheme()) DarkThemeSeparator else LightThemeSeparator)
-                    ColorBox(if (isSystemInDarkTheme()) DarkThemeOverlay else LightThemeOverlay)
-                }
-
-                Row {
-                    ColorBox(MaterialTheme.colorScheme.primary)
-                    ColorBox(MaterialTheme.colorScheme.secondary)
-                    ColorBox(MaterialTheme.colorScheme.tertiary)
-                    ColorBox(if (isSystemInDarkTheme()) DarkThemeLabelDisable else LightThemeLabelDisable)
-                }
-
-                Row {
-                    ColorBox(if (isSystemInDarkTheme()) DarkThemeRed else LightThemeRed)
-                    ColorBox(if (isSystemInDarkTheme()) DarkThemeGreen else LightThemeGreen)
-                    ColorBox(if (isSystemInDarkTheme()) DarkThemeBlue else LightThemeBlue)
-                    ColorBox(if (isSystemInDarkTheme()) DarkThemeGray else LightThemeGray)
-                    ColorBox(if (isSystemInDarkTheme()) DarkThemeGrayLight else LightThemeGrayLight)
-                    ColorBox(White)
-                }
-
-                Row {
-                    ColorBox(MaterialTheme.colorScheme.background)
-                    ColorBox(MaterialTheme.colorScheme.surface)
-                    ColorBox(MaterialTheme.colorScheme.surfaceVariant)
-                }
-            }
+            ColorColumn()
         }
     }
 }
+
+@Composable
+private fun ColorColumn() {
+    Column(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        Row {
+            ColorBox(if (isSystemInDarkTheme()) DarkThemeSeparator else LightThemeSeparator)
+            ColorBox(if (isSystemInDarkTheme()) DarkThemeOverlay else LightThemeOverlay)
+        }
+
+        Row {
+            ColorBox(MaterialTheme.colorScheme.primary)
+            ColorBox(MaterialTheme.colorScheme.secondary)
+            ColorBox(MaterialTheme.colorScheme.tertiary)
+            ColorBox(if (isSystemInDarkTheme()) DarkThemeLabelDisable else LightThemeLabelDisable)
+        }
+
+        Row {
+            ColorBox(if (isSystemInDarkTheme()) DarkThemeRed else LightThemeRed)
+            ColorBox(if (isSystemInDarkTheme()) DarkThemeGreen else LightThemeGreen)
+            ColorBox(if (isSystemInDarkTheme()) DarkThemeBlue else LightThemeBlue)
+            ColorBox(if (isSystemInDarkTheme()) DarkThemeGray else LightThemeGray)
+            ColorBox(if (isSystemInDarkTheme()) DarkThemeGrayLight else LightThemeGrayLight)
+            ColorBox(White)
+        }
+
+        Row {
+            ColorBox(MaterialTheme.colorScheme.background)
+            ColorBox(MaterialTheme.colorScheme.surface)
+            ColorBox(MaterialTheme.colorScheme.surfaceVariant)
+        }
+    }
+}
+
 
 @Composable
 private fun ColorBox(color: Color) {

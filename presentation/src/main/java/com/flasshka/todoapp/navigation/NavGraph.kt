@@ -17,31 +17,19 @@ fun NavGraph(
 ) {
     val navController = rememberNavController()
     val router = remember { Router(navController) }
+    val argsForEditScreen = listOf(
+        navArgument("itemId") { type = NavType.StringType; nullable = true }
+    )
 
     NavHost(
         navController = navController,
         startDestination = NavScreen.ListOfItems.route
     ) {
-        composable(NavScreen.ListOfItems.route) {
-            DrawerListUI(
-                router = router,
-                repository = repository
-            )
-        }
+        composable(NavScreen.ListOfItems.route) { DrawerListUI(router,repository) }
 
-        composable(
-            route = "${NavScreen.EditItem.route}/{itemId}",
-            arguments = listOf(
-                navArgument("itemId") { type = NavType.StringType; nullable = true }
-            )
-        ) {
+        composable("${NavScreen.EditItem.route}/{itemId}", argsForEditScreen) {
             val id = it.arguments?.getString("itemId")
-
-            DrawerEditItemUI(
-                itemId = id,
-                router = router,
-                repository = repository
-            )
+            DrawerEditItemUI(router, id, repository)
         }
     }
 }

@@ -27,10 +27,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.flasshka.todoapp.R
@@ -90,20 +92,19 @@ private fun DeadlineDate(
     checked: Boolean,
     state: EditTodoItemState
 ) {
-    if (checked) {
-        val context = LocalContext.current
-        val formatter = android.text.format.DateFormat.getDateFormat(context)
+    if (!checked) return
 
-        val color = if (isSystemInDarkTheme()) DarkThemeBlue else LightThemeBlue
+    val context = LocalContext.current
+    val formatter = android.text.format.DateFormat.getDateFormat(context)
+    val color = if (isSystemInDarkTheme()) DarkThemeBlue else LightThemeBlue
 
-        state.deadLine?.let {
-            Text(
-                text = formatter.format(it),
-                color = color,
-                fontSize = 14.sp,
-                fontWeight = FontWeight(400)
-            )
-        }
+    state.deadLine?.let {
+        Text(
+            text = formatter.format(it),
+            color = color,
+            fontSize = 14.sp,
+            fontWeight = FontWeight(400)
+        )
     }
 }
 
@@ -119,33 +120,49 @@ private fun CustomSwitch(
         label = "DpAnimation"
     )
 
+    Box(contentAlignment = Alignment.CenterStart) {
+        BackgroundForSwitch(modifier, onCheckedChange, checked)
+        Switch(thumbOffset, checked)
+    }
+}
+
+@Composable
+private fun BackgroundForSwitch(
+    modifier: Modifier,
+    onCheckedChange: (Boolean) -> Unit,
+    checked: Boolean
+) {
     val blue = if (isSystemInDarkTheme()) DarkThemeBlue else LightThemeBlue
-    val colorThumb = if (checked) blue else MaterialTheme.colorScheme.surfaceVariant
     val colorTrack = if (checked) blue.copy(alpha = 0.3f)
     else if (isSystemInDarkTheme()) DarkThemeOverlay
     else LightThemeOverlay
 
     Box(
-        contentAlignment = Alignment.CenterStart
-    ) {
-        Box(
-            modifier = modifier
-                .clip(RoundedCornerShape(16.dp))
-                .background(colorTrack)
-                .clickable { onCheckedChange(!checked) }
-                .padding(horizontal = 4.dp, vertical = 2.dp)
-                .size(width = 36.dp, height = 16.dp)
-        )
+        modifier = modifier
+            .clip(RoundedCornerShape(16.dp))
+            .background(colorTrack)
+            .clickable { onCheckedChange(!checked) }
+            .padding(horizontal = 4.dp, vertical = 2.dp)
+            .size(width = 36.dp, height = 16.dp)
+    )
+}
 
-        Box(
-            modifier = Modifier
-                .offset(x = thumbOffset)
-                .shadow(2.dp, CircleShape)
-                .size(26.dp)
-                .clip(CircleShape)
-                .background(colorThumb)
-        )
-    }
+@Composable
+private fun Switch(
+    thumbOffset: Dp,
+    checked: Boolean
+) {
+    val blue = if (isSystemInDarkTheme()) DarkThemeBlue else LightThemeBlue
+    val colorThumb = if (checked) blue else MaterialTheme.colorScheme.surfaceVariant
+
+    Box(
+        modifier = Modifier
+            .offset(x = thumbOffset)
+            .shadow(2.dp, CircleShape)
+            .size(26.dp)
+            .clip(CircleShape)
+            .background(colorThumb)
+    )
 }
 
 @Preview(showBackground = true)

@@ -2,6 +2,9 @@ package com.flasshka.domain.entities
 
 import java.util.Date
 
+/**
+ * Standard item
+ */
 data class TodoItem(
     val id: String,
     val text: String,

@@ -3,6 +3,9 @@ package com.flasshka.data.network.entities
 import com.flasshka.domain.entities.TodoItem
 import java.util.Date
 
+/**
+ * Standard item for work with network
+ */
 data class NetworkTodoItem(
     val id: String,
     val text: String,

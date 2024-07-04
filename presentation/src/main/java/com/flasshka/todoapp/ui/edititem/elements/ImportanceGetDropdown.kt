@@ -40,7 +40,6 @@ fun ImportanceGetDropdown(
             fontSize = 16.sp,
             fontWeight = FontWeight(400)
         )
-
         Text(
             text = state.importance.toString(),
             color = MaterialTheme.colorScheme.tertiary,
@@ -58,10 +57,6 @@ private fun PreviewImportanceDropdown() {
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
-            val importance: TodoItem.Importance by remember {
-                mutableStateOf(TodoItem.Importance.Basic)
-            }
-
             ImportanceGetDropdown(
                 state = EditTodoItemState.getNewState(),
                 changeNeed = { },

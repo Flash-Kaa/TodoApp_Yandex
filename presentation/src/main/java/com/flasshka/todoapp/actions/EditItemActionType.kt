@@ -2,6 +2,9 @@ package com.flasshka.todoapp.actions
 
 import com.flasshka.domain.entities.TodoItem
 
+/**
+ * Store actions for the edit screen
+ */
 sealed class EditItemActionType {
     // Navigation
     data object OnExit : EditItemActionType()
