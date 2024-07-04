@@ -24,11 +24,6 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         DataSyncWorker.scheduleDataSyncWork(applicationContext)
 
-        /*val sdk = YandexAuthSdk.create(YandexAuthOptions(applicationContext))
-        val launcher = registerForActivityResult(sdk.contract) { result -> handleResult(result) }
-        val loginOptions = YandexAuthLoginOptions()
-        launcher.launch(loginOptions)*/
-
         (application as TodoApp).component.inject(this)
 
         setContent {
@@ -37,21 +32,6 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
-
-    /*private fun handleResult(result: YandexAuthResult) {
-        when (result) {
-            is YandexAuthResult.Success -> {
-                *//*onSuccessAuth(result.token)*//*
-            }
-            is YandexAuthResult.Failure -> {
-                val exc = result.exception
-                exc.errors
-                *//*onProccessError(result.exception)*//*
-            }
-            YandexAuthResult.Cancelled -> {*//*onCancelled()*//*
-            }
-        }
-    }*/
 
     // Enable broadcast receiver
     override fun onStart() {

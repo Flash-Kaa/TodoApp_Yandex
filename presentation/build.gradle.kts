@@ -19,8 +19,6 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
-
-        manifestPlaceholders.put("YANDEX_CLIENT_ID", "0d0970774e284fa8ba9ff70b6b06479a")
     }
 
     buildTypes {
@@ -59,9 +57,6 @@ dependencies {
 
     // Navigation
     implementation(libs.androidx.navigation.compose)
-
-    // Yandex ID
-    implementation(libs.authsdk)
 
     // Dagger 2
     implementation(libs.dagger.android)
