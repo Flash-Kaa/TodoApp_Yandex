@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsKotlinAndroid)
+    id("com.google.devtools.ksp") version "1.9.0-1.0.13"
 }
 
 android {
@@ -59,13 +60,14 @@ dependencies {
     // Navigation
     implementation(libs.androidx.navigation.compose)
 
-    // WorkManager
-    implementation(libs.androidx.work.runtime.ktx)
-
     // Yandex ID
     implementation(libs.authsdk)
 
-
+    // Dagger 2
+    implementation(libs.dagger.android)
+    implementation(libs.dagger.android.support)
+    ksp(libs.dagger.android.processor)
+    ksp(libs.dagger.compiler)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

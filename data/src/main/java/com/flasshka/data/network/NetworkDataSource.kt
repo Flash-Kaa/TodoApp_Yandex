@@ -9,17 +9,12 @@ import com.flasshka.domain.entities.TodoItem
 import com.flasshka.domain.interfaces.DataSource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import javax.inject.Inject
 
 /**
  * Data Source impl for data in network
  */
-class NetworkDataSource(private val service: TodoListService) : DataSource {
-    companion object {
-        fun create(): NetworkDataSource {
-            return NetworkDataSource(RetrofitBuilder.networkService)
-        }
-    }
-
+class NetworkDataSource @Inject constructor(private val service: TodoListService) : DataSource {
     override suspend fun getItems(): Flow<List<TodoItem>> {
         val items = service.getItems()
         TodoListService.RuntimeConstants.lastKnownRevision = items.revision

@@ -3,7 +3,7 @@ package com.flasshka.data.network
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-internal object RetrofitBuilder {
+object RetrofitBuilder {
     private const val BASE_URL = "https://hive.mrdekk.ru/todo/"
 
     private val retrofit: Retrofit by lazy {

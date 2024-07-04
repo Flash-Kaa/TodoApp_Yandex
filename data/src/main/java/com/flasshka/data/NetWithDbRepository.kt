@@ -14,8 +14,12 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.supervisorScope
 import java.net.InetAddress
+import javax.inject.Inject
 
-class NetWithDbRepository(
+/**
+ * Repository for using data
+ */
+class NetWithDbRepository @Inject constructor(
     private val networkDataSource: DataSource,
     private val localDataSource: DataSource
 ) : TodoItemRepository {

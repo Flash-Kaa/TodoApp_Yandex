@@ -1,6 +1,7 @@
 [versions]
 agp = "8.3.2"
 authsdk = "3.1.0"
+daggerAndroid = "2.51.1"
 jacksonDatabindVersion = "2.0.1"
 kotlin = "1.9.0"
 coreKtx = "1.13.1"
@@ -29,6 +30,10 @@ androidx-work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version
 authsdk = { module = "com.yandex.android:authsdk", version.ref = "authsdk" }
 converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "retrofit" }
 core-jackson-databind = { module = "com.fasterxml.jackson.core:jackson-databind", version.ref = "jacksonDatabindVersion" }
+dagger-android-support = { module = "com.google.dagger:dagger-android-support", version.ref = "daggerAndroid" }
+dagger-android = { module = "com.google.dagger:dagger-android", version.ref = "daggerAndroid" }
+dagger-android-processor = { module = "com.google.dagger:dagger-android-processor", version.ref = "daggerAndroid" }
+dagger-compiler = { module = "com.google.dagger:dagger-compiler", version.ref = "daggerAndroid" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }

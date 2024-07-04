@@ -6,18 +6,12 @@ import com.flasshka.domain.entities.TodoItem
 import com.flasshka.domain.interfaces.DataSource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import javax.inject.Inject
 
 /**
  * Data Source impl for data in DB
  */
-class DataSourceDB(private val dao: TodoItemsDao) : DataSource {
-    companion object {
-        fun create(context: Context): DataSourceDB {
-            val dao = DatabaseBuilder.getDatabase(context).getDao()
-            return DataSourceDB(dao)
-        }
-    }
-
+class DataSourceDB @Inject constructor(private val dao: TodoItemsDao) : DataSource {
     override suspend fun getItems(): Flow<List<TodoItem>> {
         return flow { emit(dao.getItems().map { it.toItem() }) }
     }
