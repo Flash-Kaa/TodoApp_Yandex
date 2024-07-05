@@ -1,9 +1,8 @@
 package com.flasshka.data.database
 
-import android.content.Context
 import com.flasshka.data.database.entities.TodoItemDB.Companion.toItemDB
 import com.flasshka.domain.entities.TodoItem
-import com.flasshka.domain.interfaces.DataSource
+import com.flasshka.domain.interfaces.TodoItemDataSource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
@@ -11,7 +10,7 @@ import javax.inject.Inject
 /**
  * Data Source impl for data in DB
  */
-class DataSourceDB @Inject constructor(private val dao: TodoItemsDao) : DataSource {
+class DataSourceDB @Inject constructor(private val dao: TodoItemsDao) : TodoItemDataSource {
     override suspend fun getItems(): Flow<List<TodoItem>> {
         return flow { emit(dao.getItems().map { it.toItem() }) }
     }

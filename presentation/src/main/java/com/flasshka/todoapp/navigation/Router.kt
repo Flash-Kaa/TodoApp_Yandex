@@ -17,4 +17,8 @@ class Router(private val navController: NavController) {
     fun navigateToChangeItemById(id: String) {
         navController.navigate(NavScreen.EditItem.getRouteWithId(id))
     }
+
+    fun navigateToAuthorization() {
+        navController.navigate(NavScreen.Authorization.route)
+    }
 }

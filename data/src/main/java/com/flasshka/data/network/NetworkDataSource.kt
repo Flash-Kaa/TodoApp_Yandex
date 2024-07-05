@@ -6,7 +6,7 @@ import com.flasshka.data.network.entities.ItemWithRevision
 import com.flasshka.data.network.entities.ListItemsWithRevision
 import com.flasshka.data.network.entities.NetworkTodoItem.Companion.toNetwork
 import com.flasshka.domain.entities.TodoItem
-import com.flasshka.domain.interfaces.DataSource
+import com.flasshka.domain.interfaces.TodoItemDataSource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
@@ -14,10 +14,11 @@ import javax.inject.Inject
 /**
  * Data Source impl for data in network
  */
-class NetworkDataSource @Inject constructor(private val service: TodoListService) : DataSource {
+class NetworkDataSource @Inject constructor(private val service: TodoListService) :
+    TodoItemDataSource {
     override suspend fun getItems(): Flow<List<TodoItem>> {
         val items = service.getItems()
-        TodoListService.RuntimeConstants.lastKnownRevision = items.revision
+        ServiceConstants.lastKnownRevision = items.revision
 
         return flow {
             emit(items.list.map { it.toItem() })
@@ -30,7 +31,7 @@ class NetworkDataSource @Inject constructor(private val service: TodoListService
 
         val itemsWithRevision: ListItemsWithRevision =
             service.updateItems(body = RequestUtils.getBody(body))
-        TodoListService.RuntimeConstants.lastKnownRevision = itemsWithRevision.revision
+        ServiceConstants.lastKnownRevision = itemsWithRevision.revision
 
         return flow {
             emit(itemsWithRevision.list.map { it.toItem() })
@@ -41,7 +42,7 @@ class NetworkDataSource @Inject constructor(private val service: TodoListService
         val body = BodyItem(element = item.toNetwork())
 
         val itemWithRevision: ItemWithRevision = service.addItem(body = RequestUtils.getBody(body))
-        TodoListService.RuntimeConstants.lastKnownRevision = itemWithRevision.revision
+        ServiceConstants.lastKnownRevision = itemWithRevision.revision
     }
 
     override suspend fun getItemById(id: String): TodoItem {
@@ -56,11 +57,11 @@ class NetworkDataSource @Inject constructor(private val service: TodoListService
             body = RequestUtils.getBody(body)
         )
 
-        TodoListService.RuntimeConstants.lastKnownRevision = itemWithRevision.revision
+        ServiceConstants.lastKnownRevision = itemWithRevision.revision
     }
 
     override suspend fun deleteItem(id: String) {
         val itemWithRevision = service.deleteItem(path = id)
-        TodoListService.RuntimeConstants.lastKnownRevision = itemWithRevision.revision
+        ServiceConstants.lastKnownRevision = itemWithRevision.revision
     }
 }

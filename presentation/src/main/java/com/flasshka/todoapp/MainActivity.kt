@@ -1,5 +1,6 @@
 package com.flasshka.todoapp
 
+import android.annotation.SuppressLint
 import android.content.IntentFilter
 import android.net.ConnectivityManager
 import android.os.Bundle
@@ -20,10 +21,10 @@ class MainActivity : ComponentActivity() {
         NetworkChangeReceiver(repository, lifecycleScope)
     }
 
+    @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         DataSyncWorker.scheduleDataSyncWork(applicationContext)
-
         (application as TodoApp).component.inject(this)
 
         setContent {

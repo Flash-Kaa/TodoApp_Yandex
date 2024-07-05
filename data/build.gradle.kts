@@ -18,8 +18,10 @@ android {
         val localProperties = Properties()
         localProperties.load(project.rootProject.file("local.properties").inputStream())
 
-        val address: String? = localProperties.getProperty("token.oath")
-        buildConfigField("String", "OATH_TOKEN", address.toString())
+        val clientId: String? = localProperties.getProperty("oath.clientID")
+        val redirectURI: String? = localProperties.getProperty("oath.redirectURI")
+        buildConfigField("String", "CLIENT_ID", clientId.toString())
+        buildConfigField("String", "REDIRECT_URI", redirectURI.toString())
     }
 
     buildTypes {

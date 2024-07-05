@@ -9,4 +9,6 @@ sealed class NavScreen(val route: String) {
     data object EditItem : NavScreen("change_by_id") {
         fun getRouteWithId(id: String? = null) = "$route/$id"
     }
+
+    data object Authorization : NavScreen("authorization")
 }

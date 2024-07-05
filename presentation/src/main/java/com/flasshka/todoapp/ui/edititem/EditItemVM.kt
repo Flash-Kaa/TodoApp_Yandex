@@ -4,11 +4,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.flasshka.domain.entities.TodoItem
-import com.flasshka.domain.usecases.AddTodoItemUseCase
-import com.flasshka.domain.usecases.DeleteTodoItemUseCase
-import com.flasshka.domain.usecases.FetchItemsUseCase
-import com.flasshka.domain.usecases.GetTodoItemByIdOrNullUseCase
-import com.flasshka.domain.usecases.UpdateTodoItemUseCase
+import com.flasshka.domain.usecases.items.AddTodoItemUseCase
+import com.flasshka.domain.usecases.items.DeleteTodoItemUseCase
+import com.flasshka.domain.usecases.items.FetchItemsUseCase
+import com.flasshka.domain.usecases.items.GetTodoItemByIdOrNullUseCase
+import com.flasshka.domain.usecases.items.UpdateTodoItemUseCase
 import com.flasshka.todoapp.actions.EditItemActionType
 import com.flasshka.todoapp.navigation.Router
 import kotlinx.coroutines.Dispatchers

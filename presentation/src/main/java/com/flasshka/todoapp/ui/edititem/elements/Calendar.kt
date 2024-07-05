@@ -36,7 +36,7 @@ fun Calendar(
 ) {
     val blue = if (isSystemInDarkTheme()) DarkThemeBlue else LightThemeBlue
     val state = rememberDatePickerState()
-    
+
     DatePickerDialog(
         onDismissRequest = onCancel,
         confirmButton = {

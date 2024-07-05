@@ -9,11 +9,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.flasshka.domain.interfaces.TodoItemRepository
-import com.flasshka.domain.usecases.AddTodoItemUseCase
-import com.flasshka.domain.usecases.DeleteTodoItemUseCase
-import com.flasshka.domain.usecases.FetchItemsUseCase
-import com.flasshka.domain.usecases.GetTodoItemByIdOrNullUseCase
-import com.flasshka.domain.usecases.UpdateTodoItemUseCase
+import com.flasshka.domain.usecases.items.AddTodoItemUseCase
+import com.flasshka.domain.usecases.items.DeleteTodoItemUseCase
+import com.flasshka.domain.usecases.items.FetchItemsUseCase
+import com.flasshka.domain.usecases.items.GetTodoItemByIdOrNullUseCase
+import com.flasshka.domain.usecases.items.UpdateTodoItemUseCase
 import com.flasshka.todoapp.R
 import com.flasshka.todoapp.navigation.Router
 import com.flasshka.todoapp.ui.snackbarShow
@@ -32,7 +32,7 @@ fun DrawerEditItemUI(
     )
 
     val state: EditTodoItemState by viewModel.state.collectAsState(EditTodoItemState.getNewState())
-    
+
     EditItemUI(
         snackbarHostState = snackbarHostState,
         state = state,

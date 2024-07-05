@@ -1,7 +1,8 @@
 package com.flasshka.data
 
+import com.flasshka.data.network.ServiceConstants
 import com.flasshka.domain.entities.TodoItem
-import com.flasshka.domain.interfaces.DataSource
+import com.flasshka.domain.interfaces.TodoItemDataSource
 import com.flasshka.domain.interfaces.TodoItemRepository
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
@@ -13,15 +14,14 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.supervisorScope
-import java.net.InetAddress
 import javax.inject.Inject
 
 /**
  * Repository for using data
  */
 class NetWithDbRepository @Inject constructor(
-    private val networkDataSource: DataSource,
-    private val localDataSource: DataSource
+    private val networkDataSource: TodoItemDataSource,
+    private val localDataSource: TodoItemDataSource
 ) : TodoItemRepository {
     private val _itemsFlow: MutableStateFlow<List<TodoItem>> = MutableStateFlow(emptyList())
     override val itemsFlow: StateFlow<List<TodoItem>> = _itemsFlow.asStateFlow()
@@ -30,7 +30,6 @@ class NetWithDbRepository @Inject constructor(
         runWithSupervisor(tryCount = 2u, onErrorAction = onErrorAction) {
             val itemsFromLocal: List<TodoItem> = collectFromFlow(localDataSource)
 
-            if (isInternetAvailable().not()) return@runWithSupervisor
             val itemsFromNet: List<TodoItem> = collectFromFlow(networkDataSource)
 
             updateItems(itemsFromLocal, itemsFromNet)
@@ -54,7 +53,6 @@ class NetWithDbRepository @Inject constructor(
             localDataSource.addItem(item)
         }
 
-        if (isInternetAvailable().not()) return
         runWithSupervisor(tryCount = 2u, onErrorAction = onErrorAction) {
             networkDataSource.addItem(item)
         }
@@ -87,7 +85,6 @@ class NetWithDbRepository @Inject constructor(
             localDataSource.updateItem(item)
         }
 
-        if (isInternetAvailable().not()) return
         runWithSupervisor(tryCount = 2u, onErrorAction = onErrorAction) {
             networkDataSource.updateItem(item)
         }
@@ -105,6 +102,9 @@ class NetWithDbRepository @Inject constructor(
         content: suspend CoroutineScope.() -> Unit
     ) {
         if (tryCount.compareTo(0u) == 0) return
+
+        if (ServiceConstants.OAthWithToken.value == "") return
+
 
         supervisorScope {
             launch(
@@ -131,7 +131,7 @@ class NetWithDbRepository @Inject constructor(
         }
     }
 
-    private suspend fun collectFromFlow(dataSource: DataSource): List<TodoItem> {
+    private suspend fun collectFromFlow(dataSource: TodoItemDataSource): List<TodoItem> {
         var itemsFromCollect: List<TodoItem> = emptyList()
         dataSource.getItems().collect { collect ->
             itemsFromCollect = collect
@@ -170,16 +170,4 @@ class NetWithDbRepository @Inject constructor(
         items: List<TodoItem>,
         item: TodoItem
     ) = items.map { if (it.id != item.id) it else item }
-
-    /**
-     * Проверка на наличие интернет соединение без использования context
-     */
-    private fun isInternetAvailable(): Boolean {
-        return try {
-            val ipAddress = InetAddress.getByName("ya.ru")
-            ipAddress.hostAddress != null
-        } catch (e: Exception) {
-            false
-        }
-    }
 }
