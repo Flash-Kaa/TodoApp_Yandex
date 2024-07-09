@@ -1,10 +1,13 @@
-package com.flasshka.domain.usecases
+package com.flasshka.domain.usecases.items
 
 import com.flasshka.domain.entities.TodoItem
 import com.flasshka.domain.interfaces.TodoItemRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
+/**
+ * Use case for getting items with current visibility
+ */
 class GetItemsWithVisibilityUseCase(
     private val repository: TodoItemRepository
 ) {

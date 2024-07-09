@@ -1,13 +1,17 @@
-package com.flasshka.domain.entities
+package com.flasshka.todoapp.ui.edititem
 
+import com.flasshka.domain.entities.TodoItem
 import java.util.Calendar
 import java.util.Date
 import java.util.UUID
 
+/**
+ * UI state; copy of TodoItem
+ */
 data class EditTodoItemState(
     val id: String,
     val text: String = "",
-    val importance: TodoItem.Importance = TodoItem.Importance.Common,
+    val importance: TodoItem.Importance = TodoItem.Importance.Basic,
     val created: Date? = null,
     val deadLine: Long? = null,
     val completed: Boolean = false,

@@ -1,12 +1,7 @@
 package com.flasshka.todoapp
 
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.ui.semantics.SemanticsConfiguration
-import androidx.compose.ui.semantics.getOrNull
-import androidx.compose.ui.semantics.testTag
-import androidx.compose.ui.semantics.text
-import androidx.compose.ui.test.ExperimentalTestApi
-import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.junit4.ComposeContentTestRule
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
@@ -17,19 +12,20 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.test.swipeLeft
 import androidx.compose.ui.test.swipeRight
-import androidx.compose.ui.text.buildAnnotatedString
 import com.flasshka.domain.entities.TodoItem
-import com.flasshka.domain.interfaces.TodoItemRepository
 import com.flasshka.todoapp.ui.listitems.ListUI
 import com.flasshka.todoapp.utils.ActionsForTest
 import com.flasshka.todoapp.utils.TodoItemRepositoryMock
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.runBlocking
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import java.util.Calendar
 
+/**
+ * Testing UI for list screen
+ * Now not working
+ */
 internal class ListUITest {
     @Rule
     @JvmField
@@ -49,11 +45,12 @@ internal class ListUITest {
                 visibilityDoneON = actionsMock.visibility.value,
                 items = runBlocking {
                     mutableStateListOf(
-                        *repository.getTodoItems()
+                        *repository.itemsFlow.value
                             .filter { it.completed.not() || actionsMock.visibility.value }
                             .toTypedArray()
                     )
                 },
+                snackbarHostState = SnackbarHostState(),
                 getAction = actionsMock::invoke
             )
         }
@@ -107,13 +104,13 @@ internal class ListUITest {
     fun canDone() {
         addOne()
 
-        val firstNotCompleted = runBlocking { repository.getTodoItems().first().completed.not() }
+        val firstNotCompleted = runBlocking { repository.itemsFlow.value.first().completed.not() }
         assert(firstNotCompleted)
 
         composeTestRule.onNodeWithTag(TestTag.Checkbox.value)
             .performClick()
 
-        val firstCompleted = runBlocking { repository.getTodoItems().first().completed }
+        val firstCompleted = runBlocking { repository.itemsFlow.value.first().completed }
         assert(firstCompleted)
     }
 
@@ -144,15 +141,13 @@ internal class ListUITest {
         composeTestRule.onNodeWithTag(TestTag.ListItem.value)
             .assertExists()
 
-        val firstCompleted = runBlocking { repository.getTodoItems().first().completed }
+        val firstCompleted = runBlocking { repository.itemsFlow.value.first().completed }
         assert(firstCompleted)
     }
 
     @Test
     fun visibilityCount() {
-        val names = (1..20).map {
-            addOne(it.toString())
-        }
+        val names = (1..20).map { addOne(it.toString()) }
 
         composeTestRule.onNodeWithText(text = "Выполнено — 0")
             .assertExists()
@@ -160,9 +155,7 @@ internal class ListUITest {
         names.forEach { name ->
             composeTestRule.onNodeWithText(name)
                 .assertExists()
-                .performTouchInput {
-                    swipeRight()
-                }
+                .performTouchInput { swipeRight() }
                 .assertDoesNotExist()
 
             composeTestRule.onNodeWithText(text = "Выполнено — $name")

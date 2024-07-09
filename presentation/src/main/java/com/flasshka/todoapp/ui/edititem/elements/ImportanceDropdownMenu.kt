@@ -21,6 +21,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
@@ -47,15 +48,22 @@ fun ImportanceDropdownMenu(
             .background(MaterialTheme.colorScheme.surfaceVariant)
             .widthIn(min = 190.dp)
             .shadow(0.1.dp, RoundedCornerShape(2.dp))
-            .clip(RoundedCornerShape(2.dp))
-    ) {
-        TodoItem.Importance.entries.forEach { importance ->
-            ImportanceDrawer(
-                importance = importance,
-                changeNeed = changeNeed,
-                getAction = getAction
-            )
-        }
+            .clip(RoundedCornerShape(2.dp)),
+        content = { ListOfImportanceDrawer(changeNeed, getAction) }
+    )
+}
+
+@Composable
+private fun ListOfImportanceDrawer(
+    changeNeed: (Boolean) -> Unit,
+    getAction: (EditItemActionType) -> () -> Unit
+) {
+    TodoItem.Importance.entries.forEach { importance ->
+        ImportanceDrawer(
+            importance = importance,
+            changeNeed = changeNeed,
+            getAction = getAction
+        )
     }
 }
 
@@ -65,31 +73,37 @@ private fun ImportanceDrawer(
     changeNeed: (Boolean) -> Unit,
     getAction: (EditItemActionType) -> (() -> Unit),
 ) {
-    val color = if (importance == TodoItem.Importance.Urgently)
+    val color = if (importance == TodoItem.Importance.Important)
         if (isSystemInDarkTheme()) DarkThemeRed else LightThemeRed
     else
         MaterialTheme.colorScheme.primary
 
     DropdownMenuItem(
-        text = {
-            Box(
-                contentAlignment = Alignment.CenterStart,
-                modifier = Modifier.heightIn(min = 60.dp)
-            ) {
-                Text(
-                    text = importance.toString(),
-                    color = color,
-                    fontWeight = FontWeight(400),
-                    fontSize = 16.sp,
-                    lineHeight = 20.sp,
-                )
-            }
-        },
+        text = { DropdownItemText(importance, color) },
         onClick = {
             getAction(EditItemActionType.OnImportanceChanged(importance)).invoke()
             changeNeed(false)
         }
     )
+}
+
+@Composable
+private fun DropdownItemText(
+    importance: TodoItem.Importance,
+    color: Color
+) {
+    Box(
+        contentAlignment = Alignment.CenterStart,
+        modifier = Modifier.heightIn(min = 60.dp)
+    ) {
+        Text(
+            text = importance.toString(),
+            color = color,
+            fontWeight = FontWeight(400),
+            fontSize = 16.sp,
+            lineHeight = 20.sp,
+        )
+    }
 }
 
 @Preview(showBackground = true)
@@ -111,5 +125,4 @@ private fun PreviewImportanceDropdownMenu() {
             )
         }
     }
-
 }

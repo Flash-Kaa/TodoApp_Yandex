@@ -1,28 +1,49 @@
 package com.flasshka.todoapp
 
+import android.annotation.SuppressLint
+import android.content.IntentFilter
+import android.net.ConnectivityManager
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.ui.Modifier
+import androidx.lifecycle.lifecycleScope
+import com.flasshka.data.DataSyncWorker
+import com.flasshka.domain.interfaces.TodoItemRepository
 import com.flasshka.todoapp.navigation.NavGraph
 import com.flasshka.todoapp.ui.theme.TodoAppTheme
+import javax.inject.Inject
 
 class MainActivity : ComponentActivity() {
+    @Inject
+    lateinit var repository: TodoItemRepository
+
+    private val networkChangeReceiver: NetworkChangeReceiver by lazy {
+        NetworkChangeReceiver(repository, lifecycleScope)
+    }
+
+    @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        DataSyncWorker.scheduleDataSyncWork(applicationContext)
+        (application as TodoApp).component.inject(this)
 
         setContent {
             TodoAppTheme {
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    NavGraph()
-                }
+                NavGraph(repository)
             }
         }
+    }
+
+    // Enable broadcast receiver
+    override fun onStart() {
+        super.onStart()
+        val filter = IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION)
+        registerReceiver(networkChangeReceiver, filter)
+    }
+
+    // Disable broadcast receiver
+    override fun onStop() {
+        super.onStop()
+        unregisterReceiver(networkChangeReceiver)
     }
 }

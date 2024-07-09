@@ -9,18 +9,14 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.flasshka.domain.entities.EditTodoItemState
-import com.flasshka.domain.entities.TodoItem
 import com.flasshka.todoapp.R
+import com.flasshka.todoapp.ui.edititem.EditTodoItemState
 import com.flasshka.todoapp.ui.theme.TodoAppTheme
 
 @Composable
@@ -40,7 +36,6 @@ fun ImportanceGetDropdown(
             fontSize = 16.sp,
             fontWeight = FontWeight(400)
         )
-
         Text(
             text = state.importance.toString(),
             color = MaterialTheme.colorScheme.tertiary,
@@ -58,10 +53,6 @@ private fun PreviewImportanceDropdown() {
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
-            val importance: TodoItem.Importance by remember {
-                mutableStateOf(TodoItem.Importance.Common)
-            }
-
             ImportanceGetDropdown(
                 state = EditTodoItemState.getNewState(),
                 changeNeed = { },

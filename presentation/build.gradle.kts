@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsKotlinAndroid)
+    id("com.google.devtools.ksp") version "1.9.0-1.0.13"
 }
 
 android {
@@ -54,7 +55,14 @@ dependencies {
     implementation(project(":data"))
 
 
-    implementation("androidx.navigation:navigation-compose:2.7.7")
+    // Navigation
+    implementation(libs.androidx.navigation.compose)
+
+    // Dagger 2
+    implementation(libs.dagger.android)
+    implementation(libs.dagger.android.support)
+    ksp(libs.dagger.android.processor)
+    ksp(libs.dagger.compiler)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

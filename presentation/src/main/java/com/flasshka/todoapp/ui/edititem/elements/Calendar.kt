@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDefaults
 import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.DatePickerState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -14,6 +15,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -33,42 +35,43 @@ fun Calendar(
     onDone: (Long?) -> Unit
 ) {
     val blue = if (isSystemInDarkTheme()) DarkThemeBlue else LightThemeBlue
-
     val state = rememberDatePickerState()
+
     DatePickerDialog(
         onDismissRequest = onCancel,
         confirmButton = {
             TextButton(
                 text = stringResource(R.string.done),
-                onClick = {
-                    onDone(state.selectedDateMillis)
-                },
+                onClick = { onDone(state.selectedDateMillis) },
                 enabled = state.selectedDateMillis != null
             )
         },
-        dismissButton = {
-            TextButton(
-                text = stringResource(R.string.cancel),
-                onClick = onCancel
-            )
-        },
+        dismissButton = { TextButton(stringResource(R.string.cancel), onCancel) },
         colors = DatePickerDefaults.colors(
             containerColor = MaterialTheme.colorScheme.background,
             selectedDayContainerColor = blue,
+        ),
+        content = { CalendarDatePicker(state, blue) }
+    )
+}
+
+@Composable
+@OptIn(ExperimentalMaterial3Api::class)
+private fun CalendarDatePicker(
+    state: DatePickerState,
+    blue: Color
+) {
+    DatePicker(
+        state = state,
+        showModeToggle = false,
+        colors = DatePickerDefaults.colors(
+            containerColor = MaterialTheme.colorScheme.background,
+            selectedYearContainerColor = blue,
+            selectedDayContainerColor = blue,
+            dayInSelectionRangeContainerColor = blue,
+            disabledSelectedDayContainerColor = blue,
         )
-    ) {
-        DatePicker(
-            state = state,
-            showModeToggle = false,
-            colors = DatePickerDefaults.colors(
-                containerColor = MaterialTheme.colorScheme.background,
-                selectedYearContainerColor = blue,
-                selectedDayContainerColor = blue,
-                dayInSelectionRangeContainerColor = blue,
-                disabledSelectedDayContainerColor = blue,
-            )
-        )
-    }
+    )
 }
 
 @Composable

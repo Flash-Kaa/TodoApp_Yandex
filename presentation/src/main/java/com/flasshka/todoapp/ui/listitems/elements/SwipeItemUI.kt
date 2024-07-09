@@ -4,7 +4,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -17,6 +16,7 @@ import androidx.compose.material3.SwipeToDismissBoxState
 import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
@@ -45,24 +45,10 @@ fun SwipeItemUI(
 
     modifier: Modifier = Modifier
 ) {
-    val cur = rememberUpdatedState(newValue = item)
+    val curState = rememberUpdatedState(newValue = item)
     val state = rememberSwipeToDismissBoxState(
         confirmValueChange = {
-            when (it) {
-                SwipeToDismissBoxValue.StartToEnd -> getAction(
-                    ListOfItemsActionType.OnChangeDoneItem(
-                        id = cur.value.id
-                    )
-                ).invoke()
-
-                SwipeToDismissBoxValue.EndToStart -> getAction(
-                    ListOfItemsActionType.OnDeleteItem(
-                        id = cur.value.id
-                    )
-                ).invoke()
-
-                else -> {}
-            }
+            getConfirmAction(it, getAction, curState).invoke()
             return@rememberSwipeToDismissBoxState false
         },
         positionalThreshold = { it * .25f }
@@ -81,31 +67,41 @@ fun SwipeItemUI(
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
+private fun getConfirmAction(
+    it: SwipeToDismissBoxValue,
+    getAction: (ListOfItemsActionType) -> () -> Unit,
+    cur: State<TodoItem>
+): () -> Unit {
+    return when (it) {
+        SwipeToDismissBoxValue.StartToEnd ->
+            getAction(ListOfItemsActionType.OnChangeDoneItem(cur.value.id))
+
+        SwipeToDismissBoxValue.EndToStart ->
+            getAction(ListOfItemsActionType.OnDeleteItem(cur.value.id))
+
+        else -> {
+            {}
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun SwipeBackgroundContent(
     state: SwipeToDismissBoxState
 ) {
-    val color = when (state.dismissDirection) {
-        SwipeToDismissBoxValue.StartToEnd -> if (isSystemInDarkTheme()) DarkThemeGreen else LightThemeGreen
-        SwipeToDismissBoxValue.EndToStart -> if (isSystemInDarkTheme()) DarkThemeRed else LightThemeRed
-        SwipeToDismissBoxValue.Settled -> Color.Transparent
-    }
-
     Row(
         modifier = Modifier
             .fillMaxSize()
-            .background(color)
+            .background(getColor(state))
             .padding(12.dp, 8.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Icon(
-            // make sure add baseline_archive_24 resource to drawable folder
             painter = painterResource(R.drawable.baseline_done_24),
             contentDescription = "done_item"
         )
-
-        Spacer(modifier = Modifier)
 
         Icon(
             imageVector = ImageVector.vectorResource(id = R.drawable.baseline_delete_24),
@@ -114,6 +110,19 @@ private fun SwipeBackgroundContent(
     }
 }
 
+@Composable
+@OptIn(ExperimentalMaterial3Api::class)
+private fun getColor(state: SwipeToDismissBoxState): Color {
+    return when (state.dismissDirection) {
+        SwipeToDismissBoxValue.StartToEnd ->
+            if (isSystemInDarkTheme()) DarkThemeGreen else LightThemeGreen
+
+        SwipeToDismissBoxValue.EndToStart ->
+            if (isSystemInDarkTheme()) DarkThemeRed else LightThemeRed
+
+        SwipeToDismissBoxValue.Settled -> Color.Transparent
+    }
+}
 
 @Preview(showBackground = true)
 @Composable
@@ -127,7 +136,7 @@ private fun PreviewSwipeItemUI() {
                 TodoItem(
                     id = "123",
                     text = "text",
-                    TodoItem.Importance.Urgently,
+                    TodoItem.Importance.Important,
                     created = Calendar.getInstance().time,
                     deadLine = Calendar.getInstance().time
                 )
@@ -136,5 +145,4 @@ private fun PreviewSwipeItemUI() {
             SwipeItemUI(item = item, getAction = { {} })
         }
     }
-
 }

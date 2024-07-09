@@ -11,4 +11,9 @@
     <string name="done_count">"Выполнено — %d"</string>
     <string name="date_format">dd-MM-yy</string>
     <string name="new_item">Новое</string>
+    <string name="update_error_message">Ошибка при обновлении</string>
+    <string name="delete_error_message">Ошибка при удалении</string>
+    <string name="fetch_error_message">Ошибка при обновлении данных</string>
+    <string name="get_by_id_error_message">Ошибка при получении данных</string>
+    <string name="add_error_message">Ошибка при добавлении дела</string>
 </resources>
