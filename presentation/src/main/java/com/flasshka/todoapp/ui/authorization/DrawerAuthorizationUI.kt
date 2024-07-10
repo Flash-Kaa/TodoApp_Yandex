@@ -12,7 +12,11 @@ fun DrawerAuthorizationUI(router: Router) {
     val context = LocalContext.current
 
     val authVM: AuthorizationVM = viewModel(
-        factory = context.appComponent.provideAuthVmFactory().InnerFactory(router)
+        factory = context.appComponent.tokenRepositoryComponent()
+            .tokenUseCasesComponent()
+            .authorizationVMComponent()
+            .provideFactoryWrapper()
+            .InnerFactory(router)
     )
 
     YandexAuthUI(

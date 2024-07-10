@@ -3,20 +3,20 @@ package com.flasshka.todoapp.di.modules
 import com.flasshka.domain.interfaces.TokenRepository
 import com.flasshka.domain.usecases.token.FetchTokenUseCase
 import com.flasshka.domain.usecases.token.UpdateTokenUseCase
+import com.flasshka.todoapp.di.TokenUseCaseScope
 import dagger.Module
 import dagger.Provides
-import javax.inject.Singleton
 
 @Module
 class TokenUseCasesModule {
     @Provides
-    @Singleton
+    @TokenUseCaseScope
     fun provideFetchUseCase(
         repository: TokenRepository
     ): FetchTokenUseCase = FetchTokenUseCase(repository)
 
     @Provides
-    @Singleton
+    @TokenUseCaseScope
     fun provideUpdateUseCase(
         repository: TokenRepository
     ): UpdateTokenUseCase = UpdateTokenUseCase(repository)

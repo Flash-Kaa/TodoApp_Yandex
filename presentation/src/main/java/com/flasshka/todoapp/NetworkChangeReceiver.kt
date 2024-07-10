@@ -39,12 +39,12 @@ class NetworkChangeReceiver(
                 goToAuth(component)
             }
 
-            component.provideItemsRepository().fetchItems()
+            component.itemsRepositoryComponent().provideItemsRepository().fetchItems()
         }
     }
 
     private suspend fun needAuth(component: AppComponent): Boolean {
-        val tokenRepository = component.provideTokenRepository()
+        val tokenRepository = component.tokenRepositoryComponent().provideTokenRepository()
         tokenRepository.fetchToken()
 
         return tokenRepository.hasLogin.value.not()

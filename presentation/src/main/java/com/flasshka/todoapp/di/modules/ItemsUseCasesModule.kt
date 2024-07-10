@@ -11,28 +11,33 @@ import com.flasshka.domain.usecases.items.GetItemsWithVisibilityUseCase
 import com.flasshka.domain.usecases.items.GetTodoItemByIdOrNullUseCase
 import com.flasshka.domain.usecases.items.UpdateTodoItemUseCase
 import com.flasshka.todoapp.R
+import com.flasshka.todoapp.di.ItemsUseCaseScope
 import com.flasshka.todoapp.ui.snackbarShow
 import dagger.Module
 import dagger.Provides
 
-@Module(includes = [SnackbarHostModule::class])
+@Module(includes = [])
 class ItemsUseCasesModule {
     @Provides
+    @ItemsUseCaseScope
     fun provideDoneCount(
         repository: TodoItemRepository
     ): GetDoneCountUseCase = GetDoneCountUseCase(repository)
 
     @Provides
+    @ItemsUseCaseScope
     fun provideItemsWithVisibility(
         repository: TodoItemRepository
     ): GetItemsWithVisibilityUseCase = GetItemsWithVisibilityUseCase(repository)
 
     @Provides
+    @ItemsUseCaseScope
     fun provideGetById(
         repository: TodoItemRepository
     ): GetTodoItemByIdOrNullUseCase = GetTodoItemByIdOrNullUseCase(repository)
 
     @Provides
+    @ItemsUseCaseScope
     fun provideFetch(
         repository: TodoItemRepository,
         context: Context,
@@ -50,6 +55,7 @@ class ItemsUseCasesModule {
     }
 
     @Provides
+    @ItemsUseCaseScope
     fun provideDelete(
         repository: TodoItemRepository,
         context: Context,
@@ -65,6 +71,7 @@ class ItemsUseCasesModule {
     }
 
     @Provides
+    @ItemsUseCaseScope
     fun provideUpdate(
         repository: TodoItemRepository,
         context: Context,
@@ -80,6 +87,7 @@ class ItemsUseCasesModule {
     }
 
     @Provides
+    @ItemsUseCaseScope
     fun provideAdd(
         repository: TodoItemRepository,
         context: Context,

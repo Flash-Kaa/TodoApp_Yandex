@@ -15,10 +15,12 @@ fun DrawerEditItemUI(
     itemId: String? = null,
     snackbarHostState: SnackbarHostState
 ) {
-    val context = LocalContext.current
-
     val viewModel: EditItemVM = viewModel(
-        factory = context.appComponent.provideEditItemVmFactory().InnerFactory(router, itemId),
+        factory = LocalContext.current.appComponent.itemsRepositoryComponent()
+            .itemsUseCasesComponent()
+            .editItemVMComponent()
+            .provideFactoryWrapper()
+            .InnerFactory(router, itemId),
     )
 
     val state: EditTodoItemState by viewModel.state.collectAsState(EditTodoItemState.getNewState())

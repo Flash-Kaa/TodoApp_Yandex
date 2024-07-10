@@ -19,7 +19,7 @@ internal class TodoApp : Application() {
     override fun onCreate() {
         super.onCreate()
         appComponent = initDagger(this)
-        itemsRepository = appComponent.provideItemsRepository()
-        tokenRepository = appComponent.provideTokenRepository()
+        itemsRepository = appComponent.itemsRepositoryComponent().provideItemsRepository()
+        tokenRepository = appComponent.tokenRepositoryComponent().provideTokenRepository()
     }
 }

@@ -26,10 +26,13 @@ fun DrawerListUI(
     router: Router,
     snackbarHostState: SnackbarHostState
 ) {
-    val context = LocalContext.current
-
     val listVM: ListVM = viewModel(
-        factory = context.appComponent.provideListVmFactory().InnerFactory(router)
+        factory = LocalContext.current.appComponent
+            .itemsRepositoryComponent()
+            .itemsUseCasesComponent()
+            .listVMComponent()
+            .provideFactoryWrapper()
+            .InnerFactory(router)
     )
 
     val list: List<TodoItem> by listVM.getItems().collectAsState(initial = emptyList())
