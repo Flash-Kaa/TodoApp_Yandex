@@ -1,14 +1,14 @@
 package com.flasshka.data.di.modules
 
+import com.flasshka.data.di.modules.binds.TokenDataSourceBindModule
 import com.flasshka.data.token.YandexOAuthDataSource
-import com.flasshka.domain.interfaces.TokenDataSource
 import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton
 
-@Module
-class TokenDataSourceModule {
+@Module(includes = [TokenDataSourceBindModule::class])
+internal class TokenDataSourceModule {
     @Provides
     @Singleton
-    fun tokenDataSource(): TokenDataSource = YandexOAuthDataSource()
+    fun provideTokenDataSource(): YandexOAuthDataSource = YandexOAuthDataSource()
 }

@@ -10,7 +10,7 @@ import javax.inject.Inject
 /**
  * Data Source impl for token
  */
-class YandexOAuthDataSource @Inject constructor() : TokenDataSource {
+class YandexOAuthDataSource: TokenDataSource {
     override suspend fun updateToken(token: Token) {
         ServiceConstants.OAthWithToken = token
     }

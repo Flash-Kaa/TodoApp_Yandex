@@ -17,19 +17,19 @@ import com.flasshka.domain.usecases.items.GetItemsWithVisibilityUseCase
 import com.flasshka.domain.usecases.items.GetTodoItemByIdOrNullUseCase
 import com.flasshka.domain.usecases.items.UpdateTodoItemUseCase
 import com.flasshka.todoapp.R
+import com.flasshka.todoapp.appComponent
 import com.flasshka.todoapp.navigation.Router
 import com.flasshka.todoapp.ui.snackbarShow
 
 @Composable
 fun DrawerListUI(
     router: Router,
-    repository: TodoItemRepository
+    snackbarHostState: SnackbarHostState
 ) {
-    val snackbarHostState = remember { SnackbarHostState() }
-    val context = LocalContext.current.applicationContext
+    val context = LocalContext.current
 
     val listVM: ListVM = viewModel(
-        factory = createFactoryForVM(router, repository, context, snackbarHostState)
+        factory = context.appComponent.provideListVmFactory().InnerFactory(router)
     )
 
     val list: List<TodoItem> by listVM.getItems().collectAsState(initial = emptyList())
@@ -41,65 +41,5 @@ fun DrawerListUI(
         visibilityDoneON = listVM.visibility,
         items = list,
         getAction = listVM::getAction
-    )
-}
-
-@Composable
-private fun createFactoryForVM(
-    router: Router,
-    repository: TodoItemRepository,
-    context: Context,
-    snackbarHostState: SnackbarHostState
-) = ListVM.Factory(
-    router = router,
-    updateTodoItem = remember { createUpdateUseCase(repository, context, snackbarHostState) },
-    deleteTodoItem = remember { createDeleteUseCase(repository, context, snackbarHostState) },
-    getByIdOrNull = remember { createGetByIdUseCase(repository, context, snackbarHostState) },
-    getDoneCounts = remember { GetDoneCountUseCase(repository) },
-    getItemsWithVisibility = remember { GetItemsWithVisibilityUseCase(repository) },
-    fetchItems = remember { createFetchUseCase(repository, context, snackbarHostState) }
-)
-
-private fun createFetchUseCase(
-    repository: TodoItemRepository,
-    context: Context,
-    snackbarHostState: SnackbarHostState
-) = FetchItemsUseCase(repository) {
-    snackbarShow(
-        message = context.getString(R.string.fetch_error_message),
-        snackbarHostState = snackbarHostState
-    )
-}
-
-private fun createGetByIdUseCase(
-    repository: TodoItemRepository,
-    context: Context,
-    snackbarHostState: SnackbarHostState
-) = GetTodoItemByIdOrNullUseCase(repository) {
-    snackbarShow(
-        message = context.getString(R.string.get_by_id_error_message),
-        snackbarHostState = snackbarHostState
-    )
-}
-
-private fun createDeleteUseCase(
-    repository: TodoItemRepository,
-    context: Context,
-    snackbarHostState: SnackbarHostState
-) = DeleteTodoItemUseCase(repository) {
-    snackbarShow(
-        message = context.getString(R.string.delete_error_message),
-        snackbarHostState = snackbarHostState
-    )
-}
-
-private fun createUpdateUseCase(
-    repository: TodoItemRepository,
-    context: Context,
-    snackbarHostState: SnackbarHostState
-) = UpdateTodoItemUseCase(repository) {
-    snackbarShow(
-        message = context.getString(R.string.update_error_message),
-        snackbarHostState = snackbarHostState
     )
 }

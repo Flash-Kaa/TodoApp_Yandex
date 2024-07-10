@@ -1,20 +1,25 @@
 package com.flasshka.todoapp
 
 import android.app.Application
+import com.flasshka.domain.interfaces.TodoItemRepository
+import com.flasshka.domain.interfaces.TokenRepository
 import com.flasshka.todoapp.di.components.AppComponent
 import com.flasshka.todoapp.di.components.DaggerAppComponent
-import com.flasshka.todoapp.di.modules.AppModule
 
-class TodoApp : Application() {
-    lateinit var component: AppComponent
+internal class TodoApp : Application() {
+    lateinit var appComponent: AppComponent
+    lateinit var itemsRepository: TodoItemRepository
+    lateinit var tokenRepository: TokenRepository
 
     private fun initDagger(app: TodoApp): AppComponent =
         DaggerAppComponent.builder()
-            .appModule(AppModule(app))
+            .context(app)
             .build()
 
     override fun onCreate() {
         super.onCreate()
-        component = initDagger(this)
+        appComponent = initDagger(this)
+        itemsRepository = appComponent.provideItemsRepository()
+        tokenRepository = appComponent.provideTokenRepository()
     }
 }

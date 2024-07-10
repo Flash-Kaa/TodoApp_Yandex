@@ -14,22 +14,18 @@ import com.flasshka.todoapp.ui.theme.TodoAppTheme
 import javax.inject.Inject
 
 class MainActivity : ComponentActivity() {
-    @Inject
-    lateinit var repository: TodoItemRepository
-
     private val networkChangeReceiver: NetworkChangeReceiver by lazy {
-        NetworkChangeReceiver(repository, lifecycleScope)
+        NetworkChangeReceiver(lifecycleScope)
     }
 
     @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         DataSyncWorker.scheduleDataSyncWork(applicationContext)
-        (application as TodoApp).component.inject(this)
 
         setContent {
             TodoAppTheme {
-                NavGraph(repository)
+                NavGraph()
             }
         }
     }

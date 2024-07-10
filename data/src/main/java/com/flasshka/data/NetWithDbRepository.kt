@@ -1,6 +1,5 @@
 package com.flasshka.data
 
-import com.flasshka.data.network.ServiceConstants
 import com.flasshka.domain.entities.TodoItem
 import com.flasshka.domain.interfaces.TodoItemDataSource
 import com.flasshka.domain.interfaces.TodoItemRepository
@@ -14,12 +13,11 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.supervisorScope
-import javax.inject.Inject
 
 /**
  * Repository for using data
  */
-class NetWithDbRepository @Inject constructor(
+class NetWithDbRepository(
     private val networkDataSource: TodoItemDataSource,
     private val localDataSource: TodoItemDataSource
 ) : TodoItemRepository {
@@ -29,9 +27,7 @@ class NetWithDbRepository @Inject constructor(
     override suspend fun fetchItems(onErrorAction: (suspend () -> Unit)?) {
         runWithSupervisor(tryCount = 2u, onErrorAction = onErrorAction) {
             val itemsFromLocal: List<TodoItem> = collectFromFlow(localDataSource)
-
             val itemsFromNet: List<TodoItem> = collectFromFlow(networkDataSource)
-
             updateItems(itemsFromLocal, itemsFromNet)
         }
     }
@@ -102,8 +98,6 @@ class NetWithDbRepository @Inject constructor(
         content: suspend CoroutineScope.() -> Unit
     ) {
         if (tryCount.compareTo(0u) == 0) return
-
-        if (ServiceConstants.OAthWithToken.value == "") return
 
 
         supervisorScope {

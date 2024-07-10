@@ -10,7 +10,7 @@ import javax.inject.Inject
 /**
  * Data Source impl for data in DB
  */
-class DataSourceDB @Inject constructor(private val dao: TodoItemsDao) : TodoItemDataSource {
+class DataSourceDB(private val dao: TodoItemsDao) : TodoItemDataSource {
     override suspend fun getItems(): Flow<List<TodoItem>> {
         return flow { emit(dao.getItems().map { it.toItem() }) }
     }

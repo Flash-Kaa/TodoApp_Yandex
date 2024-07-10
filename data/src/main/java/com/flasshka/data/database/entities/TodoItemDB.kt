@@ -18,6 +18,7 @@ data class TodoItemDB(
     @ColumnInfo("done") val done: Boolean,
     @ColumnInfo("created_at") val created: Long,
     @ColumnInfo("changed_at") val lastChange: Long?,
+    @ColumnInfo("path_to_file") val pathToFile: String? = null
 ) {
     companion object {
         fun TodoItem.toItemDB(): TodoItemDB {
