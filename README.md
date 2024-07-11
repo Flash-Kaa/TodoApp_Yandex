@@ -1,18 +1,8 @@
 # How to use
-First, create a **local.properties** file in the root directory
-
-Then paste the lines below, replacing 'your_client_id', 'your_redirect_uri' and 'your_token':
+Env variables:
 ```
-oath.clientID="your_client_id"
-oath.redirectURI="your_redirect_uri"
-```
-
-### Tg plugin
-First, create a **local.properties** file in the root directory
-
-Then paste the lines below, replacing 'your_token' and 'your_tg_id' in number format (https://t.me/getmyid_bot):
-
-```
-tg.token=your_token
-tg.chatID=your_tg_id
+OAUTH_CLIENT_ID - clientID for yandex ID,
+OAUTH_REDIRECT_URI - redirect URI for yandex ID,
+TG_CHAT - tg chatID
+TG_TOKEN - token for tg api
 ```

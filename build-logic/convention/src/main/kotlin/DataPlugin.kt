@@ -5,7 +5,6 @@ import org.gradle.api.Project
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.configure
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-import java.util.Properties
 
 class DataPlugin : Plugin<Project> {
     override fun apply(target: Project) {
@@ -22,13 +21,13 @@ class DataPlugin : Plugin<Project> {
 
                     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-                    val localProperties = Properties()
-                    localProperties.load(project.rootProject.file("local.properties").inputStream())
+                    val clientId: String =
+                        providers.environmentVariable("OAUTH_CLIENT_ID").get()
+                    val redirectUri: String =
+                        providers.environmentVariable("OAUTH_REDIRECT_URI").get()
 
-                    val clientId: String? = localProperties.getProperty("oath.clientID")
-                    val redirectURI: String? = localProperties.getProperty("oath.redirectURI")
-                    buildConfigField("String", "CLIENT_ID", clientId.toString())
-                    buildConfigField("String", "REDIRECT_URI", redirectURI.toString())
+                    buildConfigField("String", "CLIENT_ID", "\"$clientId\"")
+                    buildConfigField("String", "REDIRECT_URI", "\"$redirectUri\"")
                 }
 
                 buildTypes {
