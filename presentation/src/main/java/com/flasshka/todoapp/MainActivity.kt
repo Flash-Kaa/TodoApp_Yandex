@@ -8,10 +8,8 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.lifecycle.lifecycleScope
 import com.flasshka.data.DataSyncWorker
-import com.flasshka.domain.interfaces.TodoItemRepository
 import com.flasshka.todoapp.navigation.NavGraph
 import com.flasshka.todoapp.ui.theme.TodoAppTheme
-import javax.inject.Inject
 
 class MainActivity : ComponentActivity() {
     private val networkChangeReceiver: NetworkChangeReceiver by lazy {
