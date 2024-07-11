@@ -7,16 +7,8 @@ plugins {
 }
 
 lectureTgPlugin {
-    val localProperties = Properties()
-    localProperties.load(project.rootProject.file("local.properties").inputStream())
-
-    localProperties.getProperty("tg.token")?.let {
-        token.set(it)
-    }
-
-    localProperties.getProperty("tg.chatID")?.let {
-        chatId.set(it)
-    }
+    token.set(providers.environmentVariable("TG_TOKEN"))
+    chatId.set(providers.environmentVariable("TG_CHAT"))
 }
 
 dependencies {
