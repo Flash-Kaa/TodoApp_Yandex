@@ -26,9 +26,9 @@ jobs:
         shell: bash
         run: chmod +x gradlew
       - name: Build with Gradle
-        run: ./gradlew :app:reportTelegramApkForPaidRelease $gradleFlags
+        run: ./gradlew :app:reportForRelease $gradleFlags
       - name: Upload apk
         uses: actions/upload-artifact@v4
         with:
           name: app-release.apk
-          path: app/build/outputs/apk/paid/release/app-paid-release-unsigned.apk
+          path: app/build/outputs/apk/paid/release/todolist-release-unspecified.apk
