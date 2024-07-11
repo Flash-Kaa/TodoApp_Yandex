@@ -1,5 +1,4 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     `kotlin-dsl`
@@ -20,6 +19,13 @@ kotlin {
 }
 
 dependencies {
+    // Coroutines
+    implementation(libs.kotlinx.coroutines.core)
+
+    // ktor for sendDocx
+    implementation(libs.ktor.client.core)
+    implementation(libs.ktor.client.android)
+
     compileOnly(libs.kotlin.gradlePlugin)
     compileOnly(libs.android.gradlePlugin)
 }
@@ -41,6 +47,12 @@ gradlePlugin {
         register("dataPlugin") {
             id = "conventionplugin.data"
             implementationClass = "DataPlugin"
+        }
+    }
+    plugins {
+        register("tg-plugin") {
+            id = "conventionplugin.tgplugin"
+            implementationClass = "LectureTgPlugin"
         }
     }
 }

@@ -1,6 +1,22 @@
+import java.util.Properties
+
 plugins {
     id("conventionplugin.presentation")
     id("com.google.devtools.ksp") version "1.9.0-1.0.13"
+    id("conventionplugin.tgplugin")
+}
+
+lectureTgPlugin {
+    val localProperties = Properties()
+    localProperties.load(project.rootProject.file("local.properties").inputStream())
+
+    localProperties.getProperty("tg.token")?.let {
+        token.set(it)
+    }
+
+    localProperties.getProperty("tg.chatID")?.let {
+        chatId.set(it)
+    }
 }
 
 dependencies {
