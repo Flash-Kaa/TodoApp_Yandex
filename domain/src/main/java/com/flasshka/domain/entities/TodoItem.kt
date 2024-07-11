@@ -12,7 +12,8 @@ data class TodoItem(
     val created: Date,
     val deadLine: Date? = null,
     val completed: Boolean = false,
-    val lastChange: Date? = null
+    val lastChange: Date? = null,
+    val files: List<String>? = null
 ) {
     enum class Importance {
         Basic,

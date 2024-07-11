@@ -30,7 +30,7 @@ internal class ServiceModule {
         val db = Room.databaseBuilder(
             context = context,
             klass = AppDatabase::class.java,
-            name = "todo_yandex_db"
+            name = "todo_yandex_database123"
         ).build()
 
         return db.getDao()

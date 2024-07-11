@@ -15,7 +15,8 @@ data class NetworkTodoItem(
     val color: String?,
     val created_at: Long,
     val changed_at: Long,
-    val last_updated_by: String
+    val last_updated_by: String,
+    val files: List<String>?
 ) {
     companion object {
         fun TodoItem.toNetwork(): NetworkTodoItem {
@@ -28,7 +29,8 @@ data class NetworkTodoItem(
                 color = "#FFFFFF",
                 created_at = created.time,
                 changed_at = lastChange?.time ?: (created.time + 10),
-                last_updated_by = "12"
+                last_updated_by = "12",
+                files = files
             )
         }
     }
@@ -41,7 +43,8 @@ data class NetworkTodoItem(
             created = Date(created_at),
             deadLine = deadline?.let { Date(it) },
             completed = done,
-            lastChange = Date(changed_at)
+            lastChange = Date(changed_at),
+            files = files
         )
     }
 }

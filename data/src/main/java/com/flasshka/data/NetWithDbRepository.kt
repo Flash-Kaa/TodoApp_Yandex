@@ -1,8 +1,10 @@
 package com.flasshka.data
 
+import android.util.Log
 import com.flasshka.domain.entities.TodoItem
 import com.flasshka.domain.interfaces.TodoItemDataSource
 import com.flasshka.domain.interfaces.TodoItemRepository
+import com.flasshka.todo.data.BuildConfig
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -99,14 +101,21 @@ class NetWithDbRepository(
     ) {
         if (tryCount.compareTo(0u) == 0) return
 
-
         supervisorScope {
             launch(
-                context = Dispatchers.IO + CoroutineExceptionHandler { _, _ ->
+                context = Dispatchers.IO + CoroutineExceptionHandler { _, e ->
+                    logIfDebug(e)
                     runAfterException(onErrorAction, tryCount, content)
                 },
                 block = content
             )
+        }
+    }
+
+    private fun logIfDebug(e: Throwable) {
+        if (BuildConfig.DEBUG) {
+            Log.e("REPOSITOEY_ERROR", e.message.toString())
+            Log.e("REPOSITOEY_ERROR", e.stackTrace.joinToString("\n"))
         }
     }
 
