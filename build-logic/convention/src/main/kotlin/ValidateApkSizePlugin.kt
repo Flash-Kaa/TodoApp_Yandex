@@ -7,44 +7,45 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.provider.Property
 import org.gradle.kotlin.dsl.register
-import tasks.TgTask
+import tasks.ValidateTask
 
-class LectureTgPlugin : Plugin<Project> {
+class ValidateApkSizePlugin : Plugin<Project> {
     override fun apply(target: Project) {
         with(target) {
+            val extension = extensions.create("validateApkSize", ValidateSizeExtension::class.java)
+
             val androidComponent = extensions
                 .findByType(AndroidComponentsExtension::class.java)
                 ?: throw GradleException("android plugin required")
 
-            val extension = extensions.create("lectureTgPlugin", TelegramExtension::class.java)
             androidComponent.onVariants { variant: Variant ->
                 val artifacts = variant.artifacts.get(SingleArtifact.APK)
 
-                if (extension.token.isPresent.not() || extension.chatId.isPresent.not()) {
+                if (extension.on.isPresent && extension.on.get().not()) {
+                    return@onVariants
+                } else if (extension.token.isPresent.not() || extension.chatId.isPresent.not()) {
                     return@onVariants
                 }
 
-                tasks.register("reportFor${variant.name.capitalize()}", TgTask::class, TgApi())
+                tasks.register(
+                    "validateApkSizeFor${variant.name.capitalize()}",
+                    ValidateTask::class, TgApi()
+                )
                     .configure {
-                        "validateApkSizeFor${variant.name.capitalize()}".also { depend ->
-                            tasks.findByName(depend)?.let {
-                                dependsOn(depend)
-                            }
-                        }
-
-                        apkDir.set(artifacts)
+                        maxMbSize.set(extension.maxMbSize)
                         token.set(extension.token)
                         chatId.set(extension.chatId)
-                        this.variant.set(variant.name)
+                        apkDir.set(artifacts)
 
-                        version.set(target.version.toString())
                     }
             }
         }
     }
 }
 
-interface TelegramExtension {
+interface ValidateSizeExtension {
+    val maxMbSize: Property<Float>
+    val on: Property<Boolean>
     val chatId: Property<String>
     val token: Property<String>
 }

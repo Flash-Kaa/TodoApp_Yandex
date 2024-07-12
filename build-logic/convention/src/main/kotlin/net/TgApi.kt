@@ -1,4 +1,4 @@
-package tasks
+package net
 
 import io.ktor.client.HttpClient
 import io.ktor.client.request.forms.MultiPartFormDataContent

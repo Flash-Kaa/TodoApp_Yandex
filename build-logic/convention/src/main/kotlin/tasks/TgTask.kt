@@ -7,6 +7,7 @@ import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.TaskAction
+import net.TgApi
 import javax.inject.Inject
 
 abstract class TgTask @Inject constructor(
@@ -32,16 +33,6 @@ abstract class TgTask @Inject constructor(
         apkDir.get().asFile.listFiles()
             ?.filter { it.name.endsWith(".apk") }
             ?.forEach {
-                runBlocking {
-                    println("Build finished")
-
-                    tgApi.sendMessage(
-                        token = token.get(),
-                        chatId = chatId.get(),
-                        message = "Build finished"
-                    )
-                }
-
                 runBlocking {
                     println("Sending file")
 

@@ -55,4 +55,10 @@ gradlePlugin {
             implementationClass = "LectureTgPlugin"
         }
     }
+    plugins {
+        register("validate-apk-size") {
+            id = "conventionplugin.apkvalidate"
+            implementationClass = "ValidateApkSizePlugin"
+        }
+    }
 }

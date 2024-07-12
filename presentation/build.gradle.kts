@@ -1,14 +1,25 @@
-import java.util.Properties
-
 plugins {
     id("conventionplugin.presentation")
     id("com.google.devtools.ksp") version "1.9.0-1.0.13"
     id("conventionplugin.tgplugin")
+    id("conventionplugin.apkvalidate")
+}
+
+val TG_CHAT = providers.environmentVariable("TG_CHAT")
+val TG_TOKEN = providers.environmentVariable("TG_TOKEN")
+
+
+validateApkSize {
+    // OFF: on.set(false)
+    maxMbSize.set(25f)
+
+    token.set(TG_TOKEN)
+    chatId.set(TG_CHAT)
 }
 
 lectureTgPlugin {
-    token.set(providers.environmentVariable("TG_TOKEN"))
-    chatId.set(providers.environmentVariable("TG_CHAT"))
+    token.set(TG_TOKEN)
+    chatId.set(TG_CHAT)
 }
 
 dependencies {
