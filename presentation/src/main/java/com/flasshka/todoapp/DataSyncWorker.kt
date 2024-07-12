@@ -1,4 +1,4 @@
-package com.flasshka.data
+package com.flasshka.todoapp
 
 import android.content.Context
 import androidx.work.CoroutineWorker
@@ -17,8 +17,7 @@ class DataSyncWorker(
     appContext: Context,
     workerParams: WorkerParameters
 ) : CoroutineWorker(appContext, workerParams) {
-    @Inject
-    lateinit var repository: TodoItemRepository
+    private val repository: TodoItemRepository = applicationContext.itemsRepository
 
     companion object {
         fun scheduleDataSyncWork(applicationContext: Context) {
@@ -34,9 +33,7 @@ class DataSyncWorker(
     }
 
     override suspend fun doWork(): Result {
-        // TODO: DaggerRepositoryComponent.create().inject(applicationContext)
-        // repository.fetchItems()
-
+        repository.fetchItems()
         return Result.success()
     }
 }

@@ -15,9 +15,6 @@ dependencies {
     implementation(libs.androidx.room.runtime)
     ksp(libs.androidx.room.compiler)
 
-    // WorkManager
-    implementation(libs.androidx.work.runtime.ktx)
-
     // Dagger 2
     implementation(libs.dagger.android)
     implementation(libs.dagger.android.support)

@@ -31,6 +31,9 @@ dependencies {
     ksp(libs.dagger.android.processor)
     ksp(libs.dagger.compiler)
 
+    // WorkManager
+    implementation(libs.androidx.work.runtime.ktx)
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)

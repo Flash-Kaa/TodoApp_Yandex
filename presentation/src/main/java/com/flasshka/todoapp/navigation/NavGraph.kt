@@ -20,7 +20,7 @@ import com.flasshka.todoapp.ui.listitems.DrawerListUI
 
 @Composable
 fun NavGraph(
-    router: Router = Router(rememberNavController()),
+    router: Router,
     snackbarHostState: SnackbarHostState = LocalContext.current.appComponent.provideSnackbar()
 ) {
     NavHost(

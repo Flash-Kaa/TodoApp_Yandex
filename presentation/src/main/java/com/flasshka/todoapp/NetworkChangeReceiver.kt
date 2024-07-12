@@ -5,11 +5,14 @@ import android.content.Context
 import android.content.Intent
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
+import com.flasshka.domain.interfaces.TodoItemRepository
+import com.flasshka.domain.interfaces.TokenRepository
 import com.flasshka.todoapp.di.components.AppComponent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
 /**
  * Monitors internet connection and updates data
@@ -17,9 +20,22 @@ import kotlinx.coroutines.withContext
 class NetworkChangeReceiver(
     private val coroutineScope: CoroutineScope,
 ) : BroadcastReceiver() {
+    var navigateToAuthorization: (() -> Unit)? = null
+
+    private lateinit var itemRepository: TodoItemRepository
+    private lateinit var tokenRepository: TokenRepository
+
     override fun onReceive(context: Context?, p1: Intent?) {
         if (context != null && isOnline(context)) {
-            runUpdate(context)
+            itemRepository = context.appComponent
+                .itemsRepositoryComponent()
+                .provideItemsRepository()
+
+            tokenRepository = context.appComponent
+                .tokenRepositoryComponent()
+                .provideTokenRepository()
+
+            runUpdate()
         }
     }
 
@@ -31,29 +47,28 @@ class NetworkChangeReceiver(
         return networkCapabilities?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) == true
     }
 
-    private fun runUpdate(context: Context) {
+    private fun runUpdate() {
         coroutineScope.launch(Dispatchers.IO) {
-            val component = context.appComponent
+            if (needAuth()) {
+                if (navigateToAuthorization == null) {
+                    return@launch
+                }
 
-            if (needAuth(component)) {
-                goToAuth(component)
+                navigateToAuth()
             }
 
-            component.itemsRepositoryComponent().provideItemsRepository().fetchItems()
+            itemRepository.fetchItems()
         }
     }
 
-    private suspend fun needAuth(component: AppComponent): Boolean {
-        val tokenRepository = component.tokenRepositoryComponent().provideTokenRepository()
+    private suspend fun needAuth(): Boolean {
         tokenRepository.fetchToken()
-
         return tokenRepository.hasLogin.value.not()
     }
 
-    private suspend fun goToAuth(component: AppComponent) {
-        /* TODO val router = component.provideRouter()
+    private suspend fun navigateToAuth() {
         withContext(Dispatchers.Main.immediate) {
-            router.navigateToAuthorization()
-        }*/
+            navigateToAuthorization?.invoke()
+        }
     }
 }

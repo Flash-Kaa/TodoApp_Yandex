@@ -17,12 +17,6 @@ internal interface AppComponent {
 
     fun itemsRepositoryComponent(): ItemsRepositorySubcomponent
 
-    /*fun provideEditItemVmFactory(): EditItemVM.FactoryWrapperWithUseCases
-
-    fun provideListVmFactory(): ListVM.FactoryWrapperWithUseCases
-
-    fun provideAuthVmFactory(): AuthorizationVM.FactoryWrapperWithUseCases*/
-
     fun provideSnackbar(): SnackbarHostState
 
     @Component.Builder

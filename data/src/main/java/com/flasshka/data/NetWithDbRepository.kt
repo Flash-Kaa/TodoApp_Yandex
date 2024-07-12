@@ -31,9 +31,14 @@ class NetWithDbRepository(
 
     override suspend fun fetchItems(onErrorAction: (suspend () -> Unit)?) {
         runWithSupervisor(tryCount = 2u, onErrorAction = onErrorAction) {
-            val itemsFromLocal: List<TodoItem> = emptyList() // collectFromFlow(localDataSource)
+            val itemsFromLocal: List<TodoItem> = collectFromFlow(localDataSource)
+
+            if (ServiceConstants.OAthWithToken == Token()) {
+               return@runWithSupervisor
+            }
+
             val itemsFromNet: List<TodoItem> = collectFromFlow(networkDataSource)
-            //updateItems(itemsFromLocal, itemsFromNet)
+            updateItems(itemsFromLocal, itemsFromNet)
         }
     }
 
@@ -139,10 +144,6 @@ class NetWithDbRepository(
 
     private suspend fun collectFromFlow(dataSource: TodoItemDataSource): List<TodoItem> {
         var itemsFromCollect: List<TodoItem> = emptyList()
-
-        if (ServiceConstants.OAthWithToken == Token()) {
-            return emptyList()
-        }
 
         dataSource.getItems().collect { items ->
             itemsFromCollect = items
