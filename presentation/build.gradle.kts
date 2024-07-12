@@ -9,7 +9,7 @@ val TG_TOKEN = providers.environmentVariable("TG_TOKEN")
 
 
 validateApkSize {
-    // OFF: validateOn.set(false)
+    // OFF: validateOFF.set(true)
     maxMbSize.set(15f)
 }
 

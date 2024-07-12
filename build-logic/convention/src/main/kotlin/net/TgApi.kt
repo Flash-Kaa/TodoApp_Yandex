@@ -17,8 +17,7 @@ class TgApi {
         file: File,
         chatId: String,
         token: String,
-        variant: String,
-        version: String
+        filename: String
     ) {
         client.post("https://api.telegram.org/bot$token/sendDocument") {
             parameter("chat_id", chatId)
@@ -29,7 +28,7 @@ class TgApi {
                             Headers.build {
                                 append(
                                     HttpHeaders.ContentDisposition,
-                                    "filename=todolist-$variant-$version.apk"
+                                    "filename=$filename"
                                 )
                             }
                         )

@@ -7,6 +7,7 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.provider.Property
 import org.gradle.kotlin.dsl.register
+import tasks.ApkUnzipTask
 import tasks.TgTask
 import tasks.ValidateTask
 
@@ -18,13 +19,15 @@ class LectureTgPlugin : Plugin<Project> {
                 ?: throw GradleException("android plugin required")
 
             val tgExtension = extensions.create("lectureTgPlugin", TelegramExtension::class.java)
-            val validateExtension = extensions.create("validateApkSize", ValidateSizeExtension::class.java)
+            val validateExtension =
+                extensions.create("validateApkSize", ValidateSizeExtension::class.java)
             androidComponent.onVariants { variant: Variant ->
                 val artifacts = variant.artifacts.get(SingleArtifact.APK)
 
                 tasks.register(
                     "validateApkSizeFor${variant.name.capitalize()}",
-                    ValidateTask::class, TgApi()
+                    ValidateTask::class,
+                    TgApi()
                 )
                     .configure {
                         maxMbSize.set(validateExtension.maxMbSize)
@@ -35,12 +38,9 @@ class LectureTgPlugin : Plugin<Project> {
 
                 tasks.register("reportFor${variant.name.capitalize()}", TgTask::class, TgApi())
                     .configure {
-                        if (validateExtension.validateOn.isPresent.not() || validateExtension.validateOn.get()) {
-                            "validateApkSizeFor${variant.name.capitalize()}".also { depend ->
-                                tasks.findByName(depend)?.let {
-                                    dependsOn(depend)
-                                }
-                            }
+                        if (validateExtension.validateOFF.isPresent.not()
+                            || validateExtension.validateOFF.get().not()) {
+                            dependsOn("validateApkSizeFor${variant.name.capitalize()}")
                         }
 
                         apkDir.set(artifacts)
@@ -50,6 +50,17 @@ class LectureTgPlugin : Plugin<Project> {
 
                         version.set(target.version.toString())
                     }
+
+                tasks.register(
+                    "spaceComponentsFor${variant.name.capitalize()}",
+                    ApkUnzipTask::class,
+                    TgApi()
+                ).configure {
+                    dependsOn("reportFor${variant.name.capitalize()}")
+                    apkDir.set(artifacts)
+                    token.set(tgExtension.token)
+                    chatId.set(tgExtension.chatId)
+                }
             }
         }
     }
@@ -62,5 +73,5 @@ interface TelegramExtension {
 
 interface ValidateSizeExtension {
     val maxMbSize: Property<Float>
-    val validateOn: Property<Boolean>
+    val validateOFF: Property<Boolean>
 }

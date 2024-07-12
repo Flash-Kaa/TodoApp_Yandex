@@ -40,8 +40,7 @@ abstract class TgTask @Inject constructor(
                         file = it,
                         chatId = chatId.get(),
                         token = token.get(),
-                        variant = variant.get(),
-                        version = version.get()
+                        filename = "todolist-${variant.get()}-${version.get()}.apk"
                     )
                 }
             }
