@@ -5,12 +5,11 @@ import com.flasshka.domain.entities.Token
 import com.flasshka.domain.interfaces.TokenDataSource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import javax.inject.Inject
 
 /**
  * Data Source impl for token
  */
-class YandexOAuthDataSource: TokenDataSource {
+class YandexOAuthDataSource : TokenDataSource {
     override suspend fun updateToken(token: Token) {
         ServiceConstants.OAthWithToken = token
     }

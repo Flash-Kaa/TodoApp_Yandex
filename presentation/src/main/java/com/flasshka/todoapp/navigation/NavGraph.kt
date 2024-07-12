@@ -2,16 +2,10 @@ package com.flasshka.todoapp.navigation
 
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
-import androidx.navigation.NavDestination
-import androidx.navigation.NavHost
 import androidx.navigation.NavType
-import androidx.navigation.Navigator
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
-import androidx.navigation.createGraph
 import androidx.navigation.navArgument
 import com.flasshka.todoapp.appComponent
 import com.flasshka.todoapp.ui.authorization.DrawerAuthorizationUI
@@ -34,7 +28,8 @@ fun NavGraph(
             "${NavScreen.EditItem.route}/{itemId}",
             listOf(navArgument("itemId") {
                 type = NavType.StringType
-                nullable = true }
+                nullable = true
+            }
             )
         ) {
             val id = it.arguments?.getString("itemId")

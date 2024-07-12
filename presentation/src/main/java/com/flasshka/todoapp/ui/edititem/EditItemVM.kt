@@ -114,7 +114,7 @@ internal class EditItemVM(
         inner class InnerFactory(
             private val router: Router,
             private val itemId: String?,
-        ): ViewModelProvider.Factory {
+        ) : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
                 return EditItemVM(

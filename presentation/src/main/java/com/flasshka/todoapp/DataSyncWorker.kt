@@ -8,7 +8,6 @@ import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import com.flasshka.domain.interfaces.TodoItemRepository
 import java.util.concurrent.TimeUnit
-import javax.inject.Inject
 
 /**
  * Sync net data with local data

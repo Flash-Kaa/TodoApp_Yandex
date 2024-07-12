@@ -7,12 +7,10 @@ import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import com.flasshka.domain.interfaces.TodoItemRepository
 import com.flasshka.domain.interfaces.TokenRepository
-import com.flasshka.todoapp.di.components.AppComponent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import javax.inject.Inject
 
 /**
  * Monitors internet connection and updates data
@@ -27,13 +25,8 @@ class NetworkChangeReceiver(
 
     override fun onReceive(context: Context?, p1: Intent?) {
         if (context != null && isOnline(context)) {
-            itemRepository = context.appComponent
-                .itemsRepositoryComponent()
-                .provideItemsRepository()
-
-            tokenRepository = context.appComponent
-                .tokenRepositoryComponent()
-                .provideTokenRepository()
+            itemRepository = context.itemsRepository
+            tokenRepository = context.tokenRepository
 
             runUpdate()
         }

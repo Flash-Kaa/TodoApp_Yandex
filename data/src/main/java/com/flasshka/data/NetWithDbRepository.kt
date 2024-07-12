@@ -1,7 +1,6 @@
 package com.flasshka.data
 
 import android.util.Log
-import com.flasshka.data.network.NetworkDataSource
 import com.flasshka.data.network.ServiceConstants
 import com.flasshka.domain.entities.TodoItem
 import com.flasshka.domain.entities.Token
@@ -34,7 +33,7 @@ class NetWithDbRepository(
             val itemsFromLocal: List<TodoItem> = collectFromFlow(localDataSource)
 
             if (ServiceConstants.OAthWithToken == Token()) {
-               return@runWithSupervisor
+                return@runWithSupervisor
             }
 
             val itemsFromNet: List<TodoItem> = collectFromFlow(networkDataSource)
