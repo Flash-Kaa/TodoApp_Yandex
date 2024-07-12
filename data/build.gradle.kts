@@ -10,9 +10,6 @@ dependencies {
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
 
-    // Json converter
-    implementation(libs.core.jackson.databind)
-
     // Room
     implementation(libs.androidx.room.ktx)
     implementation(libs.androidx.room.runtime)

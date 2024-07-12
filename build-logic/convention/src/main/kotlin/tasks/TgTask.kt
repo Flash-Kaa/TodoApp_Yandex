@@ -8,6 +8,7 @@ import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.TaskAction
 import net.TgApi
+import java.io.File
 import javax.inject.Inject
 
 abstract class TgTask @Inject constructor(
@@ -32,17 +33,20 @@ abstract class TgTask @Inject constructor(
     fun execute() {
         apkDir.get().asFile.listFiles()
             ?.filter { it.name.endsWith(".apk") }
-            ?.forEach {
-                runBlocking {
-                    println("Sending file")
-
-                    tgApi.sendFile(
-                        file = it,
-                        chatId = chatId.get(),
-                        token = token.get(),
-                        filename = "todolist-${variant.get()}-${version.get()}.apk"
-                    )
-                }
+            ?.forEach { file ->
+                println("Sending file")
+                sendFile(file)
             }
+    }
+
+    private fun sendFile(file: File) {
+        runBlocking {
+            tgApi.sendFile(
+                file = file,
+                chatId = chatId.get(),
+                token = token.get(),
+                filename = "todolist-${variant.get()}-${version.get()}.apk"
+            )
+        }
     }
 }

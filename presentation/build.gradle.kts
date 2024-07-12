@@ -22,7 +22,6 @@ dependencies {
     implementation(project(":domain"))
     implementation(project(":data"))
 
-
     // Navigation
     implementation(libs.androidx.navigation.compose)
 

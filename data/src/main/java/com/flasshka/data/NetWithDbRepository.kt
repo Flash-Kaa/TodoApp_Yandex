@@ -1,7 +1,10 @@
 package com.flasshka.data
 
 import android.util.Log
+import com.flasshka.data.network.NetworkDataSource
+import com.flasshka.data.network.ServiceConstants
 import com.flasshka.domain.entities.TodoItem
+import com.flasshka.domain.entities.Token
 import com.flasshka.domain.interfaces.TodoItemDataSource
 import com.flasshka.domain.interfaces.TodoItemRepository
 import com.flasshka.todo.data.BuildConfig
@@ -28,9 +31,9 @@ class NetWithDbRepository(
 
     override suspend fun fetchItems(onErrorAction: (suspend () -> Unit)?) {
         runWithSupervisor(tryCount = 2u, onErrorAction = onErrorAction) {
-            val itemsFromLocal: List<TodoItem> = collectFromFlow(localDataSource)
+            val itemsFromLocal: List<TodoItem> = emptyList() // collectFromFlow(localDataSource)
             val itemsFromNet: List<TodoItem> = collectFromFlow(networkDataSource)
-            updateItems(itemsFromLocal, itemsFromNet)
+            //updateItems(itemsFromLocal, itemsFromNet)
         }
     }
 
@@ -136,9 +139,14 @@ class NetWithDbRepository(
 
     private suspend fun collectFromFlow(dataSource: TodoItemDataSource): List<TodoItem> {
         var itemsFromCollect: List<TodoItem> = emptyList()
-        dataSource.getItems().collect { collect ->
-            itemsFromCollect = collect
-            _itemsFlow.update { upd -> upd + collect.distinctById(upd) }
+
+        if (ServiceConstants.OAthWithToken == Token()) {
+            return emptyList()
+        }
+
+        dataSource.getItems().collect { items ->
+            itemsFromCollect = items
+            _itemsFlow.update { upd -> upd + items.distinctById(upd) }
         }
         return itemsFromCollect
     }

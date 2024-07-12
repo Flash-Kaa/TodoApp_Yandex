@@ -1,11 +1,11 @@
 package com.flasshka.data
 
-import com.fasterxml.jackson.databind.ObjectMapper
+import com.google.gson.Gson
 
 object JsonUtils {
-    private val mapper = ObjectMapper()
+    private val mapper = Gson()
 
-    fun <T> convertToJson(item: T): String = mapper.writeValueAsString(item)
+    fun <T> convertToJson(item: T): String = mapper.toJson(item)
 
-    fun <T> convertFromJson(json: String, clazz: Class<T>): T = mapper.readValue(json, clazz)
+    fun <T> convertFromJson(json: String, clazz: Class<T>): T = mapper.fromJson(json, clazz)
 }

@@ -5,7 +5,6 @@ import com.flasshka.domain.entities.TodoItem
 import com.flasshka.domain.interfaces.TodoItemDataSource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import javax.inject.Inject
 
 /**
  * Data Source impl for data in DB
@@ -16,8 +15,8 @@ class DataSourceDB(private val dao: TodoItemsDao) : TodoItemDataSource {
     }
 
     override suspend fun updateItems(items: List<TodoItem>): Flow<List<TodoItem>> {
-        for (i in items) {
-            updateItem(i)
+        for (item in items) {
+            updateItem(item)
         }
 
         return flow { emit(items) }

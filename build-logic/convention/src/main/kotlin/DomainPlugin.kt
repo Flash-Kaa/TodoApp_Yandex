@@ -23,13 +23,6 @@ class DomainPlugin : Plugin<Project> {
                     jvmTarget = "1.8"
                 }
             }
-
-            dependencies {
-                add(
-                    "implementation",
-                    "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3"
-                )
-            }
         }
     }
 }

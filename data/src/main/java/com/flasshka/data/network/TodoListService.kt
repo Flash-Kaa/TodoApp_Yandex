@@ -1,5 +1,7 @@
 package com.flasshka.data.network
 
+import com.flasshka.data.network.entities.BodyItem
+import com.flasshka.data.network.entities.BodyListItems
 import com.flasshka.data.network.entities.ItemWithRevision
 import com.flasshka.data.network.entities.ListItemsWithRevision
 import okhttp3.RequestBody
@@ -14,7 +16,7 @@ import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Path
 
-interface TodoListService {
+internal interface TodoListService {
     @GET("list")
     suspend fun getItems(
         @Header("Authorization") auth: String = ServiceConstants.OAthWithToken.getFullTokenValue()
@@ -22,7 +24,7 @@ interface TodoListService {
 
     @PATCH("list")
     suspend fun updateItems(
-        @Body body: RequestBody,
+        @Body body: BodyListItems,
         @Header("X-Last-Known-Revision") revision: Int = ServiceConstants.lastKnownRevision,
         @Header("Authorization") auth: String = ServiceConstants.OAthWithToken.getFullTokenValue()
     ): ListItemsWithRevision
@@ -37,13 +39,13 @@ interface TodoListService {
     suspend fun addItem(
         @Header("X-Last-Known-Revision") revision: Int = ServiceConstants.lastKnownRevision,
         @Header("Authorization") auth: String = ServiceConstants.OAthWithToken.getFullTokenValue(),
-        @Body body: RequestBody,
+        @Body body: BodyItem,
     ): ItemWithRevision
 
     @PUT("list/{id}")
     suspend fun updateItem(
         @Path("id") path: String,
-        @Body body: RequestBody,
+        @Body body: BodyItem,
         @Header("X-Last-Known-Revision") revision: Int = ServiceConstants.lastKnownRevision,
         @Header("Authorization") auth: String = ServiceConstants.OAthWithToken.getFullTokenValue()
     ): ItemWithRevision
@@ -54,7 +56,4 @@ interface TodoListService {
         @Header("X-Last-Known-Revision") revision: Int = ServiceConstants.lastKnownRevision,
         @Header("Authorization") auth: String = ServiceConstants.OAthWithToken.getFullTokenValue()
     ): ItemWithRevision
-
-    @GET("authorize?response_type=token")
-    suspend fun get(): Call<ResponseBody>
 }

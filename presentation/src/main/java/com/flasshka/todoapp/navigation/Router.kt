@@ -7,7 +7,13 @@ import androidx.navigation.NavHostController
  */
 class Router(val navController: NavHostController) {
     fun navigateToListOfItems() {
-        navController.navigate(NavScreen.ListOfItems.route)
+        navController.navigate(NavScreen.ListOfItems.route) {
+            navController.graph.setStartDestination(NavScreen.ListOfItems.route)
+            navController.popBackStack()
+            popUpTo(navController.graph.startDestinationId) {
+                inclusive = true
+            }
+        }
     }
 
     fun navigateToCreateItem() {

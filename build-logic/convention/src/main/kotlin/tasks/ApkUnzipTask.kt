@@ -9,6 +9,7 @@ import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.TaskAction
 import java.io.File
+import java.io.PrintWriter
 import java.util.zip.ZipFile
 import javax.inject.Inject
 
@@ -28,29 +29,27 @@ abstract class ApkUnzipTask @Inject constructor(
     fun execute() {
         apkDir.get().asFile.listFiles()
             ?.filter { it.name.endsWith(".apk") }
-            ?.forEach {
-                val zipFile = ZipFile(it)
+            ?.forEach { file ->
                 val tempFile = File.createTempFile("components", ".txt")
 
                 tempFile.printWriter().use { writer ->
-                    zipFile.entries().asSequence().forEach { entry ->
-                        writer.write("${entry.name} ${getSizeName(entry.size)}")
-                        writer.println()
-                    }
+                    readZip(file, writer)
                 }
 
-                runBlocking {
-                    tgApi.sendFile(
-                        token = token.get(),
-                        chatId = chatId.get(),
-                        file = tempFile,
-                        filename = "space-stats.txt"
-                    )
-                }
-
-                zipFile.close()
+                sendFile(tempFile)
                 tempFile.delete()
             }
+    }
+
+    private fun readZip(file: File, writer: PrintWriter) {
+        val zipFile = ZipFile(file)
+
+        zipFile.entries().asSequence().forEach { entry ->
+            writer.write("${entry.name} ${getSizeName(entry.size)}")
+            writer.println()
+        }
+
+        zipFile.close()
     }
 
     private fun getSizeName(size: Long): String {
@@ -69,5 +68,16 @@ abstract class ApkUnzipTask @Inject constructor(
         }
 
         return String.format("%.2f ${postfix.get(postfixInd)}", curSize)
+    }
+
+    private fun sendFile(file: File) {
+        runBlocking {
+            tgApi.sendFile(
+                token = token.get(),
+                chatId = chatId.get(),
+                file = file,
+                filename = "space-stats.txt"
+            )
+        }
     }
 }
