@@ -17,6 +17,7 @@ fun DrawerListUI(
 ) {
     val listVM: ListVM = viewModel(
         factory = LocalContext.current.appComponent
+            .tokenRepositoryComponent()
             .itemsRepositoryComponent()
             .itemsUseCasesComponent()
             .listVMComponent()
@@ -24,6 +25,14 @@ fun DrawerListUI(
             .InnerFactory(router)
     )
 
+    DrawableListUI(listVM, snackbarHostState)
+}
+
+@Composable
+private fun DrawableListUI(
+    listVM: ListVM,
+    snackbarHostState: SnackbarHostState
+) {
     val list: List<TodoItem> by listVM.getItems().collectAsState(initial = emptyList())
     val doneCounts: Int by listVM.getDoneCount().collectAsState(initial = 0)
 

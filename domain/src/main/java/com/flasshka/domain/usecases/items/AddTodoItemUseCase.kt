@@ -2,15 +2,28 @@ package com.flasshka.domain.usecases.items
 
 import com.flasshka.domain.entities.TodoItem
 import com.flasshka.domain.interfaces.TodoItemRepository
+import com.flasshka.domain.interfaces.TokenRepository
+import com.flasshka.domain.usecases.runWithSupervisorInBackground
 
 /**
  * Use case for adding element
  */
 class AddTodoItemUseCase(
-    private val repository: TodoItemRepository,
+    private val netRepository: TodoItemRepository,
+    private val dbRepository: TodoItemRepository,
+    private val tokenRepository: TokenRepository,
     private val onErrorAction: (suspend () -> Unit)? = null
 ) {
     suspend operator fun invoke(todoItem: TodoItem) {
-        repository.addTodoItem(todoItem, onErrorAction)
+        runWithSupervisorInBackground(
+            tryCount = 3u,
+            onErrorAction = onErrorAction
+        ) {
+            dbRepository.addTodoItem(todoItem)
+
+            if (tokenRepository.haveLogin()) {
+                netRepository.addTodoItem(todoItem)
+            }
+        }
     }
 }

@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.flasshka.domain.entities.Token
-import com.flasshka.domain.usecases.token.FetchTokenUseCase
+import com.flasshka.domain.usecases.token.GetTokenUseCase
 import com.flasshka.domain.usecases.token.UpdateTokenUseCase
 import com.flasshka.todoapp.actions.AuthorizationActions
 import com.flasshka.todoapp.navigation.Router
@@ -15,7 +15,7 @@ import kotlinx.coroutines.launch
  */
 internal class AuthorizationVM(
     private val router: Router,
-    private val fetchToken: FetchTokenUseCase,
+    private val fetchToken: GetTokenUseCase,
     private val updateToken: UpdateTokenUseCase
 ) : ViewModel() {
     init {
@@ -42,7 +42,7 @@ internal class AuthorizationVM(
      * Creates a AuthorizationVM without @AssistedInject
      */
     class FactoryWrapperWithUseCases(
-        private val fetchToken: FetchTokenUseCase,
+        private val fetchToken: GetTokenUseCase,
         private val updateToken: UpdateTokenUseCase
     ) {
         inner class InnerFactory(

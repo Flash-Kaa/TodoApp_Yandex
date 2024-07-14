@@ -15,8 +15,6 @@ internal interface AppComponent {
 
     fun tokenRepositoryComponent(): TokenRepositorySubcomponent
 
-    fun itemsRepositoryComponent(): ItemsRepositorySubcomponent
-
     fun provideSnackbar(): SnackbarHostState
 
     @Component.Builder

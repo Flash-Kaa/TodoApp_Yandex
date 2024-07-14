@@ -16,7 +16,9 @@ fun DrawerEditItemUI(
     snackbarHostState: SnackbarHostState
 ) {
     val viewModel: EditItemVM = viewModel(
-        factory = LocalContext.current.appComponent.itemsRepositoryComponent()
+        factory = LocalContext.current.appComponent
+            .tokenRepositoryComponent()
+            .itemsRepositoryComponent()
             .itemsUseCasesComponent()
             .editItemVMComponent()
             .provideFactoryWrapper()

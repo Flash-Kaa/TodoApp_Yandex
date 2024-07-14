@@ -1,10 +1,11 @@
 package com.flasshka.domain.interfaces
 
 import com.flasshka.domain.entities.Token
-import kotlinx.coroutines.flow.Flow
 
 interface TokenDataSource {
-    suspend fun updateToken(token: Token)
+    var token: Token?
 
-    suspend fun getToken(): Flow<Token>
+    suspend fun haveLogin(): Boolean
+
+    suspend fun updateRevision(revision: Token.Revision)
 }

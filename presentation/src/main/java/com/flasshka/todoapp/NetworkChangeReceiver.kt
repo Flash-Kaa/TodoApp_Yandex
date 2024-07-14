@@ -5,8 +5,8 @@ import android.content.Context
 import android.content.Intent
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
-import com.flasshka.domain.interfaces.TodoItemRepository
 import com.flasshka.domain.interfaces.TokenRepository
+import com.flasshka.domain.usecases.items.FetchItemsUseCase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -20,12 +20,17 @@ class NetworkChangeReceiver(
 ) : BroadcastReceiver() {
     var navigateToAuthorization: (() -> Unit)? = null
 
-    private lateinit var itemRepository: TodoItemRepository
+    private lateinit var fetchItemsUseCase: FetchItemsUseCase
     private lateinit var tokenRepository: TokenRepository
 
     override fun onReceive(context: Context?, p1: Intent?) {
         if (context != null && isOnline(context)) {
-            itemRepository = context.itemsRepository
+            fetchItemsUseCase = context.appComponent
+                .tokenRepositoryComponent()
+                .itemsRepositoryComponent()
+                .itemsUseCasesComponent()
+                .fetchUseCase()
+
             tokenRepository = context.tokenRepository
 
             runUpdate()
@@ -50,13 +55,13 @@ class NetworkChangeReceiver(
                 navigateToAuth()
             }
 
-            itemRepository.fetchItems()
+            fetchItemsUseCase()
         }
     }
 
     private suspend fun needAuth(): Boolean {
-        tokenRepository.fetchToken()
-        return tokenRepository.hasLogin.value.not()
+        tokenRepository.getToken()
+        return tokenRepository.haveLogin()
     }
 
     private suspend fun navigateToAuth() {

@@ -1,22 +1,23 @@
 package com.flasshka.data.network.entities
 
 import com.flasshka.domain.entities.TodoItem
+import com.google.gson.annotations.SerializedName
 import java.util.Date
 
 /**
  * Standard item for work with network
  */
 data class NetworkTodoItem(
-    val id: String,
-    val text: String,
-    val importance: String,
-    val deadline: Long?,
-    val done: Boolean,
-    val color: String?,
-    val created_at: Long,
-    val changed_at: Long,
-    val last_updated_by: String,
-    val files: List<String>?
+    @SerializedName("id") val id: String,
+    @SerializedName("text") val text: String,
+    @SerializedName("importance") val importance: String,
+    @SerializedName("deadline") val deadline: Long?,
+    @SerializedName("done") val done: Boolean,
+    @SerializedName("color") val color: String?,
+    @SerializedName("created_at") val createdAt: Long,
+    @SerializedName("changed_at") val changedAt: Long,
+    @SerializedName("last_updated_by") val lastUpdatedBy: String,
+    @SerializedName("files") val files: List<String>?
 ) {
     companion object {
         fun TodoItem.toNetwork(): NetworkTodoItem {
@@ -27,9 +28,9 @@ data class NetworkTodoItem(
                 deadline = deadLine?.time,
                 done = completed,
                 color = "#FFFFFF",
-                created_at = created.time,
-                changed_at = lastChange?.time ?: (created.time + 10),
-                last_updated_by = "12",
+                createdAt = created.time,
+                changedAt = lastChange?.time ?: (created.time + 10),
+                lastUpdatedBy = "12",
                 files = files
             )
         }
@@ -40,10 +41,10 @@ data class NetworkTodoItem(
             id = id,
             text = text,
             importance = TodoItem.Importance.valueOf(importance.replaceFirstChar(Char::uppercaseChar)),
-            created = Date(created_at),
+            created = Date(createdAt),
             deadLine = deadline?.let { Date(it) },
             completed = done,
-            lastChange = Date(changed_at),
+            lastChange = Date(changedAt),
             files = files
         )
     }

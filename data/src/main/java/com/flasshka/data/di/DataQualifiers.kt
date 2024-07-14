@@ -14,3 +14,9 @@ annotation class NetworkDataSourceQualifier
  */
 @Qualifier
 annotation class DatabaseDataSourceQualifier
+
+@Qualifier
+annotation class NetworkRepositoryQualifier
+
+@Qualifier
+annotation class DatabaseRepositoryQualifier

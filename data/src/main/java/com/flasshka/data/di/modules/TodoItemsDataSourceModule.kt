@@ -6,6 +6,7 @@ import com.flasshka.data.di.ItemsRepositorySubcomponentScope
 import com.flasshka.data.di.modules.binds.DataSourceBindModule
 import com.flasshka.data.network.NetworkDataSource
 import com.flasshka.data.network.TodoListService
+import com.flasshka.domain.interfaces.TokenRepository
 import dagger.Module
 import dagger.Provides
 
@@ -18,6 +19,7 @@ internal class TodoItemsDataSourceModule {
     @Provides
     @ItemsRepositorySubcomponentScope
     fun provideNetworkDataSource(
-        service: TodoListService
-    ): NetworkDataSource = NetworkDataSource(service)
+        service: TodoListService,
+        tokenRepository: TokenRepository
+    ): NetworkDataSource = NetworkDataSource(service, tokenRepository)
 }

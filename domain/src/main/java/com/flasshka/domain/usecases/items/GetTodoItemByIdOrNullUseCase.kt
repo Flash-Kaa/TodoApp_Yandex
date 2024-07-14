@@ -8,10 +8,13 @@ import com.flasshka.domain.interfaces.TodoItemRepository
  * Use case for getting item with id
  */
 class GetTodoItemByIdOrNullUseCase(
-    private val repository: TodoItemRepository,
-    private val onErrorAction: (suspend () -> Unit)? = null
+    private val repository: TodoItemRepository
 ) {
     suspend operator fun invoke(id: String): TodoItem? {
-        return repository.getItemByIdOrNull(id, onErrorAction)
+        return try {
+            repository.getItemById(id)
+        } catch (e: Exception) {
+            null
+        }
     }
 }

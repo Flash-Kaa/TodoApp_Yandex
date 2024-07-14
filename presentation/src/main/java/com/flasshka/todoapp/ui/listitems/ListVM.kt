@@ -6,7 +6,6 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.flasshka.domain.entities.TodoItem
 import com.flasshka.domain.usecases.items.DeleteTodoItemUseCase
 import com.flasshka.domain.usecases.items.FetchItemsUseCase
 import com.flasshka.domain.usecases.items.GetDoneCountUseCase
@@ -15,7 +14,7 @@ import com.flasshka.domain.usecases.items.GetTodoItemByIdOrNullUseCase
 import com.flasshka.domain.usecases.items.UpdateTodoItemUseCase
 import com.flasshka.todoapp.actions.ListOfItemsActionType
 import com.flasshka.todoapp.navigation.Router
-import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 /**
@@ -33,19 +32,16 @@ internal class ListVM(
     var visibility: Boolean by mutableStateOf(false)
         private set
 
+    fun getItems() = getItemsWithVisibility(visibility)
+
+    fun getDoneCount() = getDoneCounts()
+
     init {
         viewModelScope.launch {
             fetchItems()
         }
     }
 
-    fun getItems(): Flow<List<TodoItem>> {
-        return getItemsWithVisibility(visibility)
-    }
-
-    fun getDoneCount(): Flow<Int> {
-        return getDoneCounts()
-    }
 
     fun getAction(action: ListOfItemsActionType): () -> Unit {
         return when (action) {
@@ -79,15 +75,15 @@ internal class ListVM(
 
     private fun onChangeDoneItem(id: String): () -> Unit {
         return {
-            viewModelScope.launch {
-                updateDone(id)
-            }
+            viewModelScope.launch(Dispatchers.IO) { updateDone(id) }
         }
     }
 
-    private suspend fun ListVM.updateDone(id: String) {
-        getByIdOrNull(id)?.let {
-            val copy = it.copy(completed = it.completed.not())
+    private suspend fun updateDone(id: String) {
+        val item = getByIdOrNull(id)
+
+        if (item != null) {
+            val copy = item.copy(completed = item.completed.not())
             updateTodoItem(copy)
         }
     }

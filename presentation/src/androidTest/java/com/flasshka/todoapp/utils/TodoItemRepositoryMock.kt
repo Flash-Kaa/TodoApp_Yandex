@@ -1,3 +1,4 @@
+
 package com.flasshka.todoapp.utils
 
 import com.flasshka.domain.entities.TodoItem
@@ -9,7 +10,8 @@ import kotlinx.coroutines.flow.update
 
 /**
  * Mock repository
- */
+ *//*
+
 internal class TodoItemRepositoryMock : TodoItemRepository {
     private val _itemsFlow: MutableStateFlow<List<TodoItem>> =
         MutableStateFlow(emptyList())
@@ -43,4 +45,4 @@ internal class TodoItemRepositoryMock : TodoItemRepository {
     ): TodoItem? {
         TODO("Not yet implemented")
     }
-}
+}*/

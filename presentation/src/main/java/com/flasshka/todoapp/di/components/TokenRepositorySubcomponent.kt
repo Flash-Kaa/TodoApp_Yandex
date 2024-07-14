@@ -14,5 +14,7 @@ internal interface TokenRepositorySubcomponent {
 
     fun tokenUseCasesComponent(): TokenUseCaseSubcomponents
 
+    fun itemsRepositoryComponent(): ItemsRepositorySubcomponent
+
     fun provideTokenRepository(): TokenRepository
 }

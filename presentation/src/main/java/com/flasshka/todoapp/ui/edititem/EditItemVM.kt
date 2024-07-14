@@ -41,11 +41,9 @@ internal class EditItemVM(
             fetchItems()
         }
 
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             itemId?.let { id ->
-                getTodoItemByIdOrNull(id)?.let { item ->
-                    _state.update { EditTodoItemState.getNewState(item) }
-                }
+                setState(id)
             }
         }
     }
@@ -60,6 +58,12 @@ internal class EditItemVM(
             is EditItemActionType.OnNameChanged -> onNameChanged(action.newValue)
             is EditItemActionType.OnImportanceChanged -> onImportanceChanged(action.newValue)
             is EditItemActionType.OnDeadlineChanged -> onDeadlineChanged(action.newValue)
+        }
+    }
+
+    private suspend fun setState(id: String) {
+        getTodoItemByIdOrNull(id)?.let { item ->
+            _state.update { EditTodoItemState.getNewState(item) }
         }
     }
 

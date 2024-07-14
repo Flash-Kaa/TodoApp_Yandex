@@ -1,12 +1,13 @@
 package com.flasshka.domain.interfaces
 
 import com.flasshka.domain.entities.Token
-import kotlinx.coroutines.flow.StateFlow
 
 interface TokenRepository {
-    val hasLogin: StateFlow<Boolean>
-
-    suspend fun fetchToken()
+    suspend fun getToken(): Token?
 
     suspend fun updateToken(token: Token)
+
+    suspend fun haveLogin(): Boolean
+
+    suspend fun updateRevision(revision: Token.Revision)
 }

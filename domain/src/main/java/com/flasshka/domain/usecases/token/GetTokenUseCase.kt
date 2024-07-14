@@ -1,14 +1,17 @@
 package com.flasshka.domain.usecases.token
 
 import com.flasshka.domain.interfaces.TokenRepository
+import com.flasshka.domain.usecases.runWithSupervisorInBackground
 
 /**
  * Use case for fetch token
  */
-class FetchTokenUseCase(
+class GetTokenUseCase(
     private val repository: TokenRepository
 ) {
     suspend operator fun invoke() {
-        repository.fetchToken()
+        runWithSupervisorInBackground {
+            repository.getToken()
+        }
     }
 }
