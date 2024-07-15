@@ -1,8 +1,11 @@
 package com.flasshka.todoapp.ui.listitems.elements
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.indication
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Row
+import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.Icon
@@ -14,6 +17,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
@@ -49,7 +53,11 @@ fun ItemUI(
         supportingContent = { DateDrawer(item = item) },
         trailingContent = { TrailingIcon() },
         modifier = modifier
-            .clickable(onClick = getAction(ListOfItemsActionType.OnChangeItem(item.id)))
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = rememberRipple(bounded = true, color = Color.Gray),
+                onClick = getAction(ListOfItemsActionType.OnChangeItem(item.id))
+            )
             .testTag(TestTag.ListItem.value),
         colors = ListItemDefaults.colors(
             containerColor = MaterialTheme.colorScheme.surface
@@ -88,6 +96,10 @@ private fun CheckboxContent(
             uncheckedColor = uncheckedColor
         ),
         modifier = Modifier.testTag(TestTag.Checkbox.value)
+            .indication(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = rememberRipple(bounded = true, color = Color.Gray)
+            ),
     )
 }
 
@@ -111,7 +123,8 @@ private fun TextName(
             textDecoration = textDecoration,
             color = textColor,
             maxLines = 3,
-            overflow = TextOverflow.Ellipsis
+            overflow = TextOverflow.Ellipsis,
+            style = MaterialTheme.typography.bodyMedium
         )
     }
 }
@@ -152,7 +165,8 @@ private fun DateDrawer(
         text = formatter.format(item.deadLine!!),
         fontWeight = FontWeight(400),
         fontSize = 14.sp,
-        color = MaterialTheme.colorScheme.tertiary
+        color = MaterialTheme.colorScheme.tertiary,
+        style = MaterialTheme.typography.bodyMedium
     )
 }
 

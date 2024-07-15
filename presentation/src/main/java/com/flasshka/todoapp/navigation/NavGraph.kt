@@ -11,6 +11,7 @@ import com.flasshka.todoapp.appComponent
 import com.flasshka.todoapp.ui.authorization.DrawerAuthorizationUI
 import com.flasshka.todoapp.ui.edititem.DrawerEditItemUI
 import com.flasshka.todoapp.ui.listitems.DrawerListUI
+import com.flasshka.todoapp.ui.settings.DrawerSettingsUI
 
 @Composable
 fun NavGraph(
@@ -23,6 +24,7 @@ fun NavGraph(
     ) {
         composable(NavScreen.Authorization.route) { DrawerAuthorizationUI(router) }
         composable(NavScreen.ListOfItems.route) { DrawerListUI(router, snackbarHostState) }
+        composable(NavScreen.Settings.route) { DrawerSettingsUI(router) }
 
         composable(
             "${NavScreen.EditItem.route}/{itemId}",

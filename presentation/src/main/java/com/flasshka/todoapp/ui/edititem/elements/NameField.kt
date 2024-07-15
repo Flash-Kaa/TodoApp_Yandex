@@ -48,7 +48,8 @@ fun NameField(
             .padding(2.dp)
             .fillMaxWidth()
             .heightIn(min = 130.dp)
-            .shadow(1.dp, shape)
+            .shadow(1.dp, shape),
+        textStyle = MaterialTheme.typography.bodyMedium
     )
 }
 
@@ -67,7 +68,8 @@ private fun Placeholder() {
         text = stringResource(R.string.what_write),
         fontSize = 16.sp,
         fontWeight = FontWeight(400),
-        color = MaterialTheme.colorScheme.tertiary
+        color = MaterialTheme.colorScheme.tertiary,
+        style = MaterialTheme.typography.bodyMedium
     )
 }
 

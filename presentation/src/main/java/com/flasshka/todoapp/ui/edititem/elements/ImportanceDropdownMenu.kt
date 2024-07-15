@@ -102,6 +102,7 @@ private fun DropdownItemText(
             fontWeight = FontWeight(400),
             fontSize = 16.sp,
             lineHeight = 20.sp,
+            style = MaterialTheme.typography.bodyMedium
         )
     }
 }

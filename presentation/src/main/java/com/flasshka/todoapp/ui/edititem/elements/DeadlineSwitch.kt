@@ -3,6 +3,7 @@ package com.flasshka.todoapp.ui.edititem.elements
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -15,6 +16,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -27,6 +29,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -76,7 +79,8 @@ private fun DeadlineText(
             text = stringResource(R.string.deadline_date),
             color = MaterialTheme.colorScheme.primary,
             fontSize = 16.sp,
-            fontWeight = FontWeight(400)
+            fontWeight = FontWeight(400),
+            style = MaterialTheme.typography.bodyMedium
         )
 
         DeadlineDate(
@@ -102,7 +106,8 @@ private fun DeadlineDate(
             text = formatter.format(it),
             color = color,
             fontSize = 14.sp,
-            fontWeight = FontWeight(400)
+            fontWeight = FontWeight(400),
+            style = MaterialTheme.typography.bodyMedium
         )
     }
 }
@@ -140,7 +145,11 @@ private fun BackgroundForSwitch(
         modifier = modifier
             .clip(RoundedCornerShape(16.dp))
             .background(colorTrack)
-            .clickable { onCheckedChange(!checked) }
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = rememberRipple(bounded = true, color = Color.Gray),
+                onClick = { onCheckedChange(!checked) }
+            )
             .padding(horizontal = 4.dp, vertical = 2.dp)
             .size(width = 36.dp, height = 16.dp)
     )
