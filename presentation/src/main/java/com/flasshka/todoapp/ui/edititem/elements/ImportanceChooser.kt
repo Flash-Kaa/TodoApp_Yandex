@@ -29,8 +29,7 @@ import androidx.compose.ui.unit.sp
 import com.flasshka.domain.entities.TodoItem
 import com.flasshka.todoapp.actions.EditItemActionType
 import com.flasshka.todoapp.ui.edititem.EditTodoItemState
-import com.flasshka.todoapp.ui.theme.DarkThemeRed
-import com.flasshka.todoapp.ui.theme.LightThemeRed
+import com.flasshka.todoapp.ui.theme.RedColor
 
 @Composable
 fun ImportanceChooser(
@@ -63,7 +62,7 @@ private fun ImportanceDrawer(
     getAction: (EditItemActionType) -> (() -> Unit),
 ) {
     val color = if (importance == TodoItem.Importance.Important)
-        if (isSystemInDarkTheme()) DarkThemeRed else LightThemeRed
+        RedColor
     else
         MaterialTheme.colorScheme.primary
 
@@ -87,7 +86,8 @@ private fun Modifier.modifierForImportance(
     state: EditTodoItemState,
     importance: TodoItem.Importance,
     getAction: (EditItemActionType) -> () -> Unit
-) = this.height(60.dp)
+) = this
+    .height(60.dp)
     .clip(RoundedCornerShape(16.dp))
     .isChosen(state, importance)
     .clickable(
@@ -113,7 +113,7 @@ private fun Modifier.isChosen(
 
     val isDark = isSystemInDarkTheme()
     val animateColor = remember {
-        Animatable(if (isDark) DarkThemeRed else LightThemeRed)
+        Animatable(RedColor)
     }
 
     LaunchedEffect(key1 = Unit) {

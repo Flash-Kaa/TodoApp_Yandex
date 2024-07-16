@@ -7,7 +7,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.flasshka.todoapp.appComponent
-import com.flasshka.todoapp.getDarkThemeState
+import com.flasshka.todoapp.isDarkThemeState
 import com.flasshka.todoapp.navigation.Router
 import com.flasshka.todoapp.ui.theme.TodoAppTheme
 
@@ -38,7 +38,7 @@ private fun DrawerSettingsUI(
 ) {
     val state: SettingsStateUI by viewModel.state.collectAsState()
 
-    TodoAppTheme(darkTheme = getDarkThemeState()) {
+    TodoAppTheme(darkTheme = isDarkThemeState()) {
         SettingsUI(
             state = state,
             snackbarHostState = snackbarHostState,

@@ -2,7 +2,6 @@ package com.flasshka.todoapp.ui.listitems.elements
 
 import androidx.compose.foundation.indication
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -20,8 +19,7 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.flasshka.todoapp.R
-import com.flasshka.todoapp.ui.theme.DarkThemeBlue
-import com.flasshka.todoapp.ui.theme.LightThemeBlue
+import com.flasshka.todoapp.ui.theme.BlueColor
 import com.flasshka.todoapp.ui.theme.TodoAppTheme
 import com.flasshka.todoapp.ui.theme.White
 
@@ -29,8 +27,6 @@ import com.flasshka.todoapp.ui.theme.White
 fun CreateFAB(
     onClick: () -> Unit,
 ) {
-    val blue = if (isSystemInDarkTheme()) DarkThemeBlue else LightThemeBlue
-
     FloatingActionButton(
         onClick = onClick,
         modifier = Modifier
@@ -40,7 +36,7 @@ fun CreateFAB(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = rememberRipple(bounded = true, color = Color.Gray),
             ),
-        containerColor = blue,
+        containerColor = BlueColor,
         contentColor = White,
         shape = RoundedCornerShape(35.dp)
     ) {

@@ -1,7 +1,6 @@
 package com.flasshka.todoapp.ui.edititem.elements
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.DatePicker
@@ -15,17 +14,14 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.flasshka.todoapp.R
-import com.flasshka.todoapp.ui.theme.DarkThemeBlue
-import com.flasshka.todoapp.ui.theme.DarkThemeLabelDisable
-import com.flasshka.todoapp.ui.theme.LightThemeBlue
-import com.flasshka.todoapp.ui.theme.LightThemeLabelDisable
+import com.flasshka.todoapp.ui.theme.BlueColor
+import com.flasshka.todoapp.ui.theme.DisableColor
 import com.flasshka.todoapp.ui.theme.TodoAppTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -34,7 +30,6 @@ fun Calendar(
     onCancel: () -> Unit,
     onDone: (Long?) -> Unit
 ) {
-    val blue = if (isSystemInDarkTheme()) DarkThemeBlue else LightThemeBlue
     val state = rememberDatePickerState()
 
     DatePickerDialog(
@@ -49,27 +44,26 @@ fun Calendar(
         dismissButton = { TextButton(stringResource(R.string.cancel), onCancel) },
         colors = DatePickerDefaults.colors(
             containerColor = MaterialTheme.colorScheme.background,
-            selectedDayContainerColor = blue,
+            selectedDayContainerColor = BlueColor,
         ),
-        content = { CalendarDatePicker(state, blue) }
+        content = { CalendarDatePicker(state) }
     )
 }
 
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
 private fun CalendarDatePicker(
-    state: DatePickerState,
-    blue: Color
+    state: DatePickerState
 ) {
     DatePicker(
         state = state,
         showModeToggle = false,
         colors = DatePickerDefaults.colors(
             containerColor = MaterialTheme.colorScheme.background,
-            selectedYearContainerColor = blue,
-            selectedDayContainerColor = blue,
-            dayInSelectionRangeContainerColor = blue,
-            disabledSelectedDayContainerColor = blue,
+            selectedYearContainerColor = BlueColor,
+            selectedDayContainerColor = BlueColor,
+            dayInSelectionRangeContainerColor = BlueColor,
+            disabledSelectedDayContainerColor = BlueColor,
         )
     )
 }
@@ -81,11 +75,6 @@ private fun TextButton(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
 ) {
-    val color = if (enabled)
-        if (isSystemInDarkTheme()) DarkThemeBlue else LightThemeBlue
-    else
-        if (isSystemInDarkTheme()) DarkThemeLabelDisable else LightThemeLabelDisable
-
     val clickable = if (enabled) modifier.clickable(onClick = onClick) else modifier
 
     Text(
@@ -93,7 +82,7 @@ private fun TextButton(
         fontWeight = FontWeight(500),
         fontSize = 14.sp,
         modifier = clickable.padding(16.dp),
-        color = color
+        color = if (enabled) BlueColor else DisableColor
     )
 }
 

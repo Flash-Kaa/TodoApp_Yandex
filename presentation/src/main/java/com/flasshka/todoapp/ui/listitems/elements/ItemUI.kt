@@ -3,7 +3,6 @@ package com.flasshka.todoapp.ui.listitems.elements
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.indication
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Row
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.Checkbox
@@ -31,12 +30,9 @@ import com.flasshka.domain.entities.TodoItem
 import com.flasshka.todoapp.R
 import com.flasshka.todoapp.TestTag
 import com.flasshka.todoapp.actions.ListOfItemsActionType
-import com.flasshka.todoapp.ui.theme.DarkThemeGray
-import com.flasshka.todoapp.ui.theme.DarkThemeGreen
-import com.flasshka.todoapp.ui.theme.DarkThemeRed
-import com.flasshka.todoapp.ui.theme.LightThemeGray
-import com.flasshka.todoapp.ui.theme.LightThemeGreen
-import com.flasshka.todoapp.ui.theme.LightThemeRed
+import com.flasshka.todoapp.ui.theme.GrayColor
+import com.flasshka.todoapp.ui.theme.GreenColor
+import com.flasshka.todoapp.ui.theme.RedColor
 import com.flasshka.todoapp.ui.theme.TodoAppTheme
 import java.util.Calendar
 
@@ -79,21 +75,13 @@ private fun CheckboxContent(
     item: TodoItem,
     getAction: (ListOfItemsActionType) -> () -> Unit
 ) {
-    val uncheckedColor =
-        if (item.importance == TodoItem.Importance.Important && isSystemInDarkTheme()) {
-            DarkThemeRed
-        } else if (item.importance == TodoItem.Importance.Important) {
-            LightThemeRed
-        } else {
-            MaterialTheme.colorScheme.tertiary
-        }
-
     Checkbox(
         checked = item.completed,
         onCheckedChange = { getAction(ListOfItemsActionType.OnChangeDoneItem(item.id)).invoke() },
         colors = CheckboxDefaults.colors(
-            checkedColor = if (isSystemInDarkTheme()) DarkThemeGreen else LightThemeGreen,
-            uncheckedColor = uncheckedColor
+            checkedColor = GreenColor,
+            uncheckedColor = if (item.importance == TodoItem.Importance.Important) RedColor
+            else MaterialTheme.colorScheme.tertiary
         ),
         modifier = Modifier
             .testTag(TestTag.Checkbox.value)
@@ -136,11 +124,6 @@ private fun ImportanceIcon(
 ) {
     if (item.importance == TodoItem.Importance.Basic) return
 
-    val color = if (item.importance == TodoItem.Importance.Important)
-        if (isSystemInDarkTheme()) DarkThemeRed else LightThemeRed
-    else
-        if (isSystemInDarkTheme()) DarkThemeGray else LightThemeGray
-
     val icon = if (item.importance == TodoItem.Importance.Important)
         ImageVector.vectorResource(id = R.drawable.baseline_priority_high_24)
     else
@@ -149,7 +132,7 @@ private fun ImportanceIcon(
     Icon(
         imageVector = icon,
         contentDescription = "importance icon",
-        tint = color
+        tint = if (item.importance == TodoItem.Importance.Important) RedColor else GrayColor
     )
 }
 

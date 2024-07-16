@@ -5,7 +5,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.flasshka.data.token.PathToGetToken
 import com.flasshka.todoapp.appComponent
-import com.flasshka.todoapp.getDarkThemeState
+import com.flasshka.todoapp.isDarkThemeState
 import com.flasshka.todoapp.navigation.Router
 import com.flasshka.todoapp.ui.theme.TodoAppTheme
 
@@ -29,7 +29,7 @@ private fun DrawerAuthorizationUI(
     viewModel: AuthorizationVM
 ) {
     TodoAppTheme(
-        darkTheme = getDarkThemeState()
+        darkTheme = isDarkThemeState()
     ) {
         YandexAuthUI(
             url = PathToGetToken.URI,

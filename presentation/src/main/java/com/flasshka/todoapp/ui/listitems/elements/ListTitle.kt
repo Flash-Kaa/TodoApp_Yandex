@@ -3,7 +3,6 @@ package com.flasshka.todoapp.ui.listitems.elements
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.indication
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -34,8 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.flasshka.todoapp.R
 import com.flasshka.todoapp.actions.ListOfItemsActionType
-import com.flasshka.todoapp.ui.theme.DarkThemeBlue
-import com.flasshka.todoapp.ui.theme.LightThemeBlue
+import com.flasshka.todoapp.ui.theme.BlueColor
 import com.flasshka.todoapp.ui.theme.TodoAppTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -134,7 +132,7 @@ private fun VisibilityIcon(
         Icon(
             imageVector = icon,
             contentDescription = "visibility done icon",
-            tint = if (isSystemInDarkTheme()) DarkThemeBlue else LightThemeBlue,
+            tint = BlueColor,
             modifier = Modifier
                 .padding(end = 16.dp)
                 .clickable(

@@ -6,10 +6,11 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalContext
 import com.flasshka.domain.entities.Settings
+import com.flasshka.todoapp.ui.theme.UpdateColors
 import kotlinx.coroutines.flow.map
 
 @Composable
-fun getDarkThemeState(): Boolean {
+fun isDarkThemeState(): Boolean {
     val isSystemDark = isSystemInDarkTheme()
     val themeIsDark: Boolean by LocalContext.current.appComponent
         .settingsRepositoryComponent()
@@ -25,5 +26,7 @@ fun getDarkThemeState(): Boolean {
         }
         .collectAsState(isSystemDark)
 
+
+    UpdateColors(themeIsDark)
     return themeIsDark
 }

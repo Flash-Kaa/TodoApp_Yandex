@@ -4,7 +4,6 @@ import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -39,10 +38,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.flasshka.todoapp.R
 import com.flasshka.todoapp.ui.edititem.EditTodoItemState
-import com.flasshka.todoapp.ui.theme.DarkThemeBlue
-import com.flasshka.todoapp.ui.theme.DarkThemeOverlay
-import com.flasshka.todoapp.ui.theme.LightThemeBlue
-import com.flasshka.todoapp.ui.theme.LightThemeOverlay
+import com.flasshka.todoapp.ui.theme.BlueColor
+import com.flasshka.todoapp.ui.theme.OverlayColor
 import com.flasshka.todoapp.ui.theme.TodoAppTheme
 
 @Composable
@@ -99,12 +96,11 @@ private fun DeadlineDate(
 
     val context = LocalContext.current
     val formatter = android.text.format.DateFormat.getDateFormat(context)
-    val color = if (isSystemInDarkTheme()) DarkThemeBlue else LightThemeBlue
 
     state.deadLine?.let {
         Text(
             text = formatter.format(it),
-            color = color,
+            color = BlueColor,
             fontSize = 14.sp,
             fontWeight = FontWeight(400),
             style = MaterialTheme.typography.bodyMedium
@@ -136,10 +132,7 @@ private fun BackgroundForSwitch(
     onCheckedChange: (Boolean) -> Unit,
     checked: Boolean
 ) {
-    val blue = if (isSystemInDarkTheme()) DarkThemeBlue else LightThemeBlue
-    val colorTrack = if (checked) blue.copy(alpha = 0.3f)
-    else if (isSystemInDarkTheme()) DarkThemeOverlay
-    else LightThemeOverlay
+    val colorTrack = if (checked) BlueColor.copy(alpha = 0.3f) else OverlayColor
 
     Box(
         modifier = modifier
@@ -160,16 +153,15 @@ private fun Switch(
     thumbOffset: Dp,
     checked: Boolean
 ) {
-    val blue = if (isSystemInDarkTheme()) DarkThemeBlue else LightThemeBlue
-    val colorThumb = if (checked) blue else MaterialTheme.colorScheme.surfaceVariant
-
     Box(
         modifier = Modifier
             .offset(x = thumbOffset)
             .shadow(2.dp, CircleShape)
             .size(26.dp)
             .clip(CircleShape)
-            .background(colorThumb)
+            .background(
+                if (checked) BlueColor else MaterialTheme.colorScheme.surfaceVariant
+            )
     )
 }
 

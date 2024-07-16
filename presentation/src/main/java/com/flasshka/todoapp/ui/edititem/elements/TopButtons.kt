@@ -3,7 +3,6 @@ package com.flasshka.todoapp.ui.edititem.elements
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -30,8 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.flasshka.todoapp.R
 import com.flasshka.todoapp.actions.EditItemActionType
-import com.flasshka.todoapp.ui.theme.DarkThemeBlue
-import com.flasshka.todoapp.ui.theme.LightThemeBlue
+import com.flasshka.todoapp.ui.theme.BlueColor
 import com.flasshka.todoapp.ui.theme.TodoAppTheme
 
 @Composable
@@ -69,7 +67,7 @@ private fun SaveText(getAction: (EditItemActionType) -> () -> Unit) {
             .padding(16.dp),
         fontWeight = FontWeight(500),
         fontSize = 16.sp,
-        color = if (isSystemInDarkTheme()) DarkThemeBlue else LightThemeBlue,
+        color = BlueColor,
         style = MaterialTheme.typography.bodyMedium
     )
 }

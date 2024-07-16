@@ -40,7 +40,9 @@ fun BottomSheet(
             .fillMaxSize()
             .clickable { bottomSheetIsVisible.value = false }
             .background(
-                Color.Black.copy( alpha = (300 - offsetY.floatValue * 20) / 300f * 0.5f)
+                Color.Black.copy(
+                    alpha = (300 - offsetY.floatValue * 20) / 300f * 0.5f
+                )
             )
     )
 
@@ -81,7 +83,8 @@ private fun BottomSheetDrawer(
 private fun Modifier.bottomSheet(
     offsetY: MutableFloatState,
     bottomSheetIsVisible: MutableState<Boolean>
-) = this.fillMaxWidth()
+) = this
+    .fillMaxWidth()
     .background(
         color = MaterialTheme.colorScheme.background,
         shape = RoundedCornerShape(topStart = 30.dp, topEnd = 30.dp)
