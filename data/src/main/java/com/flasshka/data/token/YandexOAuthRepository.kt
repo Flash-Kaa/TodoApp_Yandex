@@ -1,8 +1,8 @@
 package com.flasshka.data.token
 
 import com.flasshka.domain.entities.Token
-import com.flasshka.domain.interfaces.TokenDataSource
-import com.flasshka.domain.interfaces.TokenRepository
+import com.flasshka.domain.interfaces.token.TokenDataSource
+import com.flasshka.domain.interfaces.token.TokenRepository
 
 /**
  * repository for using token

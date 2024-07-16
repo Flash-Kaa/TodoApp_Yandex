@@ -10,9 +10,9 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.rememberNavController
 import com.flasshka.todoapp.navigation.NavGraph
 import com.flasshka.todoapp.navigation.Router
-import com.flasshka.todoapp.ui.theme.TodoAppTheme
 
 class MainActivity : ComponentActivity() {
+
     private val networkChangeReceiver: NetworkChangeReceiver by lazy {
         NetworkChangeReceiver(lifecycleScope)
     }
@@ -21,13 +21,13 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         DataSyncWorker.scheduleDataSyncWork(applicationContext)
-        setContent {
-            TodoAppTheme {
-                val router = Router(rememberNavController())
-                networkChangeReceiver.navigateToAuthorization = router::navigateToAuthorization
 
-                NavGraph(router)
-            }
+
+        setContent {
+            val router = Router(rememberNavController())
+            networkChangeReceiver.navigateToAuthorization = router::navigateToAuthorization
+
+            NavGraph(router)
         }
     }
 

@@ -1,12 +1,12 @@
 package com.flasshka.data.di.modules
 
-import com.flasshka.data.database.DatabaseRepository
 import com.flasshka.data.di.DatabaseDataSourceQualifier
 import com.flasshka.data.di.ItemsRepositorySubcomponentScope
 import com.flasshka.data.di.NetworkDataSourceQualifier
 import com.flasshka.data.di.modules.binds.RepositoryBindModule
-import com.flasshka.data.network.NetworkRepository
-import com.flasshka.domain.interfaces.TodoItemDataSource
+import com.flasshka.data.items.database.DatabaseRepository
+import com.flasshka.data.items.network.NetworkRepository
+import com.flasshka.domain.interfaces.items.TodoItemDataSource
 import dagger.Module
 import dagger.Provides
 

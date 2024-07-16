@@ -2,7 +2,7 @@ package com.flasshka.data.di.modules.binds
 
 import com.flasshka.data.di.TokenRepositorySubcomponentScope
 import com.flasshka.data.token.YandexOAuthRepository
-import com.flasshka.domain.interfaces.TokenRepository
+import com.flasshka.domain.interfaces.token.TokenRepository
 import dagger.Binds
 import dagger.Module
 

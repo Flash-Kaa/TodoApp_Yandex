@@ -8,7 +8,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.flasshka.domain.entities.TodoItem
 import com.flasshka.todoapp.appComponent
+import com.flasshka.todoapp.getDarkThemeState
 import com.flasshka.todoapp.navigation.Router
+import com.flasshka.todoapp.ui.theme.TodoAppTheme
 
 @Composable
 fun DrawerListUI(
@@ -25,22 +27,26 @@ fun DrawerListUI(
             .InnerFactory(router)
     )
 
-    DrawableListUI(listVM, snackbarHostState)
+    DrawerListUI(listVM, snackbarHostState)
 }
 
 @Composable
-private fun DrawableListUI(
+private fun DrawerListUI(
     listVM: ListVM,
     snackbarHostState: SnackbarHostState
 ) {
     val list: List<TodoItem> by listVM.getItems().collectAsState(initial = emptyList())
     val doneCounts: Int by listVM.getDoneCount().collectAsState(initial = 0)
 
-    ListUI(
-        snackbarHostState = snackbarHostState,
-        doneCount = doneCounts,
-        visibilityDoneON = listVM.visibility,
-        items = list,
-        getAction = listVM::getAction
-    )
+    TodoAppTheme(
+        darkTheme = getDarkThemeState()
+    ) {
+        ListUI(
+            snackbarHostState = snackbarHostState,
+            doneCount = doneCounts,
+            visibilityDoneON = listVM.visibility,
+            items = list,
+            getAction = listVM::getAction
+        )
+    }
 }

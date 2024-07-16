@@ -4,8 +4,8 @@ import android.content.Context
 import androidx.compose.material3.SnackbarHostState
 import com.flasshka.data.di.DatabaseRepositoryQualifier
 import com.flasshka.data.di.NetworkRepositoryQualifier
-import com.flasshka.domain.interfaces.TodoItemRepository
-import com.flasshka.domain.interfaces.TokenRepository
+import com.flasshka.domain.interfaces.items.TodoItemRepository
+import com.flasshka.domain.interfaces.token.TokenRepository
 import com.flasshka.domain.usecases.items.AddTodoItemUseCase
 import com.flasshka.domain.usecases.items.DeleteTodoItemUseCase
 import com.flasshka.domain.usecases.items.FetchItemsUseCase

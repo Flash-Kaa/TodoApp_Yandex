@@ -1,7 +1,7 @@
 package com.flasshka.domain.usecases.items
 
-import com.flasshka.domain.interfaces.TodoItemRepository
-import com.flasshka.domain.interfaces.TokenRepository
+import com.flasshka.domain.interfaces.items.TodoItemRepository
+import com.flasshka.domain.interfaces.token.TokenRepository
 import com.flasshka.domain.usecases.runWithSupervisorInBackground
 
 /**

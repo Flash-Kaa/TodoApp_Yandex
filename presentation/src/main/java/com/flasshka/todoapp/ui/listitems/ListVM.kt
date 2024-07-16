@@ -1,6 +1,5 @@
 package com.flasshka.todoapp.ui.listitems
 
-import android.content.Context
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -48,7 +47,7 @@ internal class ListVM(
         return when (action) {
             is ListOfItemsActionType.OnCreate -> ::onCreate
             is ListOfItemsActionType.OnChangeItem -> onChangeItem(action.id)
-            is ListOfItemsActionType.OnGetInfo -> onGetInfo(action.context)
+            is ListOfItemsActionType.OnGetInfo -> ::onGetInfo
             is ListOfItemsActionType.OnGetSettings -> ::onGetSettings
             is ListOfItemsActionType.OnChangeDoneVisibility -> ::onChangeDoneVisibility
             is ListOfItemsActionType.OnDeleteItem -> onDelete(action.id)
@@ -64,8 +63,8 @@ internal class ListVM(
         return { router.navigateToChangeItemById(id) }
     }
 
-    private fun onGetInfo(context: Context): () -> Unit {
-        return { router.navigateToInfo(context) }
+    private fun onGetInfo() {
+        router.navigateToInfo()
     }
 
     private fun onGetSettings() {

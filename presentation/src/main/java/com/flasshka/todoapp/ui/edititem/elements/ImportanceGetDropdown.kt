@@ -26,7 +26,7 @@ import com.flasshka.todoapp.ui.theme.TodoAppTheme
 @Composable
 fun ImportanceGetDropdown(
     state: EditTodoItemState,
-    changeNeed: (Boolean) -> Unit,
+    enableBottomSheet: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -35,8 +35,9 @@ fun ImportanceGetDropdown(
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = rememberRipple(bounded = true, color = Color.Gray),
-                onClick =  { changeNeed(true) }
+                onClick = enableBottomSheet
             )
+            .padding(16.dp)
     ) {
         Text(
             text = stringResource(R.string.importance),
@@ -65,7 +66,7 @@ private fun PreviewImportanceDropdown() {
         ) {
             ImportanceGetDropdown(
                 state = EditTodoItemState.getNewState(),
-                changeNeed = { },
+                enableBottomSheet = { },
                 modifier = Modifier.padding(16.dp)
             )
         }

@@ -4,13 +4,12 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.indication
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -27,7 +26,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
@@ -48,11 +46,9 @@ fun ListTitle(
     getAction: (ListOfItemsActionType) -> (() -> Unit),
 
     scrollBehavior: TopAppBarScrollBehavior,
-    modifier: Modifier = Modifier
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween,
         modifier = Modifier.fillMaxWidth()
     ) {
         InfoIcon(scrollBehavior, getAction)
@@ -69,20 +65,19 @@ private fun InfoIcon(
 ) {
     IconButton(
         onClick = getAction(ListOfItemsActionType.OnGetSettings),
-        modifier = Modifier.alpha(1 - scrollBehavior.state.collapsedFraction)
-            .padding(0.dp)
+        modifier = Modifier
+            .alpha(1 - scrollBehavior.state.collapsedFraction)
             .indication(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = rememberRipple(bounded = true, color = Color.Gray)
             )
+            .padding(start = 0.dp, end = 16.dp)
     ) {
         Icon(
             imageVector = ImageVector.vectorResource(id = R.drawable.baseline_settings_24),
             contentDescription = "to info page",
-            modifier = Modifier.padding(0.dp)
         )
     }
-
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -132,19 +127,24 @@ private fun VisibilityIcon(
     else
         ImageVector.vectorResource(id = R.drawable.baseline_visibility_off_24)
 
-    Icon(
-        imageVector = icon,
-        contentDescription = "visibility done icon",
-        tint = if (isSystemInDarkTheme()) DarkThemeBlue else LightThemeBlue,
-        modifier = Modifier
-            .padding(end = 16.dp)
-            .clickable(
-                interactionSource = remember { MutableInteractionSource() },
-                indication = rememberRipple(bounded = true, color = Color.Gray),
-                onClick = getAction(ListOfItemsActionType.OnChangeDoneVisibility)
-            )
-            .padding(8.dp)
-    )
+    Box(
+        contentAlignment = Alignment.CenterEnd,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = "visibility done icon",
+            tint = if (isSystemInDarkTheme()) DarkThemeBlue else LightThemeBlue,
+            modifier = Modifier
+                .padding(end = 16.dp)
+                .clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = rememberRipple(bounded = true, color = Color.Gray),
+                    onClick = getAction(ListOfItemsActionType.OnChangeDoneVisibility)
+                )
+                .padding(8.dp)
+        )
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

@@ -10,7 +10,7 @@ sealed class ListOfItemsActionType {
     data object OnCreate : ListOfItemsActionType()
     data class OnChangeItem(val id: String) : ListOfItemsActionType()
     data class OnGetInfo(val context: Context) : ListOfItemsActionType()
-    data object OnGetSettings: ListOfItemsActionType()
+    data object OnGetSettings : ListOfItemsActionType()
 
     // General
     data object OnChangeDoneVisibility : ListOfItemsActionType()

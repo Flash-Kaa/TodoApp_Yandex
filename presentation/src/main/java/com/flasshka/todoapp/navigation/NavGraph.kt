@@ -24,7 +24,7 @@ fun NavGraph(
     ) {
         composable(NavScreen.Authorization.route) { DrawerAuthorizationUI(router) }
         composable(NavScreen.ListOfItems.route) { DrawerListUI(router, snackbarHostState) }
-        composable(NavScreen.Settings.route) { DrawerSettingsUI(router) }
+        composable(NavScreen.Settings.route) { DrawerSettingsUI(router, snackbarHostState) }
 
         composable(
             "${NavScreen.EditItem.route}/{itemId}",

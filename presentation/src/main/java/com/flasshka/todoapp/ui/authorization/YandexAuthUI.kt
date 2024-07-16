@@ -10,12 +10,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.AndroidView
 import com.flasshka.data.token.AuthWebViewClient
 import com.flasshka.domain.entities.Token
-import com.flasshka.todoapp.actions.AuthorizationActions
+import com.flasshka.todoapp.actions.AuthorizationActionType
 
 @Composable
 fun YandexAuthUI(
     url: String,
-    getAction: (AuthorizationActions) -> (() -> Unit)
+    getAction: (AuthorizationActionType) -> (() -> Unit)
 ) {
     val factory: (Context) -> View = {
         getWebView(
@@ -35,17 +35,17 @@ fun YandexAuthUI(
 private fun getWebView(
     context: Context,
     url: String,
-    getAction: (AuthorizationActions) -> (() -> Unit)
+    getAction: (AuthorizationActionType) -> (() -> Unit)
 ): WebView {
     val onSuccess: (Token) -> Unit = {
-        getAction(AuthorizationActions.OnGetAnswer(it)).invoke()
+        getAction(AuthorizationActionType.OnGetAnswer(it)).invoke()
     }
 
     return WebView(context).apply {
         settings.javaScriptEnabled = true
         webViewClient = AuthWebViewClient(
             onSuccess = onSuccess,
-            onErrorAction = getAction(AuthorizationActions.OnExitAuth)
+            onErrorAction = getAction(AuthorizationActionType.OnExitAuth)
         )
         loadUrl(url)
     }

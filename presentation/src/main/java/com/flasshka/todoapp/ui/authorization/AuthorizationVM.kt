@@ -6,7 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.flasshka.domain.entities.Token
 import com.flasshka.domain.usecases.token.GetTokenUseCase
 import com.flasshka.domain.usecases.token.UpdateTokenUseCase
-import com.flasshka.todoapp.actions.AuthorizationActions
+import com.flasshka.todoapp.actions.AuthorizationActionType
 import com.flasshka.todoapp.navigation.Router
 import kotlinx.coroutines.launch
 
@@ -24,10 +24,10 @@ internal class AuthorizationVM(
         }
     }
 
-    fun getAction(action: AuthorizationActions): () -> Unit {
+    fun getAction(action: AuthorizationActionType): () -> Unit {
         return when (action) {
-            is AuthorizationActions.OnGetAnswer -> onTokenChanged(action.token)
-            is AuthorizationActions.OnExitAuth -> router::navigateToListOfItems
+            is AuthorizationActionType.OnGetAnswer -> onTokenChanged(action.token)
+            is AuthorizationActionType.OnExitAuth -> router::navigateToListOfItems
         }
     }
 

@@ -1,9 +1,6 @@
 package com.flasshka.todoapp.navigation
 
-import android.content.Context
-import android.content.Intent
 import androidx.navigation.NavHostController
-import com.flasshka.todoapp.InfoActivity
 
 /**
  * Managing navigation in the app
@@ -31,9 +28,7 @@ class Router(val navController: NavHostController) {
         navController.navigate(NavScreen.Authorization.route)
     }
 
-    fun navigateToInfo(context: Context) {
-        val intent = Intent(context, InfoActivity::class.java)
-        context.startActivity(intent)
+    fun navigateToInfo() {
     }
 
     fun navigateToSettings() {

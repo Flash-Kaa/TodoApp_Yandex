@@ -12,5 +12,5 @@ sealed class NavScreen(val route: String) {
 
     data object Authorization : NavScreen("authorization")
 
-    data object Settings: NavScreen("settings")
+    data object Settings : NavScreen("settings")
 }

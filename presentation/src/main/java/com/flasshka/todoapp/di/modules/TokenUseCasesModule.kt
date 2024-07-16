@@ -1,6 +1,6 @@
 package com.flasshka.todoapp.di.modules
 
-import com.flasshka.domain.interfaces.TokenRepository
+import com.flasshka.domain.interfaces.token.TokenRepository
 import com.flasshka.domain.usecases.token.GetTokenUseCase
 import com.flasshka.domain.usecases.token.UpdateTokenUseCase
 import com.flasshka.todoapp.di.TokenUseCaseScope

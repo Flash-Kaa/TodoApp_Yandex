@@ -16,4 +16,6 @@
     <string name="fetch_error_message">Ошибка при обновлении данных</string>
     <string name="get_by_id_error_message">Ошибка при получении данных</string>
     <string name="add_error_message">Ошибка при добавлении дела</string>
+    <string name="about_app">О приложении</string>
+    <string name="settings_name">Настройки</string>
 </resources>

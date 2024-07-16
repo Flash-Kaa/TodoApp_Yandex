@@ -5,11 +5,7 @@ import com.flasshka.data.di.modules.ItemsRepositoryModule
 import dagger.Subcomponent
 
 @ItemsRepositorySubcomponentScope
-@Subcomponent(modules = [ItemsRepositoryModule::class/*, RepositoryBindModule::class*/])
+@Subcomponent(modules = [ItemsRepositoryModule::class])
 internal interface ItemsRepositorySubcomponent {
     fun itemsUseCasesComponent(): ItemsUseCasesSubcomponent
-
-    /*fun provideDbRepository(): TodoItemRepository
-
-    fun provideNetRepository(): TodoItemRepository*/
 }

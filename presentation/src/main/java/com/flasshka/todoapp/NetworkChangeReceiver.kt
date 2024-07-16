@@ -5,7 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
-import com.flasshka.domain.interfaces.TokenRepository
+import com.flasshka.domain.interfaces.token.TokenRepository
 import com.flasshka.domain.usecases.items.FetchItemsUseCase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

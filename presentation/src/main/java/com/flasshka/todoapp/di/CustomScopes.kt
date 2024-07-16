@@ -9,6 +9,9 @@ annotation class TokenUseCaseScope
 annotation class ItemsUseCaseScope
 
 @Scope
+annotation class SettingsUseCasesScope
+
+@Scope
 annotation class AuthorizationViewModelScope
 
 @Scope
@@ -16,3 +19,6 @@ annotation class ListViewModelScope
 
 @Scope
 annotation class EditItemViewModelScope
+
+@Scope
+annotation class SettingsViewModelScope

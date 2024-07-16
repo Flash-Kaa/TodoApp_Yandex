@@ -7,3 +7,6 @@ annotation class ItemsRepositorySubcomponentScope
 
 @Scope
 annotation class TokenRepositorySubcomponentScope
+
+@Scope
+annotation class SettingsRepositorySubcomponentScope

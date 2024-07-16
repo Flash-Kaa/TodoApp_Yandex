@@ -1,6 +1,6 @@
 package com.flasshka.domain.usecases.items
 
-import com.flasshka.domain.interfaces.TodoItemRepository
+import com.flasshka.domain.interfaces.items.TodoItemRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.runBlocking

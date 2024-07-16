@@ -1,6 +1,6 @@
 package com.flasshka.domain.usecases.token
 
-import com.flasshka.domain.interfaces.TokenRepository
+import com.flasshka.domain.interfaces.token.TokenRepository
 import com.flasshka.domain.usecases.runWithSupervisorInBackground
 
 /**

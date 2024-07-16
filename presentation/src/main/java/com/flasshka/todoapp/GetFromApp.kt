@@ -1,7 +1,7 @@
 package com.flasshka.todoapp
 
 import android.content.Context
-import com.flasshka.domain.interfaces.TokenRepository
+import com.flasshka.domain.interfaces.token.TokenRepository
 import com.flasshka.todoapp.di.components.AppComponent
 
 internal val Context.appComponent: AppComponent

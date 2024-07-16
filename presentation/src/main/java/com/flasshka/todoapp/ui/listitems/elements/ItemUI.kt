@@ -95,7 +95,8 @@ private fun CheckboxContent(
             checkedColor = if (isSystemInDarkTheme()) DarkThemeGreen else LightThemeGreen,
             uncheckedColor = uncheckedColor
         ),
-        modifier = Modifier.testTag(TestTag.Checkbox.value)
+        modifier = Modifier
+            .testTag(TestTag.Checkbox.value)
             .indication(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = rememberRipple(bounded = true, color = Color.Gray)

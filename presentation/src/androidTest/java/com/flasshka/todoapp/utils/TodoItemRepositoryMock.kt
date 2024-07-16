@@ -1,13 +1,6 @@
 
 package com.flasshka.todoapp.utils
 
-import com.flasshka.domain.entities.TodoItem
-import com.flasshka.domain.interfaces.TodoItemRepository
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
-
 /**
  * Mock repository
  *//*
