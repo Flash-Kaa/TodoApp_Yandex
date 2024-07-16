@@ -24,36 +24,45 @@ import com.flasshka.todoapp.ui.edititem.EditTodoItemState
 import com.flasshka.todoapp.ui.theme.TodoAppTheme
 
 @Composable
-fun ImportanceGetDropdown(
+fun ImportanceGetChooser(
     state: EditTodoItemState,
-    enableBottomSheet: () -> Unit,
+    openChooser: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
-        modifier = modifier
-            .fillMaxWidth()
+        modifier = modifier.fillMaxWidth()
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = rememberRipple(bounded = true, color = Color.Gray),
-                onClick = enableBottomSheet
+                onClick = openChooser
             )
             .padding(16.dp)
     ) {
-        Text(
-            text = stringResource(R.string.importance),
-            color = MaterialTheme.colorScheme.primary,
-            fontSize = 16.sp,
-            fontWeight = FontWeight(400),
-            style = MaterialTheme.typography.bodyMedium
-        )
-        Text(
-            text = state.importance.toString(),
-            color = MaterialTheme.colorScheme.tertiary,
-            fontSize = 14.sp,
-            fontWeight = FontWeight(400),
-            style = MaterialTheme.typography.bodyMedium
-        )
+        Title()
+        CurrentImportance(state)
     }
+}
+
+@Composable
+private fun CurrentImportance(state: EditTodoItemState) {
+    Text(
+        text = state.importance.toString(),
+        color = MaterialTheme.colorScheme.tertiary,
+        fontSize = 14.sp,
+        fontWeight = FontWeight(400),
+        style = MaterialTheme.typography.bodyMedium
+    )
+}
+
+@Composable
+private fun Title() {
+    Text(
+        text = stringResource(R.string.importance),
+        color = MaterialTheme.colorScheme.primary,
+        fontSize = 16.sp,
+        fontWeight = FontWeight(400),
+        style = MaterialTheme.typography.bodyMedium
+    )
 }
 
 @Preview(showBackground = true)
@@ -64,9 +73,9 @@ private fun PreviewImportanceDropdown() {
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
-            ImportanceGetDropdown(
+            ImportanceGetChooser(
                 state = EditTodoItemState.getNewState(),
-                enableBottomSheet = { },
+                openChooser = { },
                 modifier = Modifier.padding(16.dp)
             )
         }

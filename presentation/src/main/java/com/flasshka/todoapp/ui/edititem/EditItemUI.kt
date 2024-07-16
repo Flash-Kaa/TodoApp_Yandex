@@ -24,7 +24,7 @@ import com.flasshka.todoapp.ui.edititem.elements.BottomSheet
 import com.flasshka.todoapp.ui.edititem.elements.Calendar
 import com.flasshka.todoapp.ui.edititem.elements.DeadlineSwitch
 import com.flasshka.todoapp.ui.edititem.elements.DeleteButton
-import com.flasshka.todoapp.ui.edititem.elements.ImportanceGetDropdown
+import com.flasshka.todoapp.ui.edititem.elements.ImportanceGetChooser
 import com.flasshka.todoapp.ui.edititem.elements.NameField
 import com.flasshka.todoapp.ui.edititem.elements.TopButtons
 import com.flasshka.todoapp.ui.edititem.elements.Underline
@@ -103,9 +103,9 @@ private fun ImportanceDropdownMenuItem(
     state: EditTodoItemState,
     enableBottomSheet: () -> Unit
 ) {
-    ImportanceGetDropdown(
+    ImportanceGetChooser(
         state = state,
-        enableBottomSheet = enableBottomSheet
+        openChooser = enableBottomSheet
     )
 }
 

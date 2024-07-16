@@ -35,32 +35,21 @@ fun BottomSheet(
     getAction: (EditItemActionType) -> () -> Unit,
 ) {
     val offsetY = remember { mutableFloatStateOf(0f) }
-
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .clickable {
-                bottomSheetIsVisible.value = false
-            }
+            .clickable { bottomSheetIsVisible.value = false }
             .background(
-                Color.Black.copy(
-                    alpha = (300 - offsetY.floatValue * 20) / 300f * 0.5f
-                )
+                Color.Black.copy( alpha = (300 - offsetY.floatValue * 20) / 300f * 0.5f)
             )
     )
 
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.BottomCenter,
-    ) {
-        BottomSheetDrawer(
-            state = state,
-            offsetY = offsetY,
-            bottomSheetIsVisible = bottomSheetIsVisible,
-            getAction = getAction
-        )
-    }
-
+    BottomSheetDrawer(
+        state = state,
+        offsetY = offsetY,
+        bottomSheetIsVisible = bottomSheetIsVisible,
+        getAction = getAction
+    )
 }
 
 @Composable
@@ -71,25 +60,35 @@ private fun BottomSheetDrawer(
     getAction: (EditItemActionType) -> () -> Unit,
 ) {
     Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(
-                color = MaterialTheme.colorScheme.background,
-                shape = RoundedCornerShape(topStart = 30.dp, topEnd = 30.dp)
-            )
-            .offset(x = 0.dp, y = offsetY.floatValue.dp)
-            .height((300 - offsetY.floatValue * 20).dp)
-            .pointerInput(offsetY, bottomSheetIsVisible),
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.BottomCenter,
     ) {
-        ImportanceChooser(
-            state = state,
-            getAction = getAction,
-            modifier = Modifier
-                .padding(top = 32.dp)
-                .padding(16.dp)
-        )
+        Box(
+            modifier = Modifier.bottomSheet(offsetY, bottomSheetIsVisible),
+        ) {
+            ImportanceChooser(
+                state = state,
+                getAction = getAction,
+                modifier = Modifier
+                    .padding(top = 32.dp)
+                    .padding(16.dp)
+            )
+        }
     }
 }
+
+@Composable
+private fun Modifier.bottomSheet(
+    offsetY: MutableFloatState,
+    bottomSheetIsVisible: MutableState<Boolean>
+) = this.fillMaxWidth()
+    .background(
+        color = MaterialTheme.colorScheme.background,
+        shape = RoundedCornerShape(topStart = 30.dp, topEnd = 30.dp)
+    )
+    .offset(x = 0.dp, y = offsetY.floatValue.dp)
+    .height((300 - offsetY.floatValue * 20).dp)
+    .pointerInput(offsetY, bottomSheetIsVisible)
 
 @Composable
 private fun Modifier.pointerInput(

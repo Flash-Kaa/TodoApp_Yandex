@@ -69,17 +69,7 @@ private fun ImportanceDrawer(
 
     Box(
         contentAlignment = Alignment.CenterStart,
-        modifier = Modifier
-            .height(60.dp)
-            .clip(RoundedCornerShape(16.dp))
-            .isChosen(state, importance)
-            .clickable(
-                interactionSource = remember { MutableInteractionSource() },
-                indication = rememberRipple(bounded = true, color = Color.Gray),
-                onClick = getAction(EditItemActionType.OnImportanceChanged(importance))
-            )
-            .fillMaxWidth()
-            .padding(16.dp)
+        modifier = Modifier.modifierForImportance(state, importance, getAction)
     ) {
         Text(
             text = importance.toString(),
@@ -93,38 +83,42 @@ private fun ImportanceDrawer(
 }
 
 @Composable
+private fun Modifier.modifierForImportance(
+    state: EditTodoItemState,
+    importance: TodoItem.Importance,
+    getAction: (EditItemActionType) -> () -> Unit
+) = this.height(60.dp)
+    .clip(RoundedCornerShape(16.dp))
+    .isChosen(state, importance)
+    .clickable(
+        interactionSource = remember { MutableInteractionSource() },
+        indication = rememberRipple(bounded = true, color = Color.Gray),
+        onClick = getAction(EditItemActionType.OnImportanceChanged(importance))
+    )
+    .fillMaxWidth()
+    .padding(16.dp)
+
+@Composable
 private fun Modifier.isChosen(
     state: EditTodoItemState,
     curImportance: TodoItem.Importance
 ): Modifier {
-    if (state.importance != curImportance) {
-        return this
-    }
+    if (state.importance != curImportance) return this
 
-    val withBackground: Modifier
-    if (curImportance == TodoItem.Importance.Important) {
-        val isDark = isSystemInDarkTheme()
-        val animateColor = remember {
-            Animatable(
-                if (isDark) DarkThemeRed else LightThemeRed
-            )
-        }
-
-        LaunchedEffect(key1 = Unit) {
-            animateColor.animateTo(
-                Color.Transparent,
-                tween(1000)
-            )
-        }
-
-        withBackground = this.background(animateColor.value)
-    } else {
-        withBackground = this
-    }
-
-    return withBackground.border(
-        0.3.dp,
-        MaterialTheme.colorScheme.primary,
-        RoundedCornerShape(16.dp)
+    val border = this.border(
+        0.5.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(16.dp)
     )
+
+    if (curImportance != TodoItem.Importance.Important) return border
+
+    val isDark = isSystemInDarkTheme()
+    val animateColor = remember {
+        Animatable(if (isDark) DarkThemeRed else LightThemeRed)
+    }
+
+    LaunchedEffect(key1 = Unit) {
+        animateColor.animateTo(Color.Transparent, tween(1000))
+    }
+
+    return border.background(animateColor.value)
 }
