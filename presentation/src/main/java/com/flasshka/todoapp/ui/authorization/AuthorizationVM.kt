@@ -13,7 +13,7 @@ import kotlinx.coroutines.launch
 /**
  * Manage authorization
  */
-class AuthorizationVM(
+internal class AuthorizationVM(
     private val router: Router,
     private val fetchToken: FetchTokenUseCase,
     private val updateToken: UpdateTokenUseCase
@@ -38,18 +38,24 @@ class AuthorizationVM(
         }
     }
 
-    class Factory(
-        private val router: Router,
+    /**
+     * Creates a AuthorizationVM without @AssistedInject
+     */
+    class FactoryWrapperWithUseCases(
         private val fetchToken: FetchTokenUseCase,
         private val updateToken: UpdateTokenUseCase
-    ) : ViewModelProvider.Factory {
-        @Suppress("UNCHECKED_CAST")
-        override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            return AuthorizationVM(
-                fetchToken = fetchToken,
-                updateToken = updateToken,
-                router = router
-            ) as T
+    ) {
+        inner class InnerFactory(
+            private val router: Router
+        ) : ViewModelProvider.Factory {
+            @Suppress("UNCHECKED_CAST")
+            override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                return AuthorizationVM(
+                    fetchToken = fetchToken,
+                    updateToken = updateToken,
+                    router = router
+                ) as T
+            }
         }
     }
 }

@@ -1,9 +1,12 @@
 package com.flasshka.data
 
+import android.util.Log
 import com.flasshka.data.network.ServiceConstants
 import com.flasshka.domain.entities.TodoItem
+import com.flasshka.domain.entities.Token
 import com.flasshka.domain.interfaces.TodoItemDataSource
 import com.flasshka.domain.interfaces.TodoItemRepository
+import com.flasshka.todo.data.BuildConfig
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -14,12 +17,11 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.supervisorScope
-import javax.inject.Inject
 
 /**
  * Repository for using data
  */
-class NetWithDbRepository @Inject constructor(
+class NetWithDbRepository(
     private val networkDataSource: TodoItemDataSource,
     private val localDataSource: TodoItemDataSource
 ) : TodoItemRepository {
@@ -30,8 +32,11 @@ class NetWithDbRepository @Inject constructor(
         runWithSupervisor(tryCount = 2u, onErrorAction = onErrorAction) {
             val itemsFromLocal: List<TodoItem> = collectFromFlow(localDataSource)
 
-            val itemsFromNet: List<TodoItem> = collectFromFlow(networkDataSource)
+            if (ServiceConstants.OAthWithToken == Token()) {
+                return@runWithSupervisor
+            }
 
+            val itemsFromNet: List<TodoItem> = collectFromFlow(networkDataSource)
             updateItems(itemsFromLocal, itemsFromNet)
         }
     }
@@ -103,16 +108,21 @@ class NetWithDbRepository @Inject constructor(
     ) {
         if (tryCount.compareTo(0u) == 0) return
 
-        if (ServiceConstants.OAthWithToken.value == "") return
-
-
         supervisorScope {
             launch(
-                context = Dispatchers.IO + CoroutineExceptionHandler { _, _ ->
+                context = Dispatchers.IO + CoroutineExceptionHandler { _, e ->
+                    logIfDebug(e)
                     runAfterException(onErrorAction, tryCount, content)
                 },
                 block = content
             )
+        }
+    }
+
+    private fun logIfDebug(e: Throwable) {
+        if (BuildConfig.DEBUG) {
+            Log.e("REPOSITOEY_ERROR", e.message.toString())
+            Log.e("REPOSITOEY_ERROR", e.stackTrace.joinToString("\n"))
         }
     }
 
@@ -133,9 +143,10 @@ class NetWithDbRepository @Inject constructor(
 
     private suspend fun collectFromFlow(dataSource: TodoItemDataSource): List<TodoItem> {
         var itemsFromCollect: List<TodoItem> = emptyList()
-        dataSource.getItems().collect { collect ->
-            itemsFromCollect = collect
-            _itemsFlow.update { upd -> upd + collect.distinctById(upd) }
+
+        dataSource.getItems().collect { items ->
+            itemsFromCollect = items
+            _itemsFlow.update { upd -> upd + items.distinctById(upd) }
         }
         return itemsFromCollect
     }

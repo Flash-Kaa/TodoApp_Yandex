@@ -12,13 +12,13 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.supervisorScope
-import javax.inject.Inject
 
 /**
  * repository for using token
  */
-class YandexOAuthRepository @Inject constructor(private val dataSource: TokenDataSource) :
-    TokenRepository {
+class YandexOAuthRepository(
+    private val dataSource: TokenDataSource
+) : TokenRepository {
     private val _hasLogin: MutableStateFlow<Boolean> = MutableStateFlow(false)
     override val hasLogin: StateFlow<Boolean> = _hasLogin.asStateFlow()
 

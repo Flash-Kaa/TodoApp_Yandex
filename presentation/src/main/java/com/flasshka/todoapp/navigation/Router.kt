@@ -1,13 +1,19 @@
 package com.flasshka.todoapp.navigation
 
-import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 
 /**
  * Managing navigation in the app
  */
-class Router(private val navController: NavController) {
+class Router(val navController: NavHostController) {
     fun navigateToListOfItems() {
-        navController.navigate(NavScreen.ListOfItems.route)
+        navController.navigate(NavScreen.ListOfItems.route) {
+            navController.graph.setStartDestination(NavScreen.ListOfItems.route)
+            navController.popBackStack()
+            popUpTo(navController.graph.startDestinationId) {
+                inclusive = true
+            }
+        }
     }
 
     fun navigateToCreateItem() {

@@ -9,13 +9,11 @@ import com.flasshka.domain.entities.TodoItem
 import com.flasshka.domain.interfaces.TodoItemDataSource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import javax.inject.Inject
 
 /**
  * Data Source impl for data in network
  */
-class NetworkDataSource @Inject constructor(private val service: TodoListService) :
-    TodoItemDataSource {
+internal class NetworkDataSource(private val service: TodoListService) : TodoItemDataSource {
     override suspend fun getItems(): Flow<List<TodoItem>> {
         val items = service.getItems()
         ServiceConstants.lastKnownRevision = items.revision
@@ -30,7 +28,7 @@ class NetworkDataSource @Inject constructor(private val service: TodoListService
 
 
         val itemsWithRevision: ListItemsWithRevision =
-            service.updateItems(body = RequestUtils.getBody(body))
+            service.updateItems(body = body)
         ServiceConstants.lastKnownRevision = itemsWithRevision.revision
 
         return flow {
@@ -41,7 +39,7 @@ class NetworkDataSource @Inject constructor(private val service: TodoListService
     override suspend fun addItem(item: TodoItem) {
         val body = BodyItem(element = item.toNetwork())
 
-        val itemWithRevision: ItemWithRevision = service.addItem(body = RequestUtils.getBody(body))
+        val itemWithRevision: ItemWithRevision = service.addItem(body = body)
         ServiceConstants.lastKnownRevision = itemWithRevision.revision
     }
 
@@ -54,7 +52,7 @@ class NetworkDataSource @Inject constructor(private val service: TodoListService
 
         val itemWithRevision = service.updateItem(
             path = body.element.id,
-            body = RequestUtils.getBody(body)
+            body = body
         )
 
         ServiceConstants.lastKnownRevision = itemWithRevision.revision

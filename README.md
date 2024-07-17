@@ -1,8 +1,8 @@
 # How to use
-First, create a **local.properties** file in the root directory
-
-Then paste the lines below, replacing 'your_client_id' and 'your_redirect_uri':
+Env variables:
 ```
-oath.clientID="your_client_id"
-oath.redirectURI="your_redirect_uri"
+OAUTH_CLIENT_ID - clientID for yandex ID,
+OAUTH_REDIRECT_URI - redirect URI for yandex ID,
+TG_CHAT - tg chatID
+TG_TOKEN - token for tg api
 ```

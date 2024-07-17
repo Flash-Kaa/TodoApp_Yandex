@@ -1,24 +1,54 @@
 package com.flasshka.data.di.modules
 
 import android.content.Context
-import com.flasshka.data.database.DatabaseBuilder
+import androidx.room.Room
+import com.flasshka.data.database.AppDatabase
 import com.flasshka.data.database.TodoItemsDao
-import com.flasshka.data.network.RetrofitBuilder
+import com.flasshka.data.di.ItemsRepositorySubcomponentScope
+import com.flasshka.data.network.ServiceConstants
 import com.flasshka.data.network.TodoListService
 import dagger.Module
 import dagger.Provides
-import javax.inject.Singleton
+import okhttp3.OkHttpClient
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.create
 
 /**
  * Module for implicate services for data source
  */
 @Module
-class ServiceModule {
-    @Singleton
+internal class ServiceModule {
     @Provides
-    fun todoListService(): TodoListService = RetrofitBuilder.networkService
+    @ItemsRepositorySubcomponentScope
+    fun provideTodoListService(): TodoListService = Retrofit.Builder()
+        .baseUrl("https://hive.mrdekk.ru/todo/")
+        .client(getClient())
+        .addConverterFactory(GsonConverterFactory.create())
+        .build().create()
 
-    @Singleton
     @Provides
-    fun dao(context: Context): TodoItemsDao = DatabaseBuilder.getDatabase(context).getDao()
+    @ItemsRepositorySubcomponentScope
+    fun provideDao(context: Context): TodoItemsDao {
+        val db = Room.databaseBuilder(
+            context = context,
+            klass = AppDatabase::class.java,
+            name = "todo_yandex_database123"
+        ).build()
+
+        return db.getDao()
+    }
+    
+    private fun getClient(): OkHttpClient = OkHttpClient()
+        .newBuilder()
+        .addInterceptor {
+            val requestWithHeaders = it.request()
+                .newBuilder()
+                .header("Authorization", ServiceConstants.OAthWithToken.getFullTokenValue())
+                .header("X-Last-Known-Revision", ServiceConstants.lastKnownRevision.toString())
+                .build()
+
+            it.proceed(requestWithHeaders)
+        }
+        .build()
 }

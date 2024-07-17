@@ -16,8 +16,9 @@ data class EditTodoItemState(
     val deadLine: Long? = null,
     val completed: Boolean = false,
     val lastChange: Date? = null,
+    val files: List<String>? = null,
 
-    val isUpdate: Boolean = false
+    val isUpdate: Boolean = false,
 ) {
     companion object {
         fun getNewState(): EditTodoItemState {
@@ -34,6 +35,7 @@ data class EditTodoItemState(
                     deadLine = deadLine?.time,
                     completed = completed,
                     lastChange = lastChange,
+                    files = files?.toList(),
                     isUpdate = true
                 )
             }
@@ -48,7 +50,8 @@ data class EditTodoItemState(
             created = created ?: Calendar.getInstance().time,
             deadLine = deadLine?.let { Date(it) },
             completed = completed,
-            lastChange = lastChange
+            lastChange = lastChange,
+            files = files?.toList()
         )
     }
 }

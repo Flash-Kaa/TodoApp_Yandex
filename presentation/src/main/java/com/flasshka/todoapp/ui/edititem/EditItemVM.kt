@@ -102,29 +102,31 @@ internal class EditItemVM(
     }
 
     /**
-     * Creates a EditItemVM
+     * Creates a EditItemVM without @AssistedInject
      */
-    class Factory(
-        private val router: Router,
-        private val itemId: String?,
-
+    class FactoryWrapperWithUseCases(
         private val addTodoItem: AddTodoItemUseCase,
         private val updateTodoItem: UpdateTodoItemUseCase,
         private val deleteTodoItem: DeleteTodoItemUseCase,
         private val getTodoItemByIdOrNull: GetTodoItemByIdOrNullUseCase,
         private val fetchItems: FetchItemsUseCase,
-    ) : ViewModelProvider.Factory {
-        @Suppress("UNCHECKED_CAST")
-        override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            return EditItemVM(
-                itemId = itemId,
-                router = router,
-                addTodoItem = addTodoItem,
-                updateTodoItem = updateTodoItem,
-                deleteTodoItem = deleteTodoItem,
-                getTodoItemByIdOrNull = getTodoItemByIdOrNull,
-                fetchItems = fetchItems,
-            ) as T
+    ) {
+        inner class InnerFactory(
+            private val router: Router,
+            private val itemId: String?,
+        ) : ViewModelProvider.Factory {
+            @Suppress("UNCHECKED_CAST")
+            override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                return EditItemVM(
+                    itemId = itemId,
+                    router = router,
+                    addTodoItem = addTodoItem,
+                    updateTodoItem = updateTodoItem,
+                    deleteTodoItem = deleteTodoItem,
+                    getTodoItemByIdOrNull = getTodoItemByIdOrNull,
+                    fetchItems = fetchItems,
+                ) as T
+            }
         }
     }
 }

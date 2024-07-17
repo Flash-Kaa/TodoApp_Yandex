@@ -7,29 +7,26 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.lifecycle.lifecycleScope
-import com.flasshka.data.DataSyncWorker
-import com.flasshka.domain.interfaces.TodoItemRepository
+import androidx.navigation.compose.rememberNavController
 import com.flasshka.todoapp.navigation.NavGraph
+import com.flasshka.todoapp.navigation.Router
 import com.flasshka.todoapp.ui.theme.TodoAppTheme
-import javax.inject.Inject
 
 class MainActivity : ComponentActivity() {
-    @Inject
-    lateinit var repository: TodoItemRepository
-
     private val networkChangeReceiver: NetworkChangeReceiver by lazy {
-        NetworkChangeReceiver(repository, lifecycleScope)
+        NetworkChangeReceiver(lifecycleScope)
     }
 
     @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         DataSyncWorker.scheduleDataSyncWork(applicationContext)
-        (application as TodoApp).component.inject(this)
-
         setContent {
             TodoAppTheme {
-                NavGraph(repository)
+                val router = Router(rememberNavController())
+                networkChangeReceiver.navigateToAuthorization = router::navigateToAuthorization
+
+                NavGraph(router)
             }
         }
     }

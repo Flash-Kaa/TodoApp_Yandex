@@ -1,14 +1,8 @@
 plugins {
-    id("java-library")
-    id("kotlin")
+    id("conventionplugin.domain")
     alias(libs.plugins.jetbrainsKotlinJvm)
 }
 
-java {
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
-}
-
 dependencies {
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
+    implementation(libs.kotlinx.coroutines.core)
 }

@@ -6,7 +6,6 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.CreationExtras
 import com.flasshka.domain.entities.TodoItem
 import com.flasshka.domain.usecases.items.DeleteTodoItemUseCase
 import com.flasshka.domain.usecases.items.FetchItemsUseCase
@@ -94,32 +93,31 @@ internal class ListVM(
     }
 
     /**
-     * Creates a ListVM
+     * Creates a ListVM without @AssistedInject
      */
-    class Factory(
-        private val router: Router,
-
+    class FactoryWrapperWithUseCases(
         private val updateTodoItem: UpdateTodoItemUseCase,
         private val deleteTodoItem: DeleteTodoItemUseCase,
         private val getByIdOrNull: GetTodoItemByIdOrNullUseCase,
         private val getDoneCounts: GetDoneCountUseCase,
         private val getItemsWithVisibility: GetItemsWithVisibilityUseCase,
         private val fetchItems: FetchItemsUseCase
-    ) : ViewModelProvider.Factory {
-        @Suppress("UNCHECKED_CAST")
-        override fun <T : ViewModel> create(
-            modelClass: Class<T>,
-            extras: CreationExtras
-        ): T {
-            return ListVM(
-                router = router,
-                updateTodoItem = updateTodoItem,
-                deleteTodoItem = deleteTodoItem,
-                getByIdOrNull = getByIdOrNull,
-                getDoneCounts = getDoneCounts,
-                getItemsWithVisibility = getItemsWithVisibility,
-                fetchItems = fetchItems
-            ) as T
+    ) {
+        inner class InnerFactory(
+            private val router: Router
+        ) : ViewModelProvider.Factory {
+            @Suppress("UNCHECKED_CAST")
+            override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                return ListVM(
+                    router = router,
+                    updateTodoItem = updateTodoItem,
+                    deleteTodoItem = deleteTodoItem,
+                    getByIdOrNull = getByIdOrNull,
+                    getDoneCounts = getDoneCounts,
+                    getItemsWithVisibility = getItemsWithVisibility,
+                    fetchItems = fetchItems
+                ) as T
+            }
         }
     }
 }
