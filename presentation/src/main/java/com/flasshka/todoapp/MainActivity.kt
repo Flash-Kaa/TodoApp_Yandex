@@ -12,7 +12,6 @@ import com.flasshka.todoapp.navigation.NavGraph
 import com.flasshka.todoapp.navigation.Router
 
 class MainActivity : ComponentActivity() {
-
     private val networkChangeReceiver: NetworkChangeReceiver by lazy {
         NetworkChangeReceiver(lifecycleScope)
     }
@@ -21,7 +20,6 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         DataSyncWorker.scheduleDataSyncWork(applicationContext)
-
 
         setContent {
             val router = Router(rememberNavController())

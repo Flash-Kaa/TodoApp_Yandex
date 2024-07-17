@@ -1,0 +1,160 @@
+{
+  "templates": {
+    "title": {
+      "type": "text",
+      "font_size": 28,
+      "line_height": 24,
+      "font_weight": "bold",
+      "paddings": {
+        "left": 24,
+        "right": 24,
+        "bottom": 16
+      }
+    },
+    "content": {
+      "font_size": 18,
+      "line_height": 20,
+      "type": "text",
+      "paddings": {
+        "left": 24,
+        "right": 24
+      }
+    },
+    "visible_txt": {
+      "font_size": 16,
+      "underline": "single",
+      "line_height": 20,
+      "type": "text",
+      "paddings": {
+        "top": 32,
+        "left": 24,
+        "right": 24
+      }
+    }
+  },
+  "card": {
+    "log_id": "info_page",
+    "states": [
+      {
+        "state_id": 0,
+        "div": {
+          "type": "container",
+          "orientation": "vertical",
+          "margins": {
+            "top": 24,
+            "bottom": 24
+          },
+          "items": [
+            {
+              "type": "state",
+              "orientation": "horizontal",
+              "states": [
+                {
+                  "state_id": "current_is_gone",
+                  "div": {
+                    "type": "image",
+                    "image_url": "divkit-asset://ic_back.png",
+                    "height": {
+                      "type": "fixed",
+                      "value": 30
+                    },
+                    "width": {
+                      "type": "fixed",
+                      "value": 30
+                    },
+                    "margins": {
+                      "bottom": 24,
+                      "left": 12
+                    },
+                    "action" : {
+                      "log_id": "close_page",
+                      "url": "info-div-action://close_page"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "type": "title",
+              "text": "Информация"
+            },
+            {
+              "type": "content",
+              "text": "Это приложение со списком дел, которое разработано в рамках летней школы Яндекса."
+            },
+            {
+              "type": "state",
+              "div_id": "button_to_change_visible",
+              "states": [
+                {
+                  "state_id": "current_is_gone",
+                  "div": {
+                    "type": "visible_txt",
+                    "text": "Показать картинку ↓",
+                    "actions": [
+                      {
+                        "log_id": "change_visible",
+                        "url": "div-action://set_state?state_id=0/visible_state/visible"
+                      },
+                      {
+                        "log_id": "change_visible_text",
+                        "url": "div-action://set_state?state_id=0/button_to_change_visible/current_is_visible"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "state_id": "current_is_visible",
+                  "div": {
+                    "type": "visible_txt",
+                    "text": "Скрыть картинку ↑",
+                    "actions": [
+                      {
+                        "log_id": "change_visible",
+                        "url": "div-action://set_state?state_id=0/visible_state/gone"
+                      },
+                      {
+                        "log_id": "change_visible_text",
+                        "url": "div-action://set_state?state_id=0/button_to_change_visible/current_is_gone"
+                      }
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "type": "state",
+              "div_id": "visible_state",
+              "states": [
+                {
+                  "state_id": "gone"
+                },
+                {
+                  "state_id": "visible",
+                  "div": {
+                    "type": "container",
+                    "orientation": "vertical",
+                    "margins": {
+                      "top": 10,
+                      "bottom": 100
+                    },
+                    "items": [
+                      {
+                        "type": "image",
+                        "margins": {
+                          "left": 32,
+                          "right": 32
+                        },
+                        "image_url": "https://coding.bedfordschool.org.uk/pluginfile.php/37/course/overviewfiles/Android%20Gates.png"
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

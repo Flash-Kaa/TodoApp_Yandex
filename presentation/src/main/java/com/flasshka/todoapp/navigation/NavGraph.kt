@@ -10,6 +10,7 @@ import androidx.navigation.navArgument
 import com.flasshka.todoapp.appComponent
 import com.flasshka.todoapp.ui.authorization.DrawerAuthorizationUI
 import com.flasshka.todoapp.ui.edititem.DrawerEditItemUI
+import com.flasshka.todoapp.ui.info.DrawerInfoUI
 import com.flasshka.todoapp.ui.listitems.DrawerListUI
 import com.flasshka.todoapp.ui.settings.DrawerSettingsUI
 
@@ -25,6 +26,7 @@ fun NavGraph(
         composable(NavScreen.Authorization.route) { DrawerAuthorizationUI(router) }
         composable(NavScreen.ListOfItems.route) { DrawerListUI(router, snackbarHostState) }
         composable(NavScreen.Settings.route) { DrawerSettingsUI(router, snackbarHostState) }
+        composable(NavScreen.Info.route) { DrawerInfoUI(router, snackbarHostState) }
 
         composable(
             "${NavScreen.EditItem.route}/{itemId}",
