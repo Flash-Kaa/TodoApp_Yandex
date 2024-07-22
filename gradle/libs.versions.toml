@@ -1,7 +1,9 @@
 [versions]
 agp = "8.3.2"
+composeInterop = "30.9.0"
 daggerAndroid = "2.51.1"
-jacksonDatabindVersion = "2.0.1"
+div = "30.9.0"
+glide = "30.9.0"
 kotlin = "1.9.0"
 coreKtx = "1.13.1"
 junit = "4.13.2"
@@ -16,6 +18,7 @@ composeBom = "2024.05.00"
 jetbrainsKotlinJvm = "1.9.0"
 appcompat = "1.7.0"
 navigationCompose = "2.7.7"
+picasso = "30.9.0"
 retrofit = "2.9.0"
 roomKtx = "2.6.1"
 workRuntimeKtx = "2.9.0"
@@ -28,11 +31,16 @@ androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "roomKtx"
 androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "roomKtx" }
 androidx-work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version.ref = "workRuntimeKtx" }
 converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "retrofit" }
-core-jackson-databind = { module = "com.fasterxml.jackson.core:jackson-databind", version.ref = "jacksonDatabindVersion" }
 dagger-android-support = { module = "com.google.dagger:dagger-android-support", version.ref = "daggerAndroid" }
 dagger-android = { module = "com.google.dagger:dagger-android", version.ref = "daggerAndroid" }
 dagger-android-processor = { module = "com.google.dagger:dagger-android-processor", version.ref = "daggerAndroid" }
 dagger-compiler = { module = "com.google.dagger:dagger-compiler", version.ref = "daggerAndroid" }
+div = { module = "com.yandex.div:div", version.ref = "div" }
+div-compose-interop = { module = "com.yandex.div:compose-interop", version.ref = "composeInterop" }
+div-core = { module = "com.yandex.div:div-core", version.ref = "div" }
+div-glide = { module = "com.yandex.div:glide", version.ref = "glide" }
+div-json = { module = "com.yandex.div:div-json", version.ref = "div" }
+div-picasso = { module = "com.yandex.div:picasso", version.ref = "picasso" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }

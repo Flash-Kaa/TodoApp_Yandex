@@ -2,7 +2,6 @@ package com.flasshka.todoapp.ui.edititem
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -19,14 +18,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import com.flasshka.todoapp.actions.EditItemActionType
+import com.flasshka.todoapp.ui.edititem.elements.BottomSheet
 import com.flasshka.todoapp.ui.edititem.elements.Calendar
 import com.flasshka.todoapp.ui.edititem.elements.DeadlineSwitch
 import com.flasshka.todoapp.ui.edititem.elements.DeleteButton
-import com.flasshka.todoapp.ui.edititem.elements.ImportanceDropdownMenu
-import com.flasshka.todoapp.ui.edititem.elements.ImportanceGetDropdown
+import com.flasshka.todoapp.ui.edititem.elements.ImportanceGetChooser
 import com.flasshka.todoapp.ui.edititem.elements.NameField
 import com.flasshka.todoapp.ui.edititem.elements.TopButtons
 import com.flasshka.todoapp.ui.edititem.elements.Underline
@@ -54,6 +52,10 @@ private fun ContentColumn(
     state: EditTodoItemState,
     deleteButtonIsEnabled: () -> Boolean
 ) {
+    val bottomSheetIsVisible = remember {
+        mutableStateOf(false)
+    }
+
     Column(
         horizontalAlignment = Alignment.Start,
         modifier = Modifier.padding(padding)
@@ -62,22 +64,29 @@ private fun ContentColumn(
 
         LazyColumnOfEditField(
             state = state,
+
             getAction = getAction,
-            deleteButtonIsEnabled = deleteButtonIsEnabled
+            deleteButtonIsEnabled = deleteButtonIsEnabled,
+            enableBottomSheet = { bottomSheetIsVisible.value = true }
         )
+    }
+
+    if (bottomSheetIsVisible.value) {
+        BottomSheet(state, bottomSheetIsVisible, getAction)
     }
 }
 
 @Composable
 private fun LazyColumnOfEditField(
     state: EditTodoItemState,
-    getAction: (EditItemActionType) -> () -> Unit,
-    deleteButtonIsEnabled: () -> Boolean
+    deleteButtonIsEnabled: () -> Boolean,
+    enableBottomSheet: () -> Unit,
+    getAction: (EditItemActionType) -> () -> Unit
 ) {
     LazyColumn {
         item { NameField(state, getAction, Modifier.padding(16.dp)) }
 
-        item { ImportanceDropdownMenuItem(state, getAction) }
+        item { ImportanceDropdownMenuItem(state, enableBottomSheet) }
 
         item { Underline(modifier = Modifier.padding(horizontal = 16.dp)) }
 
@@ -92,24 +101,12 @@ private fun LazyColumnOfEditField(
 @Composable
 private fun ImportanceDropdownMenuItem(
     state: EditTodoItemState,
-    getAction: (EditItemActionType) -> (() -> Unit)
+    enableBottomSheet: () -> Unit
 ) {
-    var needDropdown: Boolean by remember { mutableStateOf(false) }
-
-    Row {
-        ImportanceGetDropdown(
-            state = state,
-            changeNeed = { needDropdown = it },
-            modifier = Modifier.padding(16.dp)
-        )
-
-        ImportanceDropdownMenu(
-            expanded = needDropdown,
-            changeNeed = { needDropdown = it },
-            getAction = getAction,
-            offset = DpOffset(x = 16.dp, y = (-60).dp)
-        )
-    }
+    ImportanceGetChooser(
+        state = state,
+        openChooser = enableBottomSheet
+    )
 }
 
 @Composable

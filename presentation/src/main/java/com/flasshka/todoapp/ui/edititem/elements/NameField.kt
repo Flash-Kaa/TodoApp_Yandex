@@ -18,7 +18,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -48,14 +47,15 @@ fun NameField(
             .padding(2.dp)
             .fillMaxWidth()
             .heightIn(min = 130.dp)
-            .shadow(1.dp, shape)
+            .shadow(1.dp, shape),
+        textStyle = MaterialTheme.typography.bodyMedium,
     )
 }
 
 @Composable
 private fun editTextDefaults() = TextFieldDefaults.colors(
-    focusedContainerColor = colorResource(id = R.color.back_secondary),
-    unfocusedContainerColor = colorResource(id = R.color.back_secondary),
+    focusedContainerColor = MaterialTheme.colorScheme.surface,
+    unfocusedContainerColor = MaterialTheme.colorScheme.surface,
     focusedIndicatorColor = Color.Transparent,
     unfocusedIndicatorColor = Color.Transparent,
     disabledIndicatorColor = Color.Transparent,
@@ -67,7 +67,8 @@ private fun Placeholder() {
         text = stringResource(R.string.what_write),
         fontSize = 16.sp,
         fontWeight = FontWeight(400),
-        color = MaterialTheme.colorScheme.tertiary
+        color = MaterialTheme.colorScheme.tertiary,
+        style = MaterialTheme.typography.bodyMedium
     )
 }
 

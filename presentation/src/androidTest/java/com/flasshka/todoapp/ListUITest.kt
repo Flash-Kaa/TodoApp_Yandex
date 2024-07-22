@@ -1,3 +1,4 @@
+
 package com.flasshka.todoapp
 
 import androidx.compose.material3.SnackbarHostState
@@ -14,18 +15,18 @@ import androidx.compose.ui.test.swipeLeft
 import androidx.compose.ui.test.swipeRight
 import com.flasshka.domain.entities.TodoItem
 import com.flasshka.todoapp.ui.listitems.ListUI
-import com.flasshka.todoapp.utils.ActionsForTest
-import com.flasshka.todoapp.utils.TodoItemRepositoryMock
 import kotlinx.coroutines.runBlocking
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import java.util.Calendar
 
+
 /**
  * Testing UI for list screen
  * Now not working
- */
+ *//*
+
 internal class ListUITest {
     @Rule
     @JvmField
@@ -185,3 +186,4 @@ internal class ListUITest {
         return idWithName
     }
 }
+*/

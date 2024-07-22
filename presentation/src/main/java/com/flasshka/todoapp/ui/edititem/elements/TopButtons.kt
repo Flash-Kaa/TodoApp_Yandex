@@ -2,7 +2,7 @@ package com.flasshka.todoapp.ui.edititem.elements
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -10,13 +10,16 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
@@ -26,8 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.flasshka.todoapp.R
 import com.flasshka.todoapp.actions.EditItemActionType
-import com.flasshka.todoapp.ui.theme.DarkThemeBlue
-import com.flasshka.todoapp.ui.theme.LightThemeBlue
+import com.flasshka.todoapp.ui.theme.BlueColor
 import com.flasshka.todoapp.ui.theme.TodoAppTheme
 
 @Composable
@@ -57,11 +59,16 @@ private fun SaveText(getAction: (EditItemActionType) -> () -> Unit) {
     Text(
         text = stringResource(R.string.save),
         modifier = Modifier
-            .clickable(onClick = getAction(EditItemActionType.OnSave))
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = rememberRipple(bounded = true, color = Color.Gray),
+                onClick = getAction(EditItemActionType.OnSave)
+            )
             .padding(16.dp),
         fontWeight = FontWeight(500),
         fontSize = 16.sp,
-        color = if (isSystemInDarkTheme()) DarkThemeBlue else LightThemeBlue
+        color = BlueColor,
+        style = MaterialTheme.typography.bodyMedium
     )
 }
 
@@ -72,7 +79,11 @@ private fun BackIcon(getAction: (EditItemActionType) -> () -> Unit) {
         contentDescription = "back to list",
         tint = MaterialTheme.colorScheme.primary,
         modifier = Modifier
-            .clickable(onClick = getAction(EditItemActionType.OnExit))
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = rememberRipple(bounded = true, color = Color.Gray),
+                onClick = getAction(EditItemActionType.OnExit)
+            )
             .padding(16.dp)
             .size(30.dp)
     )

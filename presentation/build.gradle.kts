@@ -34,6 +34,14 @@ dependencies {
     // WorkManager
     implementation(libs.androidx.work.runtime.ktx)
 
+    // DivKit
+    implementation(libs.div)
+    implementation(libs.div.core)
+    implementation(libs.div.json)
+    implementation(libs.div.picasso)
+    implementation(libs.div.compose.interop)
+
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)

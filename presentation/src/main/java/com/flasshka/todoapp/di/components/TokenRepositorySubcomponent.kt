@@ -4,7 +4,7 @@ import android.content.Context
 import com.flasshka.data.di.TokenRepositorySubcomponentScope
 import com.flasshka.data.di.modules.TokenRepositoryModule
 import com.flasshka.data.di.modules.binds.TokenRepositoryBindModule
-import com.flasshka.domain.interfaces.TokenRepository
+import com.flasshka.domain.interfaces.token.TokenRepository
 import dagger.Subcomponent
 
 @TokenRepositorySubcomponentScope
@@ -13,6 +13,8 @@ internal interface TokenRepositorySubcomponent {
     fun inject(target: Context)
 
     fun tokenUseCasesComponent(): TokenUseCaseSubcomponents
+
+    fun itemsRepositoryComponent(): ItemsRepositorySubcomponent
 
     fun provideTokenRepository(): TokenRepository
 }

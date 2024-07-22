@@ -5,13 +5,15 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.flasshka.data.token.PathToGetToken
 import com.flasshka.todoapp.appComponent
+import com.flasshka.todoapp.isDarkThemeState
 import com.flasshka.todoapp.navigation.Router
+import com.flasshka.todoapp.ui.theme.TodoAppTheme
 
 @Composable
 fun DrawerAuthorizationUI(router: Router) {
     val context = LocalContext.current
 
-    val authVM: AuthorizationVM = viewModel(
+    val viewModel: AuthorizationVM = viewModel(
         factory = context.appComponent.tokenRepositoryComponent()
             .tokenUseCasesComponent()
             .authorizationVMComponent()
@@ -19,8 +21,19 @@ fun DrawerAuthorizationUI(router: Router) {
             .InnerFactory(router)
     )
 
-    YandexAuthUI(
-        url = PathToGetToken.URI,
-        getAction = authVM::getAction
-    )
+    DrawerAuthorizationUI(viewModel)
+}
+
+@Composable
+private fun DrawerAuthorizationUI(
+    viewModel: AuthorizationVM
+) {
+    TodoAppTheme(
+        darkTheme = isDarkThemeState()
+    ) {
+        YandexAuthUI(
+            url = PathToGetToken.URI,
+            getAction = viewModel::getAction
+        )
+    }
 }

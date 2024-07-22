@@ -3,7 +3,7 @@ package com.flasshka.todoapp.ui.edititem.elements
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -27,6 +28,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -36,10 +38,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.flasshka.todoapp.R
 import com.flasshka.todoapp.ui.edititem.EditTodoItemState
-import com.flasshka.todoapp.ui.theme.DarkThemeBlue
-import com.flasshka.todoapp.ui.theme.DarkThemeOverlay
-import com.flasshka.todoapp.ui.theme.LightThemeBlue
-import com.flasshka.todoapp.ui.theme.LightThemeOverlay
+import com.flasshka.todoapp.ui.theme.BlueColor
+import com.flasshka.todoapp.ui.theme.OverlayColor
 import com.flasshka.todoapp.ui.theme.TodoAppTheme
 
 @Composable
@@ -76,7 +76,8 @@ private fun DeadlineText(
             text = stringResource(R.string.deadline_date),
             color = MaterialTheme.colorScheme.primary,
             fontSize = 16.sp,
-            fontWeight = FontWeight(400)
+            fontWeight = FontWeight(400),
+            style = MaterialTheme.typography.bodyMedium
         )
 
         DeadlineDate(
@@ -95,14 +96,14 @@ private fun DeadlineDate(
 
     val context = LocalContext.current
     val formatter = android.text.format.DateFormat.getDateFormat(context)
-    val color = if (isSystemInDarkTheme()) DarkThemeBlue else LightThemeBlue
 
     state.deadLine?.let {
         Text(
             text = formatter.format(it),
-            color = color,
+            color = BlueColor,
             fontSize = 14.sp,
-            fontWeight = FontWeight(400)
+            fontWeight = FontWeight(400),
+            style = MaterialTheme.typography.bodyMedium
         )
     }
 }
@@ -131,16 +132,17 @@ private fun BackgroundForSwitch(
     onCheckedChange: (Boolean) -> Unit,
     checked: Boolean
 ) {
-    val blue = if (isSystemInDarkTheme()) DarkThemeBlue else LightThemeBlue
-    val colorTrack = if (checked) blue.copy(alpha = 0.3f)
-    else if (isSystemInDarkTheme()) DarkThemeOverlay
-    else LightThemeOverlay
+    val colorTrack = if (checked) BlueColor.copy(alpha = 0.3f) else OverlayColor
 
     Box(
         modifier = modifier
             .clip(RoundedCornerShape(16.dp))
             .background(colorTrack)
-            .clickable { onCheckedChange(!checked) }
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = rememberRipple(bounded = true, color = Color.Gray),
+                onClick = { onCheckedChange(!checked) }
+            )
             .padding(horizontal = 4.dp, vertical = 2.dp)
             .size(width = 36.dp, height = 16.dp)
     )
@@ -151,16 +153,15 @@ private fun Switch(
     thumbOffset: Dp,
     checked: Boolean
 ) {
-    val blue = if (isSystemInDarkTheme()) DarkThemeBlue else LightThemeBlue
-    val colorThumb = if (checked) blue else MaterialTheme.colorScheme.surfaceVariant
-
     Box(
         modifier = Modifier
             .offset(x = thumbOffset)
             .shadow(2.dp, CircleShape)
             .size(26.dp)
             .clip(CircleShape)
-            .background(colorThumb)
+            .background(
+                if (checked) BlueColor else MaterialTheme.colorScheme.surfaceVariant
+            )
     )
 }
 

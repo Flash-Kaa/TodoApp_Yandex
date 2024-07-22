@@ -1,7 +1,6 @@
 package com.flasshka.todoapp.ui.listitems.elements
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -30,10 +29,8 @@ import androidx.compose.ui.unit.dp
 import com.flasshka.domain.entities.TodoItem
 import com.flasshka.todoapp.R
 import com.flasshka.todoapp.actions.ListOfItemsActionType
-import com.flasshka.todoapp.ui.theme.DarkThemeGreen
-import com.flasshka.todoapp.ui.theme.DarkThemeRed
-import com.flasshka.todoapp.ui.theme.LightThemeGreen
-import com.flasshka.todoapp.ui.theme.LightThemeRed
+import com.flasshka.todoapp.ui.theme.GreenColor
+import com.flasshka.todoapp.ui.theme.RedColor
 import com.flasshka.todoapp.ui.theme.TodoAppTheme
 import java.util.Calendar
 
@@ -114,12 +111,8 @@ private fun SwipeBackgroundContent(
 @OptIn(ExperimentalMaterial3Api::class)
 private fun getColor(state: SwipeToDismissBoxState): Color {
     return when (state.dismissDirection) {
-        SwipeToDismissBoxValue.StartToEnd ->
-            if (isSystemInDarkTheme()) DarkThemeGreen else LightThemeGreen
-
-        SwipeToDismissBoxValue.EndToStart ->
-            if (isSystemInDarkTheme()) DarkThemeRed else LightThemeRed
-
+        SwipeToDismissBoxValue.StartToEnd -> GreenColor
+        SwipeToDismissBoxValue.EndToStart -> RedColor
         SwipeToDismissBoxValue.Settled -> Color.Transparent
     }
 }

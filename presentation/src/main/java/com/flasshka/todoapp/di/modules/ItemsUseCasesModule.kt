@@ -2,7 +2,10 @@ package com.flasshka.todoapp.di.modules
 
 import android.content.Context
 import androidx.compose.material3.SnackbarHostState
-import com.flasshka.domain.interfaces.TodoItemRepository
+import com.flasshka.data.di.DatabaseRepositoryQualifier
+import com.flasshka.data.di.NetworkRepositoryQualifier
+import com.flasshka.domain.interfaces.items.TodoItemRepository
+import com.flasshka.domain.interfaces.token.TokenRepository
 import com.flasshka.domain.usecases.items.AddTodoItemUseCase
 import com.flasshka.domain.usecases.items.DeleteTodoItemUseCase
 import com.flasshka.domain.usecases.items.FetchItemsUseCase
@@ -21,47 +24,50 @@ class ItemsUseCasesModule {
     @Provides
     @ItemsUseCaseScope
     fun provideDoneCount(
-        repository: TodoItemRepository
+        @DatabaseRepositoryQualifier repository: TodoItemRepository
     ): GetDoneCountUseCase = GetDoneCountUseCase(repository)
 
     @Provides
     @ItemsUseCaseScope
     fun provideItemsWithVisibility(
-        repository: TodoItemRepository
+        @DatabaseRepositoryQualifier repository: TodoItemRepository
     ): GetItemsWithVisibilityUseCase = GetItemsWithVisibilityUseCase(repository)
 
     @Provides
     @ItemsUseCaseScope
     fun provideGetById(
-        repository: TodoItemRepository
+        @DatabaseRepositoryQualifier repository: TodoItemRepository
     ): GetTodoItemByIdOrNullUseCase = GetTodoItemByIdOrNullUseCase(repository)
 
     @Provides
     @ItemsUseCaseScope
     fun provideFetch(
-        repository: TodoItemRepository,
+        @NetworkRepositoryQualifier netRepository: TodoItemRepository,
+        @DatabaseRepositoryQualifier dbRepository: TodoItemRepository,
+        tokenRepository: TokenRepository,
         context: Context,
         snackbarHostState: SnackbarHostState
     ): FetchItemsUseCase {
-        return FetchItemsUseCase(repository) {
+        return FetchItemsUseCase(
+            netRepository, dbRepository, tokenRepository
+        ) {
             snackbarShow(
                 message = context.getString(R.string.fetch_error_message),
-                actionLabel = "retry",
                 snackbarHostState = snackbarHostState
-            ) {
-                repository.fetchItems()
-            }
+            )
         }
     }
 
     @Provides
     @ItemsUseCaseScope
     fun provideDelete(
-        repository: TodoItemRepository,
+        @NetworkRepositoryQualifier netRepository: TodoItemRepository,
+        @DatabaseRepositoryQualifier dbRepository: TodoItemRepository,
+        tokenRepository: TokenRepository,
         context: Context,
         snackbarHostState: SnackbarHostState
     ): DeleteTodoItemUseCase {
-        return DeleteTodoItemUseCase(repository) {
+        return DeleteTodoItemUseCase(netRepository, dbRepository, tokenRepository) {
             snackbarShow(
                 message = context.getString(R.string.delete_error_message),
                 actionLabel = "retry",
@@ -73,11 +79,13 @@ class ItemsUseCasesModule {
     @Provides
     @ItemsUseCaseScope
     fun provideUpdate(
-        repository: TodoItemRepository,
+        @NetworkRepositoryQualifier netRepository: TodoItemRepository,
+        @DatabaseRepositoryQualifier dbRepository: TodoItemRepository,
+        tokenRepository: TokenRepository,
         context: Context,
         snackbarHostState: SnackbarHostState
     ): UpdateTodoItemUseCase {
-        return UpdateTodoItemUseCase(repository) {
+        return UpdateTodoItemUseCase(netRepository, dbRepository, tokenRepository) {
             snackbarShow(
                 message = context.getString(R.string.update_error_message),
                 actionLabel = "retry",
@@ -89,11 +97,13 @@ class ItemsUseCasesModule {
     @Provides
     @ItemsUseCaseScope
     fun provideAdd(
-        repository: TodoItemRepository,
+        @NetworkRepositoryQualifier netRepository: TodoItemRepository,
+        @DatabaseRepositoryQualifier dbRepository: TodoItemRepository,
+        tokenRepository: TokenRepository,
         context: Context,
         snackbarHostState: SnackbarHostState
     ): AddTodoItemUseCase {
-        return AddTodoItemUseCase(repository) {
+        return AddTodoItemUseCase(netRepository, dbRepository, tokenRepository) {
             snackbarShow(
                 message = context.getString(R.string.add_error_message),
                 actionLabel = "retry",

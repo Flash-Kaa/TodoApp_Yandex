@@ -128,7 +128,6 @@ private fun TopAppBar(
                 visibilityDoneON = visibilityDoneON,
                 getAction = getAction,
                 scrollBehavior = scrollBehavior,
-                modifier = Modifier.padding(start = 48.dp, end = 16.dp)
             )
         },
         scrollBehavior = scrollBehavior,
